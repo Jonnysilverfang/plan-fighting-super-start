@@ -1,0 +1,6 @@
+@KienAPI_HostAddress = http://localhost:5171
+
+GET {{KienAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
