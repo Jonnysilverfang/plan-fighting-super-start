@@ -1,0 +1,9 @@
+CREATE TABLE dbo.Accounts (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(50) NOT NULL UNIQUE,
+    Password NVARCHAR(50) NOT NULL,
+    Gold BIGINT DEFAULT 0,
+    UpgradeHP INT DEFAULT 0,
+    UpgradeDamage INT DEFAULT 0,
+    Level INT DEFAULT 1
+);
