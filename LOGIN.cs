@@ -1,28 +1,34 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Kien
+namespace plan_fighting_super_start
 {
-    public partial class Form1 : Form
+    public partial class Login : Form
     {
-        public Form1()
+        public Login()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Login_Load(object sender, EventArgs e)
         {
-            // Placeholder cho Username
+           
+            // ⚠️ Bỏ qua khi đang ở chế độ Design để tránh lỗi Designer
+            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+                return;
+
+            // --- Placeholder cho Username ---
             textBoxUser.Text = "Tên đăng nhập";
             textBoxUser.ForeColor = Color.Gray;
 
-            // Placeholder cho Password
+            // --- Placeholder cho Password ---
             textBoxPass.Text = "Mật khẩu";
             textBoxPass.ForeColor = Color.Gray;
             textBoxPass.UseSystemPasswordChar = false;
 
-            // --- XỬ LÝ PLACEHOLDER USERNAME ---
+            // --- Khi nhập username ---
             textBoxUser.Enter += (s, ev) =>
             {
                 if (textBoxUser.Text == "Tên đăng nhập")
@@ -40,7 +46,7 @@ namespace Kien
                 }
             };
 
-            // --- XỬ LÝ PLACEHOLDER PASSWORD ---
+            // --- Khi nhập password ---
             textBoxPass.Enter += (s, ev) =>
             {
                 if (textBoxPass.Text == "Mật khẩu")
@@ -50,7 +56,6 @@ namespace Kien
                 }
                 textBoxPass.UseSystemPasswordChar = !checkBoxShow.Checked;
             };
-
             textBoxPass.Leave += (s, ev) =>
             {
                 if (string.IsNullOrWhiteSpace(textBoxPass.Text))
@@ -61,7 +66,7 @@ namespace Kien
                 }
             };
 
-            // --- HIỆN/ẨN MẬT KHẨU ---
+            // --- Hiện/ẩn mật khẩu ---
             checkBoxShow.CheckedChanged += (s, ev) =>
             {
                 if (textBoxPass.Text != "Mật khẩu")
@@ -74,9 +79,10 @@ namespace Kien
             string username = textBoxUser.Text.Trim();
             string password = textBoxPass.Text.Trim();
 
-            if (username == "Tên đăng nhập" || password == "Mật khẩu")
+            if (username == "Tên đăng nhập" || password == "Mật khẩu" ||
+                username == "" || password == "")
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ!", "Lỗi",
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin!", "Lỗi",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -85,13 +91,10 @@ namespace Kien
 
             if (loginSuccess)
             {
-                Database.LoadAccountData(username);
-                AccountData.Username = username;
-                AccountData.Password = password;
+                MessageBox.Show("Đăng nhập thành công!", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                MessageBox.Show("Đăng nhập thành công!");
-
-                Form3 form3 = new Form3();
+                Menu form3 = new Menu();
                 form3.Show();
                 this.Hide();
             }
@@ -104,13 +107,11 @@ namespace Kien
 
         private void buttonRegister_Click(object sender, EventArgs e)
         {
-            Form2 form2 = new Form2();
+            Register form2 = new Register();
             form2.ShowDialog();
         }
 
-        private void Form1_Load_1(object sender, EventArgs e)
-        {
 
-        }
+
     }
 }

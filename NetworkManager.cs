@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Kien
+namespace plan_fighting_super_start
 {
     /// <summary>
     /// Quản lý TCP host/client, gửi/nhận message dạng dòng (line-based).

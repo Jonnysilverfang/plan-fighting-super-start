@@ -1,12 +1,13 @@
-﻿using Kien;
+﻿using plan_fighting_super_start;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.DataFormats;
 
-namespace Kien
+namespace plan_fighting_super_start
 
 {
-    public partial class Form5 : Form
+    public partial class Room : Form
     {
         private NetworkManager networkManager;
         private LANBroadcast lan;
@@ -14,7 +15,7 @@ namespace Kien
         private string currentRoomId;
         private const int GAME_PORT = 8888;
 
-        public Form5()
+        public Room()
         {
             InitializeComponent();
         }
@@ -193,7 +194,7 @@ namespace Kien
 
         private void OpenGame()
         {
-            var game = new Form6(networkManager, isHost, currentRoomId);
+            var game = new GAMESOLO(networkManager, isHost, currentRoomId);
             // Để game tự quản lý đóng/mở; không dispose manager ở đây
             game.Show();
             this.Hide();

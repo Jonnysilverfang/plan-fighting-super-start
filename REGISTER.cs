@@ -2,11 +2,11 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Kien
+namespace plan_fighting_super_start
 {
-    public partial class Form2 : Form
+    public partial class Register : Form
     {
-        public Form2()
+        public Register()
         {
             InitializeComponent();
         }
@@ -42,6 +42,11 @@ namespace Kien
             {
                 MessageBox.Show("Tên đăng nhập đã tồn tại!");
             }
+        }
+
+        private void textBoxPass_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

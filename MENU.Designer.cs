@@ -1,6 +1,12 @@
-﻿namespace Kien
+﻿using System.Windows.Forms;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using Font = System.Drawing.Font;
+using Image = System.Drawing.Image;
+
+namespace plan_fighting_super_start
 {
-    partial class Form3
+    partial class Menu
     {
         private System.ComponentModel.IContainer components = null;
         private TextBox textBoxGold;
@@ -25,7 +31,7 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form3));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
             textBoxGold = new TextBox();
             buttonPlay = new Button();
             buttonUpgradeHP = new Button();

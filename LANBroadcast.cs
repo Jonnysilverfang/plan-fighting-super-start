@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.Collections.Generic;
 
-namespace Kien
+namespace plan_fighting_super_start
 {
     public class LANBroadcast : IDisposable
     {

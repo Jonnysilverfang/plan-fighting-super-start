@@ -1,6 +1,6 @@
-﻿namespace Kien
+﻿namespace plan_fighting_super_start
 {
-    partial class Form6
+    partial class GAMESOLO
     {
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Button btnExit;

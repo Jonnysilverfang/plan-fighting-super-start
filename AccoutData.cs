@@ -1,4 +1,4 @@
-﻿namespace Kien
+﻿namespace plan_fighting_super_start
 {
     public static class AccountData
     {

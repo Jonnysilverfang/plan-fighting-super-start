@@ -1,6 +1,6 @@
-﻿namespace Kien
+﻿namespace plan_fighting_super_start
 {
-    partial class Form5
+    partial class Room
     {
         /// <summary>
         ///  Required designer variable.

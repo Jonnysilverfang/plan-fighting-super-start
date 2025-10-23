@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "plan-fighting-super-start": {
+      "commandName": "Project",
+      "workingDirectory": "E:\\chat tét\\c# toturial\\plan-fighting-super-start",
+      "sqlDebugging": false,
+      "nativeDebugging": false,
+      "remoteDebugEnabled": false
+    }
+  }
+}

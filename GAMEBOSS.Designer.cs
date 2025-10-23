@@ -1,9 +1,13 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using Font = System.Drawing.Font;
+using Image = System.Drawing.Image;
 
-namespace Kien
+namespace plan_fighting_super_start
 {
-    partial class Form4
+    partial class GAMEBOSS : Form
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -27,7 +31,7 @@ namespace Kien
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form4));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GAMEBOSS));
             player = new PictureBox();
             boss = new PictureBox();
             playerBullet = new PictureBox();
@@ -47,7 +51,7 @@ namespace Kien
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
             // Dòng này sử dụng tài nguyên (resource), bạn cần có file ảnh tương ứng
-            player.Image = (Image)resources.GetObject("player.Image") ?? new Bitmap(62, 80);
+            player.Image = Properties.Resource.player;
             player.Location = new Point(350, 520);
             player.Name = "player";
             player.Size = new Size(62, 80);

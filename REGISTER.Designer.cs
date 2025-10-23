@@ -1,6 +1,12 @@
-﻿namespace Kien
+﻿using System.Windows.Forms;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using Font = System.Drawing.Font;
+using Image = System.Drawing.Image;
+
+namespace plan_fighting_super_start
 {
-    partial class Form2
+    partial class Register
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -19,7 +25,6 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
             textBoxUser = new TextBox();
             textBoxPass = new TextBox();
             buttonRegister = new Button();
@@ -54,6 +59,7 @@
             textBoxPass.TabIndex = 1;
             textBoxPass.Text = "Mật khẩu";
             textBoxPass.UseSystemPasswordChar = true;
+            textBoxPass.TextChanged += textBoxPass_TextChanged;
             // 
             // buttonRegister
             // 
@@ -72,7 +78,6 @@
             // pictureBox2
             // 
             pictureBox2.BackColor = Color.Transparent;
-            pictureBox2.BackgroundImage = (Image)resources.GetObject("pictureBox2.BackgroundImage");
             pictureBox2.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox2.Location = new Point(155, 129);
             pictureBox2.Name = "pictureBox2";
@@ -116,10 +121,9 @@
             label2.TabIndex = 11;
             label2.Text = "👤";
             // 
-            // Form2
+            // Register
             // 
             BackColor = Color.White;
-            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(439, 441);
             Controls.Add(label3);
@@ -129,7 +133,7 @@
             Controls.Add(textBoxUser);
             Controls.Add(textBoxPass);
             Controls.Add(buttonRegister);
-            Name = "Form2";
+            Name = "Register";
             Text = "Đăng ký";
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
