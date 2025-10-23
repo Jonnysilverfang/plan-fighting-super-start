@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+<<<<<<< HEAD
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using Font = System.Drawing.Font;
@@ -8,6 +9,12 @@ using Image = System.Drawing.Image;
 namespace plan_fighting_super_start
 {
     partial class GAMEBOSS : Form
+=======
+
+namespace Kien
+{
+    partial class Form4
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -31,7 +38,11 @@ namespace plan_fighting_super_start
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+<<<<<<< HEAD
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GAMEBOSS));
+=======
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form4));
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             player = new PictureBox();
             boss = new PictureBox();
             playerBullet = new PictureBox();
@@ -51,7 +62,11 @@ namespace plan_fighting_super_start
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
             // Dòng này sử dụng tài nguyên (resource), bạn cần có file ảnh tương ứng
+<<<<<<< HEAD
             player.Image = Properties.Resource.player;
+=======
+            player.Image = (Image)resources.GetObject("player.Image") ?? new Bitmap(62, 80);
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             player.Location = new Point(350, 520);
             player.Name = "player";
             player.Size = new Size(62, 80);

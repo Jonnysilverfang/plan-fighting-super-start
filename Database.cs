@@ -2,9 +2,14 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Windows.Forms;
+<<<<<<< HEAD
 using static plan_fighting_super_start.GAMEBOSS;
 
 namespace plan_fighting_super_start
+=======
+
+namespace Kien
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
 {
     // Class phụ để deserialize JSON từ API
     public class AccountModel

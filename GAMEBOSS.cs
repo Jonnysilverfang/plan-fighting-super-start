@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using plan_fighting_super_start.Properties; // Cần thiết để truy cập ảnh đạn từ Resources
 using System;
 using System.Drawing;
@@ -8,6 +9,17 @@ namespace plan_fighting_super_start
 {
     // Sử dụng partial class để kết nối với Form4.Designer.cs
     public partial class GAMEBOSS : Form
+=======
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using Kien.Properties; // Cần thiết để truy cập ảnh đạn từ Resources
+
+namespace Kien
+{
+    // Sử dụng partial class để kết nối với Form4.Designer.cs
+    public partial class Form4 : Form
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     {
         // Logic Variables
         private bool goLeft, goRight, shooting;
@@ -43,7 +55,11 @@ namespace plan_fighting_super_start
             public static void LoadAccountData() { /* Tải dữ liệu */ }
         }
 
+<<<<<<< HEAD
         public GAMEBOSS()
+=======
+        public Form4()
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
         {
             InitializeComponent();
         }

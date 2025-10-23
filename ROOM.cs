@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using plan_fighting_super_start;
 using System;
 using System.Threading.Tasks;
@@ -8,6 +9,17 @@ namespace plan_fighting_super_start
 
 {
     public partial class Room : Form
+=======
+﻿using Kien;
+using System;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Kien
+
+{
+    public partial class Form5 : Form
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     {
         private NetworkManager networkManager;
         private LANBroadcast lan;
@@ -15,7 +27,11 @@ namespace plan_fighting_super_start
         private string currentRoomId;
         private const int GAME_PORT = 8888;
 
+<<<<<<< HEAD
         public Room()
+=======
+        public Form5()
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
         {
             InitializeComponent();
         }
@@ -194,7 +210,11 @@ namespace plan_fighting_super_start
 
         private void OpenGame()
         {
+<<<<<<< HEAD
             var game = new GAMESOLO(networkManager, isHost, currentRoomId);
+=======
+            var game = new Form6(networkManager, isHost, currentRoomId);
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             // Để game tự quản lý đóng/mở; không dispose manager ở đây
             game.Show();
             this.Hide();

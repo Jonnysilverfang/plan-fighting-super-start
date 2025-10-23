@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System.Windows.Forms;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
@@ -7,6 +8,11 @@ using Image = System.Drawing.Image;
 namespace plan_fighting_super_start
 {
     partial class Register
+=======
+﻿namespace Kien
+{
+    partial class Form2
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -25,7 +31,11 @@ namespace plan_fighting_super_start
 
         private void InitializeComponent()
         {
+<<<<<<< HEAD
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Register));
+=======
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             textBoxUser = new TextBox();
             textBoxPass = new TextBox();
             buttonRegister = new Button();
@@ -60,7 +70,10 @@ namespace plan_fighting_super_start
             textBoxPass.TabIndex = 1;
             textBoxPass.Text = "Mật khẩu";
             textBoxPass.UseSystemPasswordChar = true;
+<<<<<<< HEAD
             textBoxPass.TextChanged += textBoxPass_TextChanged;
+=======
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             // 
             // buttonRegister
             // 
@@ -123,7 +136,11 @@ namespace plan_fighting_super_start
             label2.TabIndex = 11;
             label2.Text = "👤";
             // 
+<<<<<<< HEAD
             // Register
+=======
+            // Form2
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             // 
             BackColor = Color.White;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
@@ -136,7 +153,11 @@ namespace plan_fighting_super_start
             Controls.Add(textBoxUser);
             Controls.Add(textBoxPass);
             Controls.Add(buttonRegister);
+<<<<<<< HEAD
             Name = "Register";
+=======
+            Name = "Form2";
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             Text = "Đăng ký";
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);

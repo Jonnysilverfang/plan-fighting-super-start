@@ -2,11 +2,19 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+<<<<<<< HEAD
 namespace plan_fighting_super_start
 {
     public partial class Register : Form
     {
         public Register()
+=======
+namespace Kien
+{
+    public partial class Form2 : Form
+    {
+        public Form2()
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
         {
             InitializeComponent();
         }
@@ -43,10 +51,13 @@ namespace plan_fighting_super_start
                 MessageBox.Show("Tên đăng nhập đã tồn tại!");
             }
         }
+<<<<<<< HEAD
 
         private void textBoxPass_TextChanged(object sender, EventArgs e)
         {
 
         }
+=======
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     }
 }

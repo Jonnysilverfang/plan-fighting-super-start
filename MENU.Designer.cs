@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System.Windows.Forms;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
@@ -7,6 +8,11 @@ using Image = System.Drawing.Image;
 namespace plan_fighting_super_start
 {
     partial class Menu
+=======
+﻿namespace Kien
+{
+    partial class Form3
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     {
         private System.ComponentModel.IContainer components = null;
         private TextBox textBoxGold;
@@ -31,7 +37,11 @@ namespace plan_fighting_super_start
 
         private void InitializeComponent()
         {
+<<<<<<< HEAD
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
+=======
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form3));
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
             textBoxGold = new TextBox();
             buttonPlay = new Button();
             buttonUpgradeHP = new Button();

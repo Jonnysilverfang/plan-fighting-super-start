@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 namespace plan_fighting_super_start
 {
     internal static class Program
@@ -16,3 +17,23 @@ namespace plan_fighting_super_start
         }
     }
 }
+=======
+﻿using System;
+using System.Windows.Forms;
+
+namespace Kien
+{
+    internal static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            // Chạy Form1 trước, không chạy Form2
+            Application.Run(new Form1());
+        }
+    }
+}
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55

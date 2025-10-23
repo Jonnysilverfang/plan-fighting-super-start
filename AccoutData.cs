@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿namespace plan_fighting_super_start
+=======
+﻿namespace Kien
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
 {
     public static class AccountData
     {

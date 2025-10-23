@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 ﻿namespace plan_fighting_super_start
 {
     partial class GAMESOLO
+=======
+﻿namespace Kien
+{
+    partial class Form6
+>>>>>>> 88a3da28403503078ef20e92d9801821b2664c55
     {
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Button btnExit;
