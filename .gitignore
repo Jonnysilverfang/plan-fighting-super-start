@@ -1,0 +1,14 @@
+# Visual Studio / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.rsuser
+*.cache
+*.log
+*.db
+*.db-shm
+*.db-wal
+*.pdb
+*.opendb
