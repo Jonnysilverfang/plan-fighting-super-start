@@ -1,14 +1,24 @@
-# Visual Studio / .NET
+# VS/IDE
 .vs/
-bin/
-obj/
-*.user
+.vscode/
+.idea/
 *.suo
-*.rsuser
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+[Bb]in/
+[Oo]bj/
+**/bin/
+**/obj/
 *.cache
 *.log
-*.db
-*.db-shm
-*.db-wal
 *.pdb
-*.opendb
+*.exe
+*.dll
+*.vsidx
+
+# NuGet
+*.nupkg
+packages/
