@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\do-an\\NT-106\\plan-fighting-super-start\\plan-fighting-super-start.csproj": {}
+    "D:\\plan-fighting-super-start\\plan-fighting-super-start.csproj": {}
   },
   "projects": {
-    "E:\\do-an\\NT-106\\plan-fighting-super-start\\plan-fighting-super-start.csproj": {
+    "D:\\plan-fighting-super-start\\plan-fighting-super-start.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\do-an\\NT-106\\plan-fighting-super-start\\plan-fighting-super-start.csproj",
+        "projectUniqueName": "D:\\plan-fighting-super-start\\plan-fighting-super-start.csproj",
         "projectName": "plan-fighting-super-start",
-        "projectPath": "E:\\do-an\\NT-106\\plan-fighting-super-start\\plan-fighting-super-start.csproj",
-        "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
-        "outputPath": "E:\\do-an\\NT-106\\plan-fighting-super-start\\obj\\",
+        "projectPath": "D:\\plan-fighting-super-start\\plan-fighting-super-start.csproj",
+        "packagesPath": "C:\\Users\\MINH\\.nuget\\packages\\",
+        "outputPath": "D:\\plan-fighting-super-start\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\MINH\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net9.0-windows7.0": {
@@ -68,7 +68,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
