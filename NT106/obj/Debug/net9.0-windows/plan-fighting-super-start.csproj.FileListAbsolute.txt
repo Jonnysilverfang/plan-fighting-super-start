@@ -1,0 +1,69 @@
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
+E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
+E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
+E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
+E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
+E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
+E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
+E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
+E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
+E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
+E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
+E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.sourcelink.json
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
+E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.API_BANGXEPHANG.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.sourcelink.json
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
