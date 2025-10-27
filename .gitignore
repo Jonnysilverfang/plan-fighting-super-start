@@ -1,0 +1,24 @@
+# VS/IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+[Bb]in/
+[Oo]bj/
+**/bin/
+**/obj/
+*.cache
+*.log
+*.pdb
+*.exe
+*.dll
+*.vsidx
+
+# NuGet
+*.nupkg
+packages/
