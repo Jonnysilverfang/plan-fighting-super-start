@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using Font = System.Drawing.Font;
@@ -221,6 +221,10 @@ namespace plan_fighting_super_start
             pictureBox2.BackColor = Color.Transparent;
             pictureBox2.BackgroundImage = (Image)resources.GetObject("pictureBox2.BackgroundImage");
             pictureBox2.BackgroundImageLayout = ImageLayout.Zoom;
+
+            pictureBox2.ErrorImage = null;
+            pictureBox2.InitialImage = null;
+
             pictureBox2.Location = new Point(187, 77);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(208, 135);
@@ -238,7 +242,11 @@ namespace plan_fighting_super_start
             labelWelcome.TabIndex = 0;
             labelWelcome.Text = "Xin chào!";
             // 
+
+            // Menu
+
             // Form3
+
             // 
             BackColor = Color.White;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
@@ -259,7 +267,11 @@ namespace plan_fighting_super_start
             Controls.Add(button1);
             Controls.Add(textBox1);
             Controls.Add(textBox2);
+
+            Name = "Menu";
+
             Name = "Form3";
+
             Text = "Menu Game";
             Load += Form3_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
