@@ -1,4 +1,4 @@
-﻿using plan_fighting_super_start;
+using plan_fighting_super_start;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
