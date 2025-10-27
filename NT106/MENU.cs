@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -98,7 +98,11 @@ namespace plan_fighting_super_start
         {
             try
             {
+
+                var form = new GAMEBOSS();
+
                 var form = new GAMESOLO();
+
                 form.Show();
             }
             catch (Exception ex)
@@ -155,7 +159,11 @@ namespace plan_fighting_super_start
         private void button1_Click(object sender, EventArgs e)
         {
             // TODO: mở form/phòng online nếu có
+
+            var form = new Room(); // tạm mở solo để tránh crash nếu chưa có form khác
+
             var form = new GAMESOLO(); // tạm mở solo để tránh crash nếu chưa có form khác
+
             form.Show();
         }
     }
