@@ -482,23 +482,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\MINH\\.nuget\\packages\\": {},
+    "C:\\Users\\LENOVO\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.csproj",
+      "projectUniqueName": "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\Leaderboard.Api\\Leaderboard.Api.csproj",
       "projectName": "Leaderboard.Api",
-      "projectPath": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.csproj",
-      "packagesPath": "C:\\Users\\MINH\\.nuget\\packages\\",
-      "outputPath": "D:\\plan-fighting-super-start\\Leaderboard.Api\\obj\\",
+      "projectPath": "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\Leaderboard.Api\\Leaderboard.Api.csproj",
+      "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
+      "outputPath": "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\Leaderboard.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\MINH\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -525,7 +525,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -559,7 +559,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
