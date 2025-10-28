@@ -19,7 +19,7 @@ namespace plan_fighting_super_start
 
     public static class Database
     {
-        private static readonly string ApiBaseUrl = "https://localhost:7250/api/Account/";
+        private static readonly string ApiBaseUrl = "https://localhost:7194/api/Account/";
         private static readonly HttpClient client = new HttpClient();
 
         // Đăng nhập qua API

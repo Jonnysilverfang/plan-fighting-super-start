@@ -1,12 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "Cn8dB6/m9c28umQtzEAldG8KCaCiwlWGqWbgT6KBsy4=",
-  "Source": "Leaderboard.Api",
-  "BasePath": "_content/Leaderboard.Api",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
-}
+{"Version":1,"Hash":"d+TdK0DaD7dUKeKZpS7tEw7xFZ5C26Cus0r7UrJumB4=","Source":"Leaderboard.Api","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
