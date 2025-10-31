@@ -200,7 +200,7 @@ namespace plan_fighting_super_start
             this.Hide();
             game.FormClosed += (_, __) =>
             {
-                // Khi đóng game, quay lại lobby (nếu còn sống), giữ kết nối để có thể vào lại (tuỳ bạn)
+                // Khi đóng game, quay lại lobby (nếu còn sống), giữ kết nối để có thể vào lại 
                 try
                 {
                     this.Show();
