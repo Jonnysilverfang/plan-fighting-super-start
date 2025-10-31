@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "F:\\New folder\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj": {}
+    "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj": {}
   },
   "projects": {
-    "F:\\New folder\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj": {
+    "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\New folder\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
+        "projectUniqueName": "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
         "projectName": "plan-fighting-super-start",
-        "projectPath": "F:\\New folder\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
-        "packagesPath": "C:\\Users\\kien0\\.nuget\\packages\\",
-        "outputPath": "F:\\New folder\\plan-fighting-super-start\\NT106\\obj\\",
+        "projectPath": "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
+        "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
+        "outputPath": "E:\\do-an\\new\\plan-fighting-super-start\\NT106\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\kien0\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0-windows7.0": {
@@ -74,7 +74,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
