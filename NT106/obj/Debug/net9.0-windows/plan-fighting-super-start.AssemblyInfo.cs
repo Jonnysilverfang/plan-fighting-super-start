@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("plan-fighting-super-start")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1db98dae8d323c7339fa1b4aa47ab5960b0d8b8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+597fdcabb72a412d0fb047844a06522696ee94a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("plan-fighting-super-start")]
 [assembly: System.Reflection.AssemblyTitleAttribute("plan-fighting-super-start")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
