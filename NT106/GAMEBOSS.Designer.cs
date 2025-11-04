@@ -31,7 +31,6 @@ namespace plan_fighting_super_start
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GAMEBOSS));
             player = new PictureBox();
             boss = new PictureBox();
             playerBullet = new PictureBox();
@@ -50,7 +49,6 @@ namespace plan_fighting_super_start
             // 
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
-            // Dòng này sử dụng tài nguyên (resource), bạn cần có file ảnh tương ứng
             player.Image = Properties.Resource.player;
             player.Location = new Point(350, 520);
             player.Name = "player";
@@ -62,10 +60,8 @@ namespace plan_fighting_super_start
             // boss
             // 
             boss.BackColor = Color.Transparent;
-            // Dòng này sử dụng tài nguyên (resource), bạn cần có file ảnh tương ứng
-            //boss.BackgroundImage = (Image)resources.GetObject("boss.BackgroundImage") ?? new Bitmap(120, 100);
-            boss.Image = Properties.Resource.boss;
             boss.BackgroundImageLayout = ImageLayout.Stretch;
+            boss.Image = Properties.Resource.boss;
             boss.Location = new Point(340, 50);
             boss.Name = "boss";
             boss.Size = new Size(120, 100);
@@ -73,7 +69,7 @@ namespace plan_fighting_super_start
             boss.TabIndex = 1;
             boss.TabStop = false;
             // 
-            // playerBullet (Chỉ là placeholder, sẽ được tạo mới trong runtime)
+            // playerBullet
             // 
             playerBullet.BackColor = Color.Transparent;
             playerBullet.Location = new Point(-50, -50);
@@ -134,9 +130,9 @@ namespace plan_fighting_super_start
             survivalTimer.Interval = 1000;
             survivalTimer.Tick += survivalTimer_Tick;
             // 
-            // Form4
+            // GAMEBOSS
             // 
-            BackColor = Color.Black;
+            BackColor = Color.White;
             ClientSize = new Size(800, 620);
             Controls.Add(buttonExit);
             Controls.Add(bossHealthBar);
@@ -146,7 +142,7 @@ namespace plan_fighting_super_start
             Controls.Add(boss);
             Controls.Add(player);
             KeyPreview = true;
-            Name = "Form4";
+            Name = "GAMEBOSS";
             Text = "Boss Shooter Game";
             Load += Form4_Load;
             KeyDown += keyisdown;

@@ -3,7 +3,11 @@
   "WorkspaceRootPath": "E:\\NT106\\plan-fighting-super-start\\NT106\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -13,10 +17,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\gamesolo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:gamesolo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -125,7 +125,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -148,10 +148,6 @@
               "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 7,
               "Title": "LANBroadcast.cs",
@@ -161,8 +157,7 @@
               "RelativeToolTip": "LANBroadcast.cs",
               "ViewState": "AgIAACUAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T07:38:26.193Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-04T07:38:26.193Z"
             },
             {
               "$type": "Document",
@@ -183,12 +178,11 @@
               "RelativeToolTip": "Database.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T15:11:49.325Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T15:11:49.325Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "GAMEBOSS.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMEBOSS.cs",
               "RelativeDocumentMoniker": "GAMEBOSS.cs",
@@ -200,31 +194,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "GAMESOLO.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs",
               "RelativeDocumentMoniker": "GAMESOLO.cs",
               "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs [Design]",
               "RelativeToolTip": "GAMESOLO.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:29:14.002Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-10-23T14:29:14.002Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "REGISTER.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\REGISTER.cs",
               "RelativeDocumentMoniker": "REGISTER.cs",
               "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\REGISTER.cs [Design]",
               "RelativeToolTip": "REGISTER.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:29:53.305Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-10-23T14:29:53.305Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "ROOM.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\ROOM.cs",
               "RelativeDocumentMoniker": "ROOM.cs",
@@ -257,8 +249,7 @@
               "RelativeToolTip": "lambdafunction-login-register-histotymatch.py",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2025-11-04T07:49:33.925Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-04T07:49:33.925Z"
             },
             {
               "$type": "Document",
@@ -324,8 +315,7 @@
               "RelativeToolTip": "GAMESOLO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:43:23.821Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T14:43:23.821Z"
             },
             {
               "$type": "Document",
@@ -374,8 +364,7 @@
               "RelativeToolTip": "REGISTER.cs",
               "ViewState": "AgIAAB8AAAAAAAAAAAAwwDAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:29:58.879Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T14:29:58.879Z"
             },
             {
               "$type": "Document",
@@ -446,8 +435,7 @@
               "RelativeToolTip": "GAMEBOSS.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T15:15:42.223Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T15:15:42.223Z"
             },
             {
               "$type": "Document",
@@ -459,8 +447,7 @@
               "RelativeToolTip": "ROOM.cs",
               "ViewState": "AgIAALUAAAAAAAAAAAAhwMcAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T15:16:05.462Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T15:16:05.462Z"
             },
             {
               "$type": "Document",
