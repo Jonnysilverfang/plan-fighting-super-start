@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "NEicCaIqMfo=",
+  "dgSpecHash": "Nvgahi1QYQE=",
   "success": true,
-  "projectFilePath": "E:\\NT106\\plan-fighting-super-start.csproj",
+  "projectFilePath": "E:\\NT106\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kien0\\.nuget\\packages\\azure.core\\1.49.0\\azure.core.1.49.0.nupkg.sha512",
     "C:\\Users\\kien0\\.nuget\\packages\\azure.identity\\1.16.0\\azure.identity.1.16.0.nupkg.sha512",

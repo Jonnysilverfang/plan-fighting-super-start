@@ -2691,11 +2691,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\NT106\\plan-fighting-super-start.csproj",
+      "projectUniqueName": "E:\\NT106\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
       "projectName": "plan-fighting-super-start",
-      "projectPath": "E:\\NT106\\plan-fighting-super-start.csproj",
+      "projectPath": "E:\\NT106\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
       "packagesPath": "C:\\Users\\kien0\\.nuget\\packages\\",
-      "outputPath": "E:\\NT106\\obj\\",
+      "outputPath": "E:\\NT106\\plan-fighting-super-start\\NT106\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2728,7 +2728,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net9.0-windows7.0": {
@@ -2758,7 +2758,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
