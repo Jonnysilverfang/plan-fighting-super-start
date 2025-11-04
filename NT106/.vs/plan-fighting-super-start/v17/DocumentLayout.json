@@ -3,11 +3,47 @@
   "WorkspaceRootPath": "E:\\NT106\\plan-fighting-super-start\\NT106\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\accoutdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:accoutdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\rank.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:rank.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\rank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:rank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\rank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:rank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\matchhistoryform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:matchhistoryform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\menu.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:menu.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:gameboss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:room.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -17,10 +53,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\gamesolo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:gamesolo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\lambdafunction-login-register-histotymatch.py||{3B902123-F8A7-4915-9F01-361F908088D0}",
@@ -40,10 +72,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\plan-fighting-super-start.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:plan-fighting-super-start.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\accoutdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:accoutdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -72,18 +100,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\properties\\resource.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:properties\\resource.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|e:\\nt106\\plan-fighting-super-start\\nt106\\menu.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|solutionrelative:menu.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FD132BDD-6304-42AD-A929-A479507900CD}|plan-fighting-super-start.csproj|E:\\NT106\\plan-fighting-super-start\\NT106\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
@@ -125,7 +141,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 11,
           "Children": [
             {
               "$type": "Bookmark",
@@ -149,40 +165,58 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "LANBroadcast.cs",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\LANBroadcast.cs",
-              "RelativeDocumentMoniker": "LANBroadcast.cs",
-              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\LANBroadcast.cs",
-              "RelativeToolTip": "LANBroadcast.cs",
-              "ViewState": "AgIAACUAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "Rank.Designer.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Rank.Designer.cs",
+              "RelativeDocumentMoniker": "Rank.Designer.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\Rank.Designer.cs",
+              "RelativeToolTip": "Rank.Designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T07:38:26.193Z"
+              "WhenOpened": "2025-11-04T11:24:34.087Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Leaderboard.Api.http",
-              "DocumentMoniker": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.http",
-              "ToolTip": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.http",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-10-25T16:13:44.726Z"
+              "DocumentIndex": 3,
+              "Title": "Rank.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Rank.cs",
+              "RelativeDocumentMoniker": "Rank.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\Rank.cs",
+              "RelativeToolTip": "Rank.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAA2wIkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T11:24:06.6Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Database.cs",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Database.cs",
-              "RelativeDocumentMoniker": "Database.cs",
-              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\Database.cs",
-              "RelativeToolTip": "Database.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "Rank.cs [Design]",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Rank.cs",
+              "RelativeDocumentMoniker": "Rank.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\Rank.cs [Design]",
+              "RelativeToolTip": "Rank.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T15:11:49.325Z"
+              "WhenOpened": "2025-11-04T11:23:05.717Z",
+              "EditorCaption": " [Design]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
+              "Title": "MatchHistoryForm.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MatchHistoryForm.cs",
+              "RelativeDocumentMoniker": "MatchHistoryForm.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\MatchHistoryForm.cs",
+              "RelativeToolTip": "MatchHistoryForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T11:22:09.335Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "GAMEBOSS.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMEBOSS.cs",
               "RelativeDocumentMoniker": "GAMEBOSS.cs",
@@ -194,18 +228,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "GAMESOLO.cs [Design]",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs",
-              "RelativeDocumentMoniker": "GAMESOLO.cs",
-              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs [Design]",
-              "RelativeToolTip": "GAMESOLO.cs [Design]",
+              "DocumentIndex": 1,
+              "Title": "AccoutData.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\AccoutData.cs",
+              "RelativeDocumentMoniker": "AccoutData.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\AccoutData.cs",
+              "RelativeToolTip": "AccoutData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:29:14.002Z"
+              "WhenOpened": "2025-10-23T14:25:55.422Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
+              "Title": "Database.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Database.cs",
+              "RelativeDocumentMoniker": "Database.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\Database.cs",
+              "RelativeToolTip": "Database.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAAAiwK8AAABaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T15:11:49.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
               "Title": "REGISTER.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\REGISTER.cs",
               "RelativeDocumentMoniker": "REGISTER.cs",
@@ -216,19 +265,88 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 12,
+              "Title": "GAMESOLO.cs [Design]",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs",
+              "RelativeDocumentMoniker": "GAMESOLO.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs [Design]",
+              "RelativeToolTip": "GAMESOLO.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T14:29:14.002Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "ROOM.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\ROOM.cs",
               "RelativeDocumentMoniker": "ROOM.cs",
               "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\ROOM.cs [Design]",
               "RelativeToolTip": "ROOM.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:29:54.282Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-10-23T14:29:54.282Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
+              "Title": "MENU.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs",
+              "RelativeDocumentMoniker": "MENU.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs",
+              "RelativeToolTip": "MENU.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAYwHEAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T14:30:25.882Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MENU.cs [Design]",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs",
+              "RelativeDocumentMoniker": "MENU.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs [Design]",
+              "RelativeToolTip": "MENU.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T14:30:24.515Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MENU.Designer.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.Designer.cs",
+              "RelativeDocumentMoniker": "MENU.Designer.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.Designer.cs",
+              "RelativeToolTip": "MENU.Designer.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T14:30:53.929Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Leaderboard.Api.http",
+              "DocumentMoniker": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.http",
+              "ToolTip": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.http",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-10-25T16:13:44.726Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "LANBroadcast.cs",
+              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\LANBroadcast.cs",
+              "RelativeDocumentMoniker": "LANBroadcast.cs",
+              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\LANBroadcast.cs",
+              "RelativeToolTip": "LANBroadcast.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T07:38:26.193Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
               "Title": "ROOM.Designer.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\ROOM.Designer.cs",
               "RelativeDocumentMoniker": "ROOM.Designer.cs",
@@ -236,12 +354,11 @@
               "RelativeToolTip": "ROOM.Designer.cs",
               "ViewState": "AgIAAJsAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T07:39:22.2Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-04T07:39:22.2Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 13,
               "Title": "lambdafunction-login-register-histotymatch.py",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\lambdafunction-login-register-histotymatch.py",
               "RelativeDocumentMoniker": "lambdafunction-login-register-histotymatch.py",
@@ -253,7 +370,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 32,
               "Title": "Leaderboard.Api.csproj",
               "DocumentMoniker": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.csproj",
               "ToolTip": "D:\\plan-fighting-super-start\\Leaderboard.Api\\Leaderboard.Api.csproj",
@@ -263,7 +380,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 31,
               "Title": "MucXepHang.cs",
               "DocumentMoniker": "D:\\plan-fighting-super-start\\Leaderboard.Api\\MucXepHang.cs",
               "ToolTip": "D:\\plan-fighting-super-start\\Leaderboard.Api\\MucXepHang.cs",
@@ -273,19 +390,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "MENU.Designer.cs",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.Designer.cs",
-              "RelativeDocumentMoniker": "MENU.Designer.cs",
-              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.Designer.cs",
-              "RelativeToolTip": "MENU.Designer.cs",
-              "ViewState": "AgIAAEUAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:30:53.929Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 30,
               "Title": "BangXepHangController.cs",
               "DocumentMoniker": "D:\\plan-fighting-super-start\\Leaderboard.Api\\BangXepHangController.cs",
               "ToolTip": "D:\\plan-fighting-super-start\\Leaderboard.Api\\BangXepHangController.cs",
@@ -295,7 +400,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 17,
               "Title": "plan-fighting-super-start.csproj",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\plan-fighting-super-start.csproj",
               "RelativeDocumentMoniker": "plan-fighting-super-start.csproj",
@@ -307,7 +412,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 26,
               "Title": "GAMESOLO.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMESOLO.cs",
               "RelativeDocumentMoniker": "GAMESOLO.cs",
@@ -319,7 +424,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 22,
               "Title": "Resource.resx",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Properties\\Resource.resx",
               "RelativeDocumentMoniker": "Properties\\Resource.resx",
@@ -330,20 +435,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "MENU.cs",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs",
-              "RelativeDocumentMoniker": "MENU.cs",
-              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs",
-              "RelativeToolTip": "MENU.cs",
-              "ViewState": "AgIAAF4AAAAAAAAAAAAwwHEAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:30:25.882Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 27,
               "Title": "LOGIN.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\LOGIN.cs",
               "RelativeDocumentMoniker": "LOGIN.cs",
@@ -356,7 +448,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 29,
               "Title": "REGISTER.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\REGISTER.cs",
               "RelativeDocumentMoniker": "REGISTER.cs",
@@ -368,7 +460,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 18,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -380,7 +472,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 28,
               "Title": "NetworkManager.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\NetworkManager.cs",
               "RelativeDocumentMoniker": "NetworkManager.cs",
@@ -392,19 +484,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "AccoutData.cs",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\AccoutData.cs",
-              "RelativeDocumentMoniker": "AccoutData.cs",
-              "ToolTip": "E:\\NT106\\plan-fighting-super-start\\NT106\\AccoutData.cs",
-              "RelativeToolTip": "AccoutData.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:25:55.422Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 24,
               "Title": "Resource.Designer.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\Properties\\Resource.Designer.cs",
               "RelativeDocumentMoniker": "Properties\\Resource.Designer.cs",
@@ -416,7 +496,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 23,
               "Title": "player.jpg",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\resources\\player.jpg",
               "RelativeDocumentMoniker": "resources\\player.jpg",
@@ -427,7 +507,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 21,
               "Title": "GAMEBOSS.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMEBOSS.cs",
               "RelativeDocumentMoniker": "GAMEBOSS.cs",
@@ -439,7 +519,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 19,
               "Title": "ROOM.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\ROOM.cs",
               "RelativeDocumentMoniker": "ROOM.cs",
@@ -451,7 +531,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 20,
               "Title": "GAMEBOSS.Designer.cs",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\GAMEBOSS.Designer.cs",
               "RelativeDocumentMoniker": "GAMEBOSS.Designer.cs",
@@ -464,7 +544,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 33,
               "Title": "API_BANGXEPHANG.cs [Design]",
               "DocumentMoniker": "D:\\plan-fighting-super-start\\API_BANGXEPHANG.cs",
               "ToolTip": "D:\\plan-fighting-super-start\\API_BANGXEPHANG.cs [Design]",
@@ -473,17 +553,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "MENU.cs [Design]",
-              "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\MENU.cs",
-              "RelativeDocumentMoniker": "MENU.cs",
-              "ToolTip": "D:\\plan-fighting-super-start\\MENU.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T14:30:24.515Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 25,
               "Title": "LOGIN.cs [Design]",
               "DocumentMoniker": "E:\\NT106\\plan-fighting-super-start\\NT106\\LOGIN.cs",
               "RelativeDocumentMoniker": "LOGIN.cs",

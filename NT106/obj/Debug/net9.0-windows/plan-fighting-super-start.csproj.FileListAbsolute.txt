@@ -270,3 +270,4 @@ E:\NT106\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\refint\plan-fi
 E:\NT106\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
 E:\NT106\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
 E:\NT106\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
+E:\NT106\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Rank.resources
