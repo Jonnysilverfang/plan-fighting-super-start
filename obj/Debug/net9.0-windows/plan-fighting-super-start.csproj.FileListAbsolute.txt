@@ -1,59 +1,13 @@
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
-E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
-E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
-E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
-E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
-E:\chat tét\c# toturial\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
-E:\chat tét\c# toturial\plan-fighting-super-start\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
-E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
-E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
-E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
-E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
-E:\do-an\NT-106\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.sourcelink.json
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
-E:\do-an\NT-106\plan-fighting-super-start\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
-D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
-D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
-D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
-D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
-D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
-D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.API_BANGXEPHANG.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.AssemblyReference.cache
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\BangXepHang.Form1.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.MatchHistoryForm.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resources.resources
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Rank.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
@@ -62,143 +16,62 @@ D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.sourcelink.json
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Azure.Core.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Azure.Identity.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Bcl.Cryptography.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Data.SqlClient.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Extensions.Caching.Abstractions.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Extensions.Caching.Memory.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Extensions.Options.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Extensions.Primitives.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Identity.Client.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.Identity.Client.Extensions.Msal.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Abstractions.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Logging.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Protocols.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Tokens.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\Microsoft.SqlServer.Server.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.ClientModel.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.Configuration.ConfigurationManager.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.Diagnostics.EventLog.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.IdentityModel.Tokens.Jwt.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.Memory.Data.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.Security.Cryptography.Pkcs.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.Security.Cryptography.ProtectedData.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\System.Text.Json.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\cs\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\de\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\es\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\fr\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\it\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\ja\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\ko\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\pl\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\pt-BR\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\ru\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\tr\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.dll
+D:\plan-fighting-super-start\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\System.Security.Cryptography.Pkcs.dll
+D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fig.2D51F183.Up2Date
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
 D:\plan-fighting-super-start\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Azure.Core.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Azure.Identity.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Bcl.Cryptography.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Data.SqlClient.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Caching.Abstractions.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Caching.Memory.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Options.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Primitives.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Identity.Client.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.Identity.Client.Extensions.Msal.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Abstractions.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.JsonWebTokens.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Logging.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Protocols.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Tokens.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\Microsoft.SqlServer.Server.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\System.ClientModel.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\System.IdentityModel.Tokens.Jwt.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\System.Memory.Data.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\cs\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\de\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\es\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\fr\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\it\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\ja\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\ko\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\pl\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\pt-BR\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\ru\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\tr\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\zh-Hans\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\zh-Hant\Microsoft.Data.SqlClient.resources.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
-F:\New folder\plan-fighting-super-start\NT106\bin\Debug\net9.0-windows\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.AssemblyReference.cache
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.sourcelink.json
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fig.2D51F183.Up2Date
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resources.resources
-F:\New folder\plan-fighting-super-start\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.MatchHistoryForm.resources
-E:\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.exe
-E:\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.deps.json
-E:\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.runtimeconfig.json
-E:\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.dll
-E:\NT106\bin\Debug\net9.0-windows\plan-fighting-super-start.pdb
-E:\NT106\bin\Debug\net9.0-windows\Azure.Core.dll
-E:\NT106\bin\Debug\net9.0-windows\Azure.Identity.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Bcl.Cryptography.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Data.SqlClient.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Caching.Abstractions.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Caching.Memory.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Options.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Extensions.Primitives.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Identity.Client.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.Identity.Client.Extensions.Msal.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Abstractions.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.JsonWebTokens.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Logging.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Protocols.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.IdentityModel.Tokens.dll
-E:\NT106\bin\Debug\net9.0-windows\Microsoft.SqlServer.Server.dll
-E:\NT106\bin\Debug\net9.0-windows\System.ClientModel.dll
-E:\NT106\bin\Debug\net9.0-windows\System.IdentityModel.Tokens.Jwt.dll
-E:\NT106\bin\Debug\net9.0-windows\System.Memory.Data.dll
-E:\NT106\bin\Debug\net9.0-windows\cs\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\de\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\es\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\fr\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\it\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\ja\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\ko\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\pl\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\pt-BR\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\ru\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\tr\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\zh-Hans\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\zh-Hant\Microsoft.Data.SqlClient.resources.dll
-E:\NT106\bin\Debug\net9.0-windows\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
-E:\NT106\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
-E:\NT106\bin\Debug\net9.0-windows\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
-E:\NT106\bin\Debug\net9.0-windows\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
-E:\NT106\bin\Debug\net9.0-windows\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.AssemblyReference.cache
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMEBOSS.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.GAMESOLO.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Login.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.MatchHistoryForm.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Menu.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resource.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Properties.Resources.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Register.resources
-E:\NT106\obj\Debug\net9.0-windows\plan_fighting_super_start.Room.resources
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.GenerateResource.cache
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.GeneratedMSBuildEditorConfig.editorconfig
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfoInputs.cache
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.AssemblyInfo.cs
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.csproj.CoreCompileInputs.cache
-E:\NT106\obj\Debug\net9.0-windows\plan-fig.2D51F183.Up2Date
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.dll
-E:\NT106\obj\Debug\net9.0-windows\refint\plan-fighting-super-start.dll
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.pdb
-E:\NT106\obj\Debug\net9.0-windows\plan-fighting-super-start.genruntimeconfig.cache
-E:\NT106\obj\Debug\net9.0-windows\ref\plan-fighting-super-start.dll
