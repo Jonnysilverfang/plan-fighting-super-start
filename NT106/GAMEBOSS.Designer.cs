@@ -49,10 +49,10 @@ namespace plan_fighting_super_start
             // 
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
-            player.Image = Properties.Resource.player;
+            player.Image = Properties.Resource.playerrr;
             player.Location = new Point(350, 520);
             player.Name = "player";
-            player.Size = new Size(62, 80);
+            player.Size = new Size(85, 80);
             player.SizeMode = PictureBoxSizeMode.StretchImage;
             player.TabIndex = 0;
             player.TabStop = false;
@@ -61,7 +61,7 @@ namespace plan_fighting_super_start
             // 
             boss.BackColor = Color.Transparent;
             boss.BackgroundImageLayout = ImageLayout.Stretch;
-            boss.Image = Properties.Resource.boss;
+            boss.Image = Properties.Resource.boss_manh;
             boss.Location = new Point(340, 50);
             boss.Name = "boss";
             boss.Size = new Size(120, 100);
