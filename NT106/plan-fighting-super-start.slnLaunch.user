@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "plan-fighting-super-start.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Leaderboard.Api\\Leaderboard.Api.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
