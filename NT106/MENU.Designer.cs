@@ -45,6 +45,8 @@ namespace plan_fighting_super_start
             textBox3 = new TextBox();
             label4 = new Label();
             labelWelcome = new Label();
+            saveFileDialog1 = new SaveFileDialog();
+            button2 = new Button();
             SuspendLayout();
             // 
             // textBoxGold
@@ -62,10 +64,11 @@ namespace plan_fighting_super_start
             // buttonPlay
             // 
             buttonPlay.BackColor = Color.Transparent;
+            buttonPlay.FlatAppearance.BorderSize = 2;
             buttonPlay.FlatStyle = FlatStyle.Flat;
             buttonPlay.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             buttonPlay.ForeColor = Color.FromArgb(0, 192, 192);
-            buttonPlay.Location = new Point(129, 419);
+            buttonPlay.Location = new Point(129, 456);
             buttonPlay.Name = "buttonPlay";
             buttonPlay.Size = new Size(139, 40);
             buttonPlay.TabIndex = 2;
@@ -76,6 +79,7 @@ namespace plan_fighting_super_start
             // buttonUpgradeHP
             // 
             buttonUpgradeHP.BackColor = Color.Transparent;
+            buttonUpgradeHP.FlatAppearance.BorderSize = 2;
             buttonUpgradeHP.FlatStyle = FlatStyle.Flat;
             buttonUpgradeHP.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             buttonUpgradeHP.ForeColor = Color.FromArgb(0, 192, 192);
@@ -104,12 +108,13 @@ namespace plan_fighting_super_start
             // buttonExit
             // 
             buttonExit.BackColor = Color.Transparent;
+            buttonExit.FlatAppearance.BorderSize = 2;
             buttonExit.FlatStyle = FlatStyle.Flat;
             buttonExit.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             buttonExit.ForeColor = Color.FromArgb(0, 192, 192);
-            buttonExit.Location = new Point(212, 584);
+            buttonExit.Location = new Point(291, 582);
             buttonExit.Name = "buttonExit";
-            buttonExit.Size = new Size(120, 40);
+            buttonExit.Size = new Size(144, 40);
             buttonExit.TabIndex = 5;
             buttonExit.Text = "Thoát";
             buttonExit.UseVisualStyleBackColor = false;
@@ -178,10 +183,11 @@ namespace plan_fighting_super_start
             // button1
             // 
             button1.BackColor = Color.Transparent;
+            button1.FlatAppearance.BorderSize = 2;
             button1.FlatStyle = FlatStyle.Flat;
             button1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             button1.ForeColor = Color.FromArgb(0, 192, 192);
-            button1.Location = new Point(291, 419);
+            button1.Location = new Point(291, 456);
             button1.Name = "button1";
             button1.Size = new Size(144, 40);
             button1.TabIndex = 11;
@@ -224,12 +230,28 @@ namespace plan_fighting_super_start
             labelWelcome.TabIndex = 0;
             labelWelcome.Text = "Xin chào!";
             // 
+            // button2
+            // 
+            button2.BackColor = Color.Transparent;
+            button2.FlatAppearance.BorderSize = 2;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            button2.ForeColor = Color.FromArgb(0, 192, 192);
+            button2.Location = new Point(129, 582);
+            button2.Name = "button2";
+            button2.Size = new Size(139, 40);
+            button2.TabIndex = 17;
+            button2.Text = "Rank";
+            button2.UseVisualStyleBackColor = false;
+            button2.Click += button2_Click;
+            // 
             // Menu
             // 
             BackColor = Color.White;
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_dy9x6hdy9x6hdy9x;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(552, 666);
+            Controls.Add(button2);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -251,5 +273,7 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         private Label labelWelcome;
+        private SaveFileDialog saveFileDialog1;
+        private Button button2;
     }
 }

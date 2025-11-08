@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             label1 = new Label();
             numericUpDown1 = new NumericUpDown();
             btnRefresh = new Button();
@@ -46,7 +47,9 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.BackColor = Color.Transparent;
             label1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            label1.ForeColor = Color.FromArgb(0, 192, 192);
             label1.Location = new Point(341, 9);
             label1.Name = "label1";
             label1.Size = new Size(200, 31);
@@ -55,32 +58,42 @@
             // 
             // numericUpDown1
             // 
-            numericUpDown1.Location = new Point(214, 65);
+            numericUpDown1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            numericUpDown1.ForeColor = Color.FromArgb(0, 192, 192);
+            numericUpDown1.Location = new Point(206, 72);
             numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(230, 27);
+            numericUpDown1.Size = new Size(230, 30);
             numericUpDown1.TabIndex = 10;
             numericUpDown1.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // btnRefresh
             // 
+            btnRefresh.BackColor = Color.Transparent;
+            btnRefresh.FlatAppearance.BorderSize = 2;
+            btnRefresh.FlatStyle = FlatStyle.Flat;
+            btnRefresh.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnRefresh.ForeColor = Color.FromArgb(0, 192, 192);
             btnRefresh.Location = new Point(524, 67);
             btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(149, 29);
+            btnRefresh.Size = new Size(149, 35);
             btnRefresh.TabIndex = 11;
             btnRefresh.Text = "Tải bảng xếp hạng";
-            btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-
+            btnRefresh.UseVisualStyleBackColor = false;
+            btnRefresh.Click += btnRefresh_Click;
             // 
             // dgvRank
             // 
-            dgvRank.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle1.BackColor = Color.White;
+            dgvRank.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dgvRank.BackgroundColor = Color.White;
+            dgvRank.ColumnHeadersHeight = 29;
             dgvRank.Columns.AddRange(new DataGridViewColumn[] { colHang, colTen, colLevel });
-            dgvRank.Location = new Point(191, 135);
+            dgvRank.GridColor = Color.FromArgb(0, 192, 192);
+            dgvRank.Location = new Point(195, 130);
             dgvRank.Name = "dgvRank";
             dgvRank.RowHeadersWidth = 51;
-            dgvRank.Size = new Size(424, 182);
+            dgvRank.Size = new Size(424, 230);
             dgvRank.TabIndex = 12;
             // 
             // colHang
@@ -109,24 +122,31 @@
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { statusLabel });
-            statusStrip1.Location = new Point(0, 527);
+            statusStrip1.Location = new Point(0, 524);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(882, 26);
+            statusStrip1.Size = new Size(882, 29);
             statusStrip1.TabIndex = 13;
             statusStrip1.Text = "statusStrip1";
             // 
             // statusLabel
             // 
+            statusLabel.BackColor = Color.Transparent;
+            statusLabel.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            statusLabel.ForeColor = Color.FromArgb(0, 192, 192);
             statusLabel.Name = "statusLabel";
-            statusLabel.Size = new Size(68, 20);
+            statusLabel.Size = new Size(81, 23);
             statusLabel.Text = "Sẵn sàng";
+            statusLabel.VisitedLinkColor = Color.FromArgb(0, 192, 192);
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(151, 67);
+            label2.BackColor = Color.Transparent;
+            label2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            label2.ForeColor = Color.FromArgb(0, 192, 192);
+            label2.Location = new Point(147, 76);
             label2.Name = "label2";
-            label2.Size = new Size(38, 20);
+            label2.Size = new Size(47, 23);
             label2.TabIndex = 14;
             label2.Text = "TOP:";
             // 
@@ -134,6 +154,8 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = Properties.Resource.anhnenrank;
+            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(882, 553);
             Controls.Add(label2);
             Controls.Add(statusStrip1);

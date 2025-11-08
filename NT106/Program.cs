@@ -12,7 +12,7 @@ namespace plan_fighting_super_start
             // see https://aka.ms/applicationconfiguration.
 
             ApplicationConfiguration.Initialize();
-            Application.Run(new Rank());
+            Application.Run(new Login());
         }
     }
 }

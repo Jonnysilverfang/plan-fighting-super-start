@@ -158,5 +158,10 @@ namespace plan_fighting_super_start
             var form = new Room(); // tạm mở solo để tránh crash nếu chưa có form khác
             form.Show();
         }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var form = new Rank();
+            form.Show();
+        }
     }
 }
