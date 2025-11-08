@@ -33,7 +33,7 @@ namespace plan_fighting_super_start
         {
             InitializeComponent();
 
-            // Cấu hình lưới và map DataPropertyName khớp JSON
+            // Cấu hình lưới và map DataPropertyName khớp JSON (logic giữ nguyên)
             dgvRank.AutoGenerateColumns = false;
             dgvRank.Columns.Clear();
             dgvRank.Columns.Add(new DataGridViewTextBoxColumn
@@ -59,6 +59,8 @@ namespace plan_fighting_super_start
             });
 
             statusLabel.Text = "Sẵn sàng";
+
+            // Tải bảng xếp hạng khi form hiện lần đầu
             this.Shown += async (_, __) => await TaiBangXepHangAsync((int)numericUpDown1.Value);
         }
 
@@ -81,7 +83,8 @@ namespace plan_fighting_super_start
                         if (row.DataBoundItem is RankItem it &&
                             string.Equals(it.Username, AccountData.Username, StringComparison.OrdinalIgnoreCase))
                         {
-                            row.DefaultCellStyle.BackColor = System.Drawing.Color.LightYellow;
+                            row.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(40, 50, 90);
+                            row.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(0, 255, 255);
                             row.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9, System.Drawing.FontStyle.Bold);
                         }
                     }

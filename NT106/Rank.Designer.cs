@@ -28,167 +28,218 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            label1 = new Label();
-            numericUpDown1 = new NumericUpDown();
-            btnRefresh = new Button();
-            dgvRank = new DataGridView();
-            colHang = new DataGridViewTextBoxColumn();
-            colTen = new DataGridViewTextBoxColumn();
-            colLevel = new DataGridViewTextBoxColumn();
-            statusStrip1 = new StatusStrip();
-            statusLabel = new ToolStripStatusLabel();
-            label2 = new Label();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvRank).BeginInit();
-            statusStrip1.SuspendLayout();
-            SuspendLayout();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.label1 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.dgvRank = new System.Windows.Forms.DataGridView();
+            this.colHang = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTen = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.Hạng = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Tên = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Level = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.statusStrip2 = new System.Windows.Forms.StatusStrip();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvRank)).BeginInit();
+            this.statusStrip1.SuspendLayout();
+            this.SuspendLayout();
             // 
-            // label1
+            // Rank (Form)
             // 
-            label1.AutoSize = true;
-            label1.BackColor = Color.Transparent;
-            label1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            label1.ForeColor = Color.FromArgb(0, 192, 192);
-            label1.Location = new Point(341, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(200, 31);
-            label1.TabIndex = 9;
-            label1.Text = "BẢNG XẾP HẠNG";
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = global::plan_fighting_super_start.Properties.Resource.anhnenrank;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(882, 553);
+            this.MinimumSize = new System.Drawing.Size(900, 600);
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Bảng xếp hạng";
+            this.DoubleBuffered = true;
             // 
-            // numericUpDown1
+            // label1 - tiêu đề
             // 
-            numericUpDown1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            numericUpDown1.ForeColor = Color.FromArgb(0, 192, 192);
-            numericUpDown1.Location = new Point(206, 72);
-            numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(230, 30);
-            numericUpDown1.TabIndex = 10;
-            numericUpDown1.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(0, 255, 255);
+            this.label1.Location = new System.Drawing.Point(310, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(252, 41);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "BẢNG XẾP HẠNG";
             // 
-            // btnRefresh
+            // numericUpDown1 - chọn TOP
             // 
-            btnRefresh.BackColor = Color.Transparent;
-            btnRefresh.FlatAppearance.BorderSize = 2;
-            btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            btnRefresh.ForeColor = Color.FromArgb(0, 192, 192);
-            btnRefresh.Location = new Point(524, 67);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(149, 35);
-            btnRefresh.TabIndex = 11;
-            btnRefresh.Text = "Tải bảng xếp hạng";
-            btnRefresh.UseVisualStyleBackColor = false;
-            btnRefresh.Click += btnRefresh_Click;
+            this.numericUpDown1.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.numericUpDown1.ForeColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(15, 20, 40);
+            this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.numericUpDown1.Location = new System.Drawing.Point(206, 72);
+            this.numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(230, 30);
+            this.numericUpDown1.TabIndex = 10;
+            this.numericUpDown1.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // dgvRank
+            // btnRefresh - nút tải BXH
             // 
-            dataGridViewCellStyle1.BackColor = Color.White;
-            dgvRank.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dgvRank.BackgroundColor = Color.White;
-            dgvRank.ColumnHeadersHeight = 29;
-            dgvRank.Columns.AddRange(new DataGridViewColumn[] { colHang, colTen, colLevel });
-            dgvRank.GridColor = Color.FromArgb(0, 192, 192);
-            dgvRank.Location = new Point(195, 130);
-            dgvRank.Name = "dgvRank";
-            dgvRank.RowHeadersWidth = 51;
-            dgvRank.Size = new Size(424, 230);
-            dgvRank.TabIndex = 12;
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(10, 20, 40);
+            this.btnRefresh.FlatAppearance.BorderSize = 1;
+            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.btnRefresh.ForeColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            this.btnRefresh.Location = new System.Drawing.Point(524, 67);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(180, 35);
+            this.btnRefresh.TabIndex = 11;
+            this.btnRefresh.Text = "Tải bảng xếp hạng";
+            this.btnRefresh.UseVisualStyleBackColor = false;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // dgvRank - bảng xếp hạng
+            // 
+            this.dgvRank.AllowUserToAddRows = false;
+            this.dgvRank.AllowUserToDeleteRows = false;
+            this.dgvRank.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(18, 24, 48);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.dgvRank.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvRank.BackgroundColor = System.Drawing.Color.FromArgb(10, 15, 35);
+            this.dgvRank.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvRank.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvRank.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(0, 120, 140);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(0, 150, 160);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvRank.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvRank.ColumnHeadersHeight = 32;
+            this.dgvRank.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colHang,
+            this.colTen,
+            this.colLevel});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(10, 15, 35);
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvRank.DefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvRank.EnableHeadersVisualStyles = false;
+            this.dgvRank.GridColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            this.dgvRank.Location = new System.Drawing.Point(195, 130);
+            this.dgvRank.MultiSelect = false;
+            this.dgvRank.Name = "dgvRank";
+            this.dgvRank.ReadOnly = true;
+            this.dgvRank.RowHeadersVisible = false;
+            this.dgvRank.RowTemplate.Height = 28;
+            this.dgvRank.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvRank.Size = new System.Drawing.Size(424, 320);
+            this.dgvRank.TabIndex = 12;
             // 
             // colHang
             // 
-            colHang.DataPropertyName = "TextBoxColumn";
-            colHang.HeaderText = "Hạng";
-            colHang.MinimumWidth = 6;
-            colHang.Name = "colHang";
-            colHang.Width = 80;
+            this.colHang.HeaderText = "Hạng";
+            this.colHang.MinimumWidth = 6;
+            this.colHang.Name = "colHang";
+            this.colHang.ReadOnly = true;
+            this.colHang.Width = 80;
             // 
             // colTen
             // 
-            colTen.HeaderText = "Tên";
-            colTen.MinimumWidth = 6;
-            colTen.Name = "colTen";
-            colTen.Width = 200;
+            this.colTen.HeaderText = "Tên";
+            this.colTen.MinimumWidth = 6;
+            this.colTen.Name = "colTen";
+            this.colTen.ReadOnly = true;
+            this.colTen.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             // 
             // colLevel
             // 
-            colLevel.HeaderText = "Level";
-            colLevel.MinimumWidth = 6;
-            colLevel.Name = "colLevel";
-            colLevel.Width = 90;
+            this.colLevel.HeaderText = "Level";
+            this.colLevel.MinimumWidth = 6;
+            this.colLevel.Name = "colLevel";
+            this.colLevel.ReadOnly = true;
+            this.colLevel.Width = 90;
             // 
             // statusStrip1
             // 
-            statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { statusLabel });
-            statusStrip1.Location = new Point(0, 524);
-            statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(882, 29);
-            statusStrip1.TabIndex = 13;
-            statusStrip1.Text = "statusStrip1";
+            this.statusStrip1.BackColor = System.Drawing.Color.FromArgb(10, 15, 30);
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 524);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(882, 29);
+            this.statusStrip1.TabIndex = 13;
+            this.statusStrip1.Text = "statusStrip1";
             // 
             // statusLabel
             // 
-            statusLabel.BackColor = Color.Transparent;
-            statusLabel.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            statusLabel.ForeColor = Color.FromArgb(0, 192, 192);
-            statusLabel.Name = "statusLabel";
-            statusLabel.Size = new Size(81, 23);
-            statusLabel.Text = "Sẵn sàng";
-            statusLabel.VisitedLinkColor = Color.FromArgb(0, 192, 192);
+            this.statusLabel.BackColor = System.Drawing.Color.Transparent;
+            this.statusLabel.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.statusLabel.ForeColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(81, 23);
+            this.statusLabel.Text = "Sẵn sàng";
             // 
-            // label2
+            // label2 - "TOP:"
             // 
-            label2.AutoSize = true;
-            label2.BackColor = Color.Transparent;
-            label2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            label2.ForeColor = Color.FromArgb(0, 192, 192);
-            label2.Location = new Point(147, 76);
-            label2.Name = "label2";
-            label2.Size = new Size(47, 23);
-            label2.TabIndex = 14;
-            label2.Text = "TOP:";
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(0, 192, 192);
+            this.label2.Location = new System.Drawing.Point(147, 76);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(47, 23);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "TOP:";
             // 
-            // Rank
+            // Rank - thêm controls vào form
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resource.anhnenrank;
-            BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(882, 553);
-            Controls.Add(label2);
-            Controls.Add(statusStrip1);
-            Controls.Add(dgvRank);
-            Controls.Add(btnRefresh);
-            Controls.Add(numericUpDown1);
-            Controls.Add(label1);
-            MinimumSize = new Size(900, 600);
-            Name = "Rank";
-            StartPosition = FormStartPosition.CenterScreen;
-            Text = "Rank";
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvRank).EndInit();
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
-            ResumeLayout(false);
-            PerformLayout();
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.dgvRank);
+            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.label1);
+            this.Name = "Rank";
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvRank)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         #endregion
-        private Label label1;
-        private NumericUpDown numericUpDown1;
-        private Button btnRefresh;
-        private DataGridView dgvRank;
-        private StatusStrip statusStrip1;
-        private ToolStripStatusLabel statusLabel;
-        private DataGridViewTextBoxColumn Hạng;
-        private DataGridViewTextBoxColumn Tên;
-        private DataGridViewTextBoxColumn Level;
-        private StatusStrip statusStrip2;
-        private DataGridViewTextBoxColumn colHang;
-        private DataGridViewTextBoxColumn colTen;
-        private DataGridViewTextBoxColumn colLevel;
-        private Label label2;
+
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.DataGridView dgvRank;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel statusLabel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Hạng;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Tên;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Level;
+        private System.Windows.Forms.StatusStrip statusStrip2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHang;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colTen;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLevel;
+        private System.Windows.Forms.Label label2;
     }
 }

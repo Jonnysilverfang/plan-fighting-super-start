@@ -1,7 +1,6 @@
 using plan_fighting_super_start.Properties;
 using System;
 using System.Drawing;
-using System.Numerics;
 using System.Windows.Forms;
 
 namespace plan_fighting_super_start
@@ -25,29 +24,6 @@ namespace plan_fighting_super_start
         private int bossAttackFrequency = 50;
         private int maxBossBullets = 50;
 
-        // ❌ XÓA Mock Database cũ và thay thế bằng định nghĩa dưới đây 
-        //    (HOẶC bạn nên di chuyển định nghĩa này ra khỏi file GAMEBOSS.cs và đặt vào Database.cs như tôi đã làm ở bước trước,
-        //     nhưng nếu bạn muốn giữ nó trong file này, đây là cách chỉnh sửa để thêm Username)
-
-        // ⭐ AccountData TĨNH mới (Đã thêm Username)
-        public static class AccountData
-        {
-            public static string? Username { get; set; } = null; // Thêm Username
-            public static int Level { get; set; } = 1;
-            public static int Gold { get; set; } = 0;
-            public static int UpgradeHP { get; set; } = 100;
-            public static int UpgradeDamage { get; set; } = 0;
-        }
-
-        // ⭐ Database class: Bỏ phần thân rỗng, chỉ giữ lại khai báo (vì thân đã được định nghĩa trong file Database.cs)
-        public static class Database
-        {
-            // Các hàm này sẽ gọi đến các hàm API đã được định nghĩa ở file Database.cs
-            public static void UpdateAccountData() { /* Logic API đã nằm ở file khác */ }
-            public static void LoadAccountData() { /* Logic API đã nằm ở file khác */ }
-            // Cần phải đảm bảo file Database.cs có các hàm này và đã được định nghĩa đúng cách
-        }
-
         public GAMEBOSS()
         {
             InitializeComponent();
@@ -57,8 +33,11 @@ namespace plan_fighting_super_start
         {
             this.BackColor = Color.White;
 
-            // ⭐ Đã chỉnh sửa: Gọi hàm LoadAccountData đã được kết nối API
-            Database.LoadAccountData();
+            // Load lại dữ liệu account từ API, nếu đã có Username sau đăng nhập
+            if (!string.IsNullOrEmpty(AccountData.Username))
+            {
+                Database.LoadAccountData(AccountData.Username);
+            }
 
             playerDamage = BASE_DAMAGE + AccountData.UpgradeDamage;
 
@@ -66,22 +45,35 @@ namespace plan_fighting_super_start
             playerHealthBar.Value = playerHealthBar.Maximum;
             playerHealthBar.ForeColor = Color.Lime;
 
-            int currentBossMaxHealth = AccountData.Level * 10000;
+            // ⭐ Máu boss trâu theo level (tăng 30% mỗi level)
+            int currentBossMaxHealth = GetBossMaxHealth();
             bossHealthBar.Maximum = currentBossMaxHealth;
             bossHealthBar.Value = currentBossMaxHealth;
             bossHealthBar.ForeColor = Color.Red;
 
             survivalTime = 90;
-            txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
+            txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
 
             gameTimer.Start();
             survivalTimer.Start();
         }
 
+        // ⭐ Hàm tính máu boss theo level (trâu dần)
+        private int GetBossMaxHealth()
+        {
+            int level = Math.Max(1, AccountData.Level);
+
+            double baseHp = 10000; // Máu level 1
+            double growth = 1.3;   // Mỗi level +30%
+
+            double hp = baseHp * Math.Pow(growth, level - 1);
+            return (int)hp;
+        }
+
         private void mainGameTimerEvent(object sender, EventArgs e)
         {
             frameCounter++;
-            txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
+            txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
 
             // Player movement
             if (goLeft && player.Left > 0) player.Left -= playerSpeed;
@@ -97,22 +89,27 @@ namespace plan_fighting_super_start
             if (bossAttackTimer > bossAttackFrequency)
             {
                 bossAttackTimer = 0;
-                ShootBossBulletRandom();
+                ShootBossBulletFan();   // pattern bắn tia vàng tỏa quạt
             }
 
             int currentBossBullets = 0;
 
             foreach (Control x in this.Controls)
             {
-                // Player bullet
+                // ===== Player bullet (tên lửa xanh) =====
                 if (x is PictureBox && (string)x.Tag == "playerBullet")
                 {
-                    CreateBulletTrail(x.Left + x.Width / 2, x.Top + x.Height, Color.Aqua);
+                    // Vệt sáng phía sau
+                    CreateBulletTrail(
+                        x.Left + x.Width / 2,
+                        x.Bottom,
+                        Color.FromArgb(0, 200, 255)
+                    );
+
+                    // Bay thẳng lên
                     x.Top -= bulletSpeed;
 
-                    int glow = (int)(Math.Abs(Math.Sin(frameCounter * 0.2)) * 100);
-                    x.BackColor = Color.FromArgb(255, 0, 200 + glow / 2, 255);
-
+                    // Ra khỏi màn hình thì xóa
                     if (x.Top < -x.Height)
                     {
                         this.Controls.Remove(x);
@@ -120,6 +117,7 @@ namespace plan_fighting_super_start
                         continue;
                     }
 
+                    // Trúng boss
                     if (x.Bounds.IntersectsWith(boss.Bounds))
                     {
                         bossHealthBar.Value = Math.Max(0, bossHealthBar.Value - playerDamage);
@@ -135,7 +133,7 @@ namespace plan_fighting_super_start
                     }
                 }
 
-                // Boss bullet
+                // ===== Boss bullet =====
                 if (x is PictureBox && (string)x.Tag == "bossBullet")
                 {
                     currentBossBullets++;
@@ -149,12 +147,12 @@ namespace plan_fighting_super_start
                         moveSpeed = int.Parse(parts[1].Split(':')[1]);
                     }
 
-                    CreateBulletTrail(x.Left + x.Width / 2, x.Top + x.Height / 2, Color.Red);
+                    CreateBulletTrail(x.Left + x.Width / 2, x.Top + x.Height / 2, Color.Yellow);
                     x.Top += moveSpeed;
                     x.Left += directionX * (moveSpeed / 2);
 
-                    int glow = (int)(Math.Abs(Math.Sin(frameCounter * 0.25)) * 150);
-                    x.BackColor = Color.FromArgb(255, 255, 50 + glow, 50 + glow / 2);
+                    int glow2 = (int)(Math.Abs(Math.Sin(frameCounter * 0.25)) * 150);
+                    x.BackColor = Color.FromArgb(40, 255, 230, 100 + glow2 / 3);
 
                     if (x.Bounds.IntersectsWith(player.Bounds))
                     {
@@ -182,7 +180,7 @@ namespace plan_fighting_super_start
                     }
                 }
 
-                // Trail
+                // ===== Trail =====
                 if (x is PictureBox && (string)x.Tag == "trail")
                 {
                     x.BackColor = Color.FromArgb(Math.Max(0, x.BackColor.A - 15),
@@ -195,7 +193,7 @@ namespace plan_fighting_super_start
                     }
                 }
 
-                // Explosion
+                // ===== Explosion =====
                 if (x is PictureBox && (string)x.Tag == "explosion")
                 {
                     x.Width += 4;
@@ -225,7 +223,7 @@ namespace plan_fighting_super_start
             PictureBox trail = new PictureBox();
             trail.Size = new Size(6, 10);
             trail.Tag = "trail";
-            trail.BackColor = Color.FromArgb(150, baseColor.R, baseColor.G, baseColor.B);
+            trail.BackColor = Color.FromArgb(120, baseColor.R, baseColor.G, baseColor.B);
             trail.Left = x - trail.Width / 2;
             trail.Top = y;
             this.Controls.Add(trail);
@@ -245,22 +243,71 @@ namespace plan_fighting_super_start
             this.Controls.Add(boom);
         }
 
-        private void ShootBossBulletRandom()
+        // ⭐ Đạn boss kiểu tia vàng dài, bắn tỏa quạt
+        private void ShootBossBulletFan()
         {
-            int[] horizontalDirections = { -1, 0, 1 };
+            // Các hướng trải từ trái sang phải
+            int[] spreadDirections = { -3, -2, -1, 0, 1, 2, 3 };
             int baseSpeed = 10;
 
-            for (int i = 0; i < 3; i++)
+            foreach (int directionX in spreadDirections)
             {
                 PictureBox bullet = new PictureBox();
-                bullet.Size = new Size(16, 32);
+                bullet.Size = new Size(10, 40);   // nhỏ, dài
                 bullet.Tag = "bossBullet";
-                bullet.BackColor = Color.Red;
-                bullet.Left = boss.Left + boss.Width / 2 - bullet.Width / 2;
-                bullet.Top = boss.Bottom;
+                bullet.BackColor = Color.Transparent;
 
-                int directionX = horizontalDirections[i];
+                Bitmap bmp = new Bitmap(bullet.Width, bullet.Height);
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    g.Clear(Color.Transparent);
+
+                    float centerX = bullet.Width / 2f;
+
+                    // Glow vàng
+                    Rectangle glowRect = new Rectangle(0, 4, bullet.Width, bullet.Height - 4);
+                    using (var glowBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                        new Point(glowRect.X, glowRect.Y),
+                        new Point(glowRect.X, glowRect.Bottom),
+                        Color.FromArgb(0, 255, 255, 0),
+                        Color.FromArgb(220, 255, 210, 60)))
+                    {
+                        g.FillEllipse(glowBrush, glowRect);
+                    }
+
+                    // Lõi đạn
+                    Rectangle coreRect = new Rectangle(
+                        (int)(centerX - 2),
+                        6,
+                        4,
+                        bullet.Height - 16
+                    );
+                    using (var coreBrush = new SolidBrush(Color.FromArgb(255, 255, 255, 220)))
+                    {
+                        g.FillRectangle(coreBrush, coreRect);
+                    }
+
+                    // Đầu nhọn phía dưới
+                    PointF p1 = new PointF(centerX, bullet.Height);
+                    PointF p2 = new PointF(coreRect.Left - 3, coreRect.Bottom - 2);
+                    PointF p3 = new PointF(coreRect.Right + 3, coreRect.Bottom - 2);
+                    PointF[] tip = { p1, p2, p3 };
+                    using (var tipBrush = new SolidBrush(Color.FromArgb(255, 255, 230, 140)))
+                    {
+                        g.FillPolygon(tipBrush, tip);
+                    }
+                }
+
+                bullet.Image = bmp;
+                bullet.SizeMode = PictureBoxSizeMode.Normal;
+
+                // Vị trí bắn: giữa boss, ngay dưới
+                bullet.Left = boss.Left + boss.Width / 2 - bullet.Width / 2;
+                bullet.Top = boss.Bottom - 5;
+
                 int moveSpeed = baseSpeed + rnd.Next(-2, 3);
+                // Lưu hướng + speed vào Name để xử lý trong mainGameTimerEvent
                 bullet.Name = $"angle:{directionX},speed:{moveSpeed}";
 
                 this.Controls.Add(bullet);
@@ -268,12 +315,11 @@ namespace plan_fighting_super_start
             }
         }
 
-        // ⚡ Đạn Player dạng sấm sét (Lightning Bolt)
+        // ⚡ Đạn Player dạng tên lửa xanh
         private void ShootPlayerBullet()
         {
-            // Kích thước PictureBox đủ để chứa viên đạn nhọn và glow
             PictureBox bullet = new PictureBox();
-            bullet.Size = new Size(20, 45); // Tăng chiều cao một chút cho đầu nhọn
+            bullet.Size = new Size(20, 60); // rộng hơn tí cho giống tên lửa
             bullet.Tag = "playerBullet";
             bullet.BackColor = Color.Transparent;
 
@@ -283,116 +329,98 @@ namespace plan_fighting_super_start
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 g.Clear(Color.Transparent);
 
-                Random rand = new Random(Guid.NewGuid().GetHashCode());
+                float centerX = bullet.Width / 2f;
 
-                // Vị trí trung tâm X của viên đạn trong PictureBox
-                float centerX = bullet.Width / 2;
+                // --- Thân tên lửa ---
+                int bodyWidth = 8;
+                int bodyHeight = 26;
+                int bodyX = (int)(centerX - bodyWidth / 2f);
+                int bodyY = 8;
+                Rectangle bodyRect = new Rectangle(bodyX, bodyY, bodyWidth, bodyHeight);
 
-                // Kích thước của phần thân viên đạn (hình chữ nhật)
-                int bodyWidth = 4;
-                int bodyHeight = 25;
-
-                // ----------------------------------------------------
-                // BƯỚC 1: VẼ HIỆU ỨNG TIA ĐIỆN NHỎ XUNG QUANH
-                // ----------------------------------------------------
-
-                // Điểm bắt đầu cho tia điện (Gần đáy)
-                PointF startGlow = new PointF(centerX, bullet.Height);
-                var glowPoints = new System.Collections.Generic.List<PointF> { startGlow };
-                PointF currentGlow = startGlow;
-
-                // Tạo đường ziczac NGẮN VÀ MỀM MẠI hơn
-                for (int i = 0; i < 6; i++)
+                using (var bodyBrush = new SolidBrush(Color.White))
                 {
-                    float xOffset = rand.Next(-3, 4);
-                    float yOffset = -rand.Next(3, 5);
-                    PointF next = new PointF(currentGlow.X + xOffset, currentGlow.Y + yOffset);
-                    glowPoints.Add(next);
-                    currentGlow = next;
+                    g.FillRectangle(bodyBrush, bodyRect);
+                }
+                using (var bodyPen = new Pen(Color.FromArgb(200, 180, 180, 180), 1f))
+                {
+                    g.DrawRectangle(bodyPen, bodyRect);
                 }
 
-                // Lớp ánh sáng ngoài (glow) - Mờ và rất nhạt
-                using (var glowPen = new Pen(Color.FromArgb(50, 0, 255, 255), 5))
+                // --- Đầu nhọn màu đỏ ---
+                PointF tip = new PointF(centerX, 0);
+                PointF leftBase = new PointF(bodyX, bodyY);
+                PointF rightBase = new PointF(bodyX + bodyWidth, bodyY);
+                PointF[] nose = { tip, leftBase, rightBase };
+                using (var noseBrush = new SolidBrush(Color.OrangeRed))
                 {
-                    glowPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
-                    g.DrawLines(glowPen, glowPoints.ToArray());
+                    g.FillPolygon(noseBrush, nose);
                 }
 
-                // ----------------------------------------------------
-                // BƯỚC 2: VẼ VIÊN ĐẠN CHÍNH (Thân hình chữ nhật + đầu nhọn)
-                // ----------------------------------------------------
-
-                // Vị trí vẽ phần thân hình chữ nhật
-                Rectangle bodyRect = new Rectangle(
-                    (int)centerX - bodyWidth / 2,
-                    bullet.Height - bodyHeight - 5, // Đặt phần thân lên trên một chút, chừa chỗ cho đầu nhọn
-                    bodyWidth,
-                    bodyHeight
-                );
-
-                // Tạo các điểm cho đầu nhọn (hình tam giác)
-                PointF tipPoint = new PointF(centerX, bodyRect.Top - 5); // Đỉnh nhọn
-                PointF leftBase = new PointF(bodyRect.Left, bodyRect.Top); // Góc trái trên của thân
-                PointF rightBase = new PointF(bodyRect.Right, bodyRect.Top); // Góc phải trên của thân
-                PointF[] tipShape = { tipPoint, leftBase, rightBase };
-
-                // Vòng ngoài/Glow nhẹ của viên đạn (Màu xanh cyan)
-                using (var bulletPen = new Pen(Color.Cyan, 2f))
+                // --- Cửa sổ xanh ---
+                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 4);
+                using (var windowBrush = new SolidBrush(Color.FromArgb(220, 80, 160, 255)))
                 {
-                    g.DrawRectangle(bulletPen, bodyRect); // Vẽ thân
-                    g.DrawPolygon(bulletPen, tipShape); // Vẽ đầu nhọn
+                    g.FillEllipse(windowBrush, windowRect);
                 }
 
-                // Lõi viên đạn (Màu trắng hoặc trắng xám)
-                using (var bulletBrush = new SolidBrush(Color.FromArgb(200, 255, 255, 255)))
+                // --- Vây ngang hai bên ---
+                using (var finBrush = new SolidBrush(Color.FromArgb(200, 0, 180, 255)))
                 {
-                    // Điền đầy phần thân
-                    g.FillRectangle(bulletBrush,
-                        bodyRect.X + 1,
-                        bodyRect.Y + 1,
-                        bodyRect.Width - 2,
-                        bodyRect.Height - 2);
-
-                    // Điền đầy phần đầu nhọn
-                    // Để làm cho đầu nhọn trông đầy đặn hơn, có thể thu nhỏ tam giác một chút khi fill
-                    PointF[] filledTipShape = {
-                        new PointF(centerX, tipPoint.Y + 1),
-                        new PointF(leftBase.X + 1, leftBase.Y),
-                        new PointF(rightBase.X - 1, rightBase.Y)
+                    // trái
+                    PointF[] leftFin =
+                    {
+                        new PointF(bodyX, bodyY + bodyHeight - 4),
+                        new PointF(bodyX - 5, bodyY + bodyHeight + 4),
+                        new PointF(bodyX, bodyY + bodyHeight + 2),
                     };
-                    g.FillPolygon(bulletBrush, filledTipShape);
+                    g.FillPolygon(finBrush, leftFin);
+
+                    // phải
+                    PointF[] rightFin =
+                    {
+                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight - 4),
+                        new PointF(bodyX + bodyWidth + 5, bodyY + bodyHeight + 4),
+                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 2),
+                    };
+                    g.FillPolygon(finBrush, rightFin);
                 }
 
-                // ----------------------------------------------------
-                // BƯỚC 3: HIỆU ỨNG TIA SÁNG ĐẦU VIÊN ĐẠN (Ở đỉnh nhọn)
-                // ----------------------------------------------------
+                // --- Vệt lửa xanh phía dưới ---
+                int flameHeight = 22;
+                Rectangle flameRect = new Rectangle(bodyX + 1, bodyY + bodyHeight, bodyWidth - 2, flameHeight);
 
-                // Vẽ một hình tròn nhỏ ở đỉnh nhọn để mô phỏng điểm nóng
-                int sparkRadius = 3;
-                using (var sparkBrush = new SolidBrush(Color.White))
+                using (var flameBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                    new Point(flameRect.X, flameRect.Y),
+                    new Point(flameRect.X, flameRect.Bottom),
+                    Color.FromArgb(230, 0, 255, 255),
+                    Color.FromArgb(0, 0, 255, 255)))
                 {
-                    g.FillEllipse(sparkBrush,
-                        (int)centerX - sparkRadius,
-                        (int)tipPoint.Y - sparkRadius, // Vị trí ở đỉnh nhọn
-                        sparkRadius * 2,
-                        sparkRadius * 2);
+                    g.FillRectangle(flameBrush, flameRect);
+                }
+
+                // --- Vệt sáng glow hình elip phía dưới ---
+                Rectangle glowRect = new Rectangle(
+                    flameRect.X - 8,
+                    flameRect.Bottom - 10,
+                    flameRect.Width + 16,
+                    20
+                );
+                using (var glowBrush = new SolidBrush(Color.FromArgb(90, 0, 200, 255)))
+                {
+                    g.FillEllipse(glowBrush, glowRect);
                 }
             }
 
             bullet.Image = bmp;
             bullet.SizeMode = PictureBoxSizeMode.Normal;
 
-            // Đặt vị trí
             bullet.Left = player.Left + player.Width / 2 - bullet.Width / 2;
             bullet.Top = player.Top - bullet.Height;
 
             this.Controls.Add(bullet);
             bullet.BringToFront();
         }
-
-
-
-
 
         private void survivalTimer_Tick(object sender, EventArgs e)
         {
@@ -408,29 +436,37 @@ namespace plan_fighting_super_start
             gameTimer.Stop();
             survivalTimer.Stop();
 
+            // Xoá bullet/trail/explosion
+            var toRemove = new System.Collections.Generic.List<Control>();
             foreach (Control x in this.Controls)
             {
-                if (x is PictureBox && ((string)x.Tag == "playerBullet" || (string)x.Tag == "bossBullet" || (string)x.Tag == "trail" || (string)x.Tag == "explosion"))
+                if (x is PictureBox &&
+                    ((string)x.Tag == "playerBullet" ||
+                     (string)x.Tag == "bossBullet" ||
+                     (string)x.Tag == "trail" ||
+                     (string)x.Tag == "explosion"))
                 {
-                    this.Controls.Remove(x);
-                    x.Dispose();
+                    toRemove.Add(x);
                 }
+            }
+            foreach (var x in toRemove)
+            {
+                this.Controls.Remove(x);
+                x.Dispose();
             }
 
             if (win)
             {
                 AccountData.Gold += 200;
                 AccountData.Level++;
-                // ⭐ Logic cập nhật đã đúng, hàm Database.UpdateAccountData() sẽ gọi API
                 Database.UpdateAccountData();
-                txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - WIN!";
+                txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - WIN!";
             }
             else
             {
                 AccountData.Gold += 50;
-                // ⭐ Logic cập nhật đã đúng, hàm Database.UpdateAccountData() sẽ gọi API
                 Database.UpdateAccountData();
-                txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - GAME OVER!";
+                txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - GAME OVER!";
             }
 
             buttonExit.Visible = true;
@@ -438,7 +474,6 @@ namespace plan_fighting_super_start
 
         private void buttonExit_Click(object sender, EventArgs e)
         {
-            // ⭐ Đảm bảo dữ liệu được lưu lần cuối trước khi thoát
             Database.UpdateAccountData();
             this.Close();
         }
@@ -461,6 +496,8 @@ namespace plan_fighting_super_start
             if (e.KeyCode == Keys.Space) shooting = false;
         }
 
-        private void txtScore_Click(object sender, EventArgs e) { }
+        private void txtScore_Click(object sender, EventArgs e)
+        {
+        }
     }
 }

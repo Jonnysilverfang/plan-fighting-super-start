@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Text.Json;
 
 namespace plan_fighting_super_start
 {
     public partial class MatchHistoryForm : Form
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private readonly string apiBaseUrl = "https://840blg9a68.execute-api.ap-southeast-1.amazonaws.com"; // Thay bằng URL API Gateway của bạn
+        private readonly string apiBaseUrl = "https://840blg9a68.execute-api.ap-southeast-1.amazonaws.com"; // URL API Gateway của bạn
 
         public MatchHistoryForm()
         {
@@ -74,7 +69,9 @@ namespace plan_fighting_super_start
                     dgvHistory.Rows.Add(
                         winner,
                         loser,
-                        matchDateTime.ToString("dd/MM/yyyy HH:mm"),
+                        matchDateTime == DateTime.MinValue
+                            ? "Không rõ"
+                            : matchDateTime.ToString("dd/MM/yyyy HH:mm"),
                         result
                     );
                 }

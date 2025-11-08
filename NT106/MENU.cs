@@ -11,19 +11,17 @@ namespace plan_fighting_super_start
             InitializeComponent();
         }
 
-        // Sự kiện load form (Designer đang gắn: Load += Form3_Load;)
-        private void Form3_Load(object sender, EventArgs e)
-        {
-            // Hiển thị thông tin người chơi
-            if (labelWelcome != null)
-            {
-                labelWelcome.Text = $"Xin chào";
-            }
+        // ===== Hàm dùng chung để load dữ liệu và cập nhật UI =====
 
-            // Tải dữ liệu tài khoản (nếu có API/DB)
+        private void RefreshAccountDataAndUI()
+        {
+            // Tải dữ liệu tài khoản (nếu có API/DB và Username không null)
             try
             {
-                Database.LoadAccountData(AccountData.Username);
+                if (!string.IsNullOrEmpty(AccountData.Username))
+                {
+                    Database.LoadAccountData(AccountData.Username);
+                }
             }
             catch
             {
@@ -35,6 +33,19 @@ namespace plan_fighting_super_start
             if (textBox1 != null) textBox1.Text = AccountData.UpgradeHP.ToString();
             if (textBox2 != null) textBox2.Text = AccountData.UpgradeDamage.ToString();
             if (textBox3 != null) textBox3.Text = AccountData.Level.ToString();
+        }
+
+        // Sự kiện load form (Designer đang gắn: Load += Form3_Load;)
+        private void Form3_Load(object sender, EventArgs e)
+        {
+            // Hiển thị thông tin người chơi
+            if (labelWelcome != null)
+            {
+                labelWelcome.Text = $"Xin chào";
+            }
+
+            // Load dữ liệu + cập nhật UI
+            RefreshAccountDataAndUI();
 
             // Làm trong suốt / style cho các control (gọi với kiểu đầy đủ để tránh mơ hồ)
             if (buttonPlay != null) SetTransparentButton(buttonPlay);
@@ -42,6 +53,7 @@ namespace plan_fighting_super_start
             if (buttonUpgradeDamage != null) SetTransparentButton(buttonUpgradeDamage);
             if (buttonExit != null) SetTransparentButton(buttonExit);
             if (button1 != null) SetTransparentButton(button1);
+            if (button2 != null) SetTransparentButton(button2);
 
             if (textBoxGold != null) SetTransparentTextBox(textBoxGold);
             if (textBox1 != null) SetTransparentTextBox(textBox1);
@@ -98,8 +110,16 @@ namespace plan_fighting_super_start
         {
             try
             {
-                var form = new GAMEBOSS();
-                form.Show();
+                // Mở GAMEBOSS dạng modal, Menu sẽ chờ đến khi GAMEBOSS đóng
+                using (var form = new GAMEBOSS())
+                {
+                    form.ShowDialog(this);
+                }
+
+                // Sau khi GAMEBOSS đóng (thắng/thua bấm Thoát),
+                // dữ liệu đã được cộng Gold/Level và gọi UpdateAccountData trong GAMEBOSS
+                // → Giờ reload lại từ API + cập nhật UI
+                RefreshAccountDataAndUI();
             }
             catch (Exception ex)
             {
@@ -155,9 +175,11 @@ namespace plan_fighting_super_start
         private void button1_Click(object sender, EventArgs e)
         {
             // TODO: mở form/phòng online nếu có
-            var form = new Room(); // tạm mở solo để tránh crash nếu chưa có form khác
+            var form = new Room(); // tạm
             form.Show();
         }
+
+        // Mở Rank (button2)
         private void button2_Click(object sender, EventArgs e)
         {
             var form = new Rank();

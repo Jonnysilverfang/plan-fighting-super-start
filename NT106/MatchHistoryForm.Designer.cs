@@ -1,4 +1,12 @@
-﻿namespace plan_fighting_super_start
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Drawing;
+
+namespace plan_fighting_super_start
 {
     partial class MatchHistoryForm
     {
@@ -9,6 +17,11 @@
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnClose;
 
+        private System.Windows.Forms.DataGridViewTextBoxColumn Player1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null)) components.Dispose();
@@ -17,143 +30,186 @@
 
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            dgvHistory = new DataGridView();
-            lblTitle = new Label();
-            lblStatus = new Label();
-            btnRefresh = new Button();
-            btnClose = new Button();
-            Player1 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
-            ((System.ComponentModel.ISupportInitialize)dgvHistory).BeginInit();
-            SuspendLayout();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.dgvHistory = new System.Windows.Forms.DataGridView();
+            this.Player1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvHistory)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = Color.FromArgb(10, 15, 30);
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+            // nếu bạn có background riêng thì đổi lại resource ở dưới:
+            this.BackgroundImage = Properties.Resource.anhnenrank;
+            this.ClientSize = new System.Drawing.Size(720, 430);
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = true;
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Name = "MatchHistoryForm";
+            this.Text = "Lịch Sử Đấu";
+            this.Load += new System.EventHandler(this.MatchHistoryForm_Load);
             // 
             // dgvHistory
             // 
-            dgvHistory.AllowUserToAddRows = false;
-            dgvHistory.AllowUserToDeleteRows = false;
-            dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvHistory.BackgroundColor = Color.White;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = SystemColors.Control;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle1.NullValue = "lo";
-            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            this.dgvHistory.AllowUserToAddRows = false;
+            this.dgvHistory.AllowUserToDeleteRows = false;
+            this.dgvHistory.AllowUserToResizeRows = false;
+            this.dgvHistory.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvHistory.BackgroundColor = Color.FromArgb(10, 15, 35);
+            this.dgvHistory.BorderStyle = BorderStyle.None;
+            this.dgvHistory.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvHistory.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(0, 120, 140);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(0, 150, 160);
+            dataGridViewCellStyle1.SelectionForeColor = Color.White;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvHistory.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvHistory.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4 });
-            dgvHistory.GridColor = Color.FromArgb(0, 192, 192);
-            dgvHistory.Location = new Point(30, 72);
-            dgvHistory.Name = "dgvHistory";
-            dgvHistory.ReadOnly = true;
-            dgvHistory.RowHeadersVisible = false;
-            dgvHistory.RowHeadersWidth = 51;
-            dgvHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvHistory.Size = new Size(600, 250);
-            dgvHistory.TabIndex = 1;
-            // 
-            // lblTitle
-            // 
-            lblTitle.BackColor = Color.Transparent;
-            lblTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-            lblTitle.ForeColor = Color.FromArgb(0, 192, 192);
-            lblTitle.Location = new Point(30, 20);
-            lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(400, 40);
-            lblTitle.TabIndex = 0;
-            lblTitle.Text = "📜 Lịch Sử Các Trận Đấu";
-            // 
-            // lblStatus
-            // 
-            lblStatus.BackColor = Color.Transparent;
-            lblStatus.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            lblStatus.ForeColor = Color.FromArgb(0, 192, 192);
-            lblStatus.Location = new Point(30, 340);
-            lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(300, 30);
-            lblStatus.TabIndex = 2;
-            // 
-            // btnRefresh
-            // 
-            btnRefresh.BackColor = Color.Transparent;
-            btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            btnRefresh.ForeColor = Color.FromArgb(0, 192, 192);
-            btnRefresh.Location = new Point(430, 340);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(88, 48);
-            btnRefresh.TabIndex = 3;
-            btnRefresh.Text = "Tải lại";
-            btnRefresh.UseVisualStyleBackColor = false;
-            btnRefresh.Click += btnRefresh_Click;
-            // 
-            // btnClose
-            // 
-            btnClose.BackColor = Color.Transparent;
-            btnClose.FlatStyle = FlatStyle.Flat;
-            btnClose.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            btnClose.ForeColor = Color.FromArgb(0, 192, 192);
-            btnClose.Location = new Point(550, 340);
-            btnClose.Name = "btnClose";
-            btnClose.Size = new Size(80, 48);
-            btnClose.TabIndex = 4;
-            btnClose.Text = "Đóng";
-            btnClose.UseVisualStyleBackColor = false;
-            btnClose.Click += btnClose_Click;
+            this.dgvHistory.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvHistory.ColumnHeadersHeight = 32;
+            this.dgvHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+            this.dgvHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+                this.Player1,
+                this.dataGridViewTextBoxColumn2,
+                this.dataGridViewTextBoxColumn3,
+                this.dataGridViewTextBoxColumn4});
+
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(18, 24, 48);
+            dataGridViewCellStyle2.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle2.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            this.dgvHistory.DefaultCellStyle = dataGridViewCellStyle2;
+
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(14, 20, 40);
+            dataGridViewCellStyle3.ForeColor = Color.White;
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle3.SelectionForeColor = Color.Black;
+            this.dgvHistory.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+
+            this.dgvHistory.GridColor = Color.FromArgb(0, 192, 192);
+            this.dgvHistory.Location = new System.Drawing.Point(30, 75);
+            this.dgvHistory.Name = "dgvHistory";
+            this.dgvHistory.ReadOnly = true;
+            this.dgvHistory.RowHeadersVisible = false;
+            this.dgvHistory.RowTemplate.Height = 28;
+            this.dgvHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dgvHistory.Size = new System.Drawing.Size(660, 260);
+            this.dgvHistory.TabIndex = 1;
             // 
             // Player1
             // 
-            Player1.HeaderText = "Player1";
-            Player1.MinimumWidth = 6;
-            Player1.Name = "Player1";
-            Player1.ReadOnly = true;
+            this.Player1.HeaderText = "Người thắng";
+            this.Player1.MinimumWidth = 6;
+            this.Player1.Name = "Player1";
+            this.Player1.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn2
             // 
-            dataGridViewTextBoxColumn2.HeaderText = "Player2";
-            dataGridViewTextBoxColumn2.MinimumWidth = 6;
-            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.HeaderText = "Người thua";
+            this.dataGridViewTextBoxColumn2.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn3
             // 
-            dataGridViewTextBoxColumn3.HeaderText = "Time";
-            dataGridViewTextBoxColumn3.MinimumWidth = 6;
-            dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            dataGridViewTextBoxColumn3.ReadOnly = true;
+            this.dataGridViewTextBoxColumn3.HeaderText = "Thời gian";
+            this.dataGridViewTextBoxColumn3.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn4
             // 
-            dataGridViewTextBoxColumn4.HeaderText = "Kết Quả";
-            dataGridViewTextBoxColumn4.MinimumWidth = 6;
-            dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            dataGridViewTextBoxColumn4.ReadOnly = true;
+            this.dataGridViewTextBoxColumn4.HeaderText = "Kết quả của bạn";
+            this.dataGridViewTextBoxColumn4.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
             // 
-            // MatchHistoryForm
+            // lblTitle
             // 
-            ClientSize = new Size(670, 400);
-            Controls.Add(lblTitle);
-            Controls.Add(dgvHistory);
-            Controls.Add(lblStatus);
-            Controls.Add(btnRefresh);
-            Controls.Add(btnClose);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            Name = "MatchHistoryForm";
-            StartPosition = FormStartPosition.CenterScreen;
-            Text = "Lịch Sử Đấu";
-            Load += MatchHistoryForm_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvHistory).EndInit();
-            ResumeLayout(false);
+            this.lblTitle.BackColor = Color.Transparent;
+            this.lblTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            this.lblTitle.ForeColor = Color.FromArgb(0, 255, 255);
+            this.lblTitle.Location = new System.Drawing.Point(30, 20);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(450, 40);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "📜 Lịch sử các trận đấu";
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.BackColor = Color.FromArgb(110, 0, 0, 0);
+            this.lblStatus.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            this.lblStatus.ForeColor = Color.FromArgb(0, 192, 192);
+            this.lblStatus.Location = new System.Drawing.Point(30, 345);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(350, 30);
+            this.lblStatus.TabIndex = 2;
+            this.lblStatus.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.BackColor = Color.FromArgb(10, 20, 40);
+            this.btnRefresh.FlatAppearance.BorderColor = Color.FromArgb(0, 192, 192);
+            this.btnRefresh.FlatAppearance.BorderSize = 1;
+            this.btnRefresh.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 140);
+            this.btnRefresh.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 80, 100);
+            this.btnRefresh.FlatStyle = FlatStyle.Flat;
+            this.btnRefresh.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            this.btnRefresh.ForeColor = Color.FromArgb(0, 192, 192);
+            this.btnRefresh.Location = new System.Drawing.Point(420, 340);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(120, 48);
+            this.btnRefresh.TabIndex = 3;
+            this.btnRefresh.Text = "Tải lại";
+            this.btnRefresh.UseVisualStyleBackColor = false;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // btnClose
+            // 
+            this.btnClose.BackColor = Color.FromArgb(10, 20, 40);
+            this.btnClose.FlatAppearance.BorderColor = Color.FromArgb(0, 192, 192);
+            this.btnClose.FlatAppearance.BorderSize = 1;
+            this.btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 140);
+            this.btnClose.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 80, 100);
+            this.btnClose.FlatStyle = FlatStyle.Flat;
+            this.btnClose.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            this.btnClose.ForeColor = Color.FromArgb(0, 192, 192);
+            this.btnClose.Location = new System.Drawing.Point(560, 340);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(130, 48);
+            this.btnClose.TabIndex = 4;
+            this.btnClose.Text = "Đóng";
+            this.btnClose.UseVisualStyleBackColor = false;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // Add controls
+            // 
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.dgvHistory);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvHistory)).EndInit();
+            this.ResumeLayout(false);
         }
-
-        private DataGridViewTextBoxColumn Player1;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
     }
 }
