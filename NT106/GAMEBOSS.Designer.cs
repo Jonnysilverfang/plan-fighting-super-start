@@ -1,9 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using Font = System.Drawing.Font;
-using Image = System.Drawing.Image;
 
 namespace plan_fighting_super_start
 {
@@ -11,16 +8,20 @@ namespace plan_fighting_super_start
     {
         private System.ComponentModel.IContainer components = null;
 
-        // Controls
-        private System.Windows.Forms.PictureBox player;
-        private System.Windows.Forms.PictureBox boss;
-        private System.Windows.Forms.PictureBox playerBullet;
-        private System.Windows.Forms.Label txtScore;
-        private System.Windows.Forms.ProgressBar playerHealthBar;
-        private System.Windows.Forms.ProgressBar bossHealthBar;
-        private System.Windows.Forms.Button buttonExit;
+        private PictureBox player;
+        private PictureBox boss;
+        private PictureBox playerBullet;
+        private Label txtScore;
+        private ProgressBar playerHealthBar;
+        private ProgressBar bossHealthBar;
+        private Button buttonExit;
         private System.Windows.Forms.Timer gameTimer;
         private System.Windows.Forms.Timer survivalTimer;
+
+        private Panel pausePanel;
+        private Label pauseTextLabel;
+        private Button btnResume;
+        private Button btnPauseExit;
 
         protected override void Dispose(bool disposing)
         {
@@ -40,16 +41,21 @@ namespace plan_fighting_super_start
             buttonExit = new Button();
             gameTimer = new System.Windows.Forms.Timer(components);
             survivalTimer = new System.Windows.Forms.Timer(components);
+            pausePanel = new Panel();
+            pauseTextLabel = new Label();
+            btnResume = new Button();
+            btnPauseExit = new Button();
             ((System.ComponentModel.ISupportInitialize)player).BeginInit();
             ((System.ComponentModel.ISupportInitialize)boss).BeginInit();
             ((System.ComponentModel.ISupportInitialize)playerBullet).BeginInit();
+            pausePanel.SuspendLayout();
             SuspendLayout();
             // 
             // player
             // 
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
-            player.Image = Properties.Resource.playerrr;
+            player.Image = Properties.Resource.playerrr;       // giữ nguyên
             player.Location = new Point(350, 520);
             player.Name = "player";
             player.Size = new Size(62, 80);
@@ -61,7 +67,7 @@ namespace plan_fighting_super_start
             // 
             boss.BackColor = Color.Transparent;
             boss.BackgroundImageLayout = ImageLayout.Stretch;
-            boss.Image = Properties.Resource.boss_manh;
+            boss.Image = Properties.Resource.boss_manh;        // giữ nguyên
             boss.Location = new Point(340, 50);
             boss.Name = "boss";
             boss.Size = new Size(120, 100);
@@ -81,14 +87,15 @@ namespace plan_fighting_super_start
             // 
             // txtScore
             // 
-            txtScore.Font = new Font("Microsoft Sans Serif", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            txtScore.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
             txtScore.ForeColor = Color.FromArgb(0, 192, 192);
-            txtScore.Location = new Point(0, 9);
+            txtScore.Location = new Point(0, 36);
             txtScore.Name = "txtScore";
-            txtScore.Size = new Size(473, 30);
+            txtScore.Size = new Size(800, 30);
             txtScore.TabIndex = 3;
             txtScore.Text = "Gold: 0  Time: 90  Level: 1";
             txtScore.TextAlign = ContentAlignment.MiddleCenter;
+            txtScore.Click += txtScore_Click;
             // 
             // playerHealthBar
             // 
@@ -111,13 +118,14 @@ namespace plan_fighting_super_start
             buttonExit.FlatStyle = FlatStyle.Flat;
             buttonExit.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
             buttonExit.ForeColor = Color.FromArgb(0, 192, 192);
-            buttonExit.Location = new Point(350, 300);
+            buttonExit.Location = new Point(340, 310);
             buttonExit.Name = "buttonExit";
-            buttonExit.Size = new Size(100, 40);
+            buttonExit.Size = new Size(140, 40);
             buttonExit.TabIndex = 6;
             buttonExit.Text = "Thoát";
             buttonExit.UseVisualStyleBackColor = true;
             buttonExit.Visible = false;
+            buttonExit.TabStop = false; // không cho focus
             buttonExit.Click += buttonExit_Click;
             // 
             // gameTimer
@@ -130,10 +138,69 @@ namespace plan_fighting_super_start
             survivalTimer.Interval = 1000;
             survivalTimer.Tick += survivalTimer_Tick;
             // 
+            // pausePanel
+            // 
+            pausePanel.BackColor = Color.FromArgb(180, 0, 0, 0);
+            pausePanel.Controls.Add(btnPauseExit);
+            pausePanel.Controls.Add(btnResume);
+            pausePanel.Controls.Add(pauseTextLabel);
+            pausePanel.Location = new Point(200, 220);
+            pausePanel.Name = "pausePanel";
+            pausePanel.Size = new Size(400, 150);
+            pausePanel.TabIndex = 8;
+            pausePanel.Visible = false;
+            // 
+            // pauseTextLabel
+            // 
+            pauseTextLabel.BackColor = Color.Transparent;
+            pauseTextLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            pauseTextLabel.ForeColor = Color.FromArgb(0, 192, 192);
+            pauseTextLabel.Location = new Point(10, 10);
+            pauseTextLabel.Name = "pauseTextLabel";
+            pauseTextLabel.Size = new Size(380, 40);
+            pauseTextLabel.TabIndex = 0;
+            pauseTextLabel.Text = "⏸ TẠM DỪNG";
+            pauseTextLabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnResume
+            // 
+            btnResume.BackColor = Color.FromArgb(20, 30, 50);
+            btnResume.FlatAppearance.BorderSize = 1;
+            btnResume.FlatStyle = FlatStyle.Flat;
+            btnResume.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnResume.ForeColor = Color.FromArgb(0, 192, 192);
+            btnResume.Location = new Point(60, 80);
+            btnResume.Name = "btnResume";
+            btnResume.Size = new Size(120, 40);
+            btnResume.TabIndex = 1;
+            btnResume.Text = "Tiếp tục";
+            btnResume.UseVisualStyleBackColor = false;
+            btnResume.TabStop = false;
+            btnResume.Click += btnResume_Click;
+            // 
+            // btnPauseExit
+            // 
+            btnPauseExit.BackColor = Color.FromArgb(20, 30, 50);
+            btnPauseExit.FlatAppearance.BorderSize = 1;
+            btnPauseExit.FlatStyle = FlatStyle.Flat;
+            btnPauseExit.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnPauseExit.ForeColor = Color.FromArgb(0, 192, 192);
+            btnPauseExit.Location = new Point(220, 80);
+            btnPauseExit.Name = "btnPauseExit";
+            btnPauseExit.Size = new Size(120, 40);
+            btnPauseExit.TabIndex = 2;
+            btnPauseExit.Text = "Thoát";
+            btnPauseExit.UseVisualStyleBackColor = false;
+            btnPauseExit.TabStop = false;
+            btnPauseExit.Click += btnPauseExit_Click;
+            // 
             // GAMEBOSS
             // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(800, 620);
+            Controls.Add(pausePanel);
             Controls.Add(buttonExit);
             Controls.Add(bossHealthBar);
             Controls.Add(playerHealthBar);
@@ -141,15 +208,37 @@ namespace plan_fighting_super_start
             Controls.Add(playerBullet);
             Controls.Add(boss);
             Controls.Add(player);
+
+            DoubleBuffered = true;          // THÊM: cho game mượt, đỡ giật
             KeyPreview = true;
             Name = "GAMEBOSS";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Boss Shooter Game";
+
+            // Label hint: Nhấn P để tạm dừng
+            Label lblHint = new Label();
+            lblHint.AutoSize = true;
+            lblHint.BackColor = Color.Transparent;
+            lblHint.ForeColor = Color.FromArgb(0, 192, 192);
+            lblHint.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblHint.Location = new Point(10, 10);
+            lblHint.Text = "Nhấn P để tạm dừng / tiếp tục";
+            lblHint.BringToFront();
+            Controls.Add(lblHint);
+
+            this.AcceptButton = null;
+            this.CancelButton = null;
+
             Load += Form4_Load;
+            Shown += GAMEBOSS_Shown;
             KeyDown += keyisdown;
             KeyUp += keyisup;
+            FormClosed += GAMEBOSS_FormClosed;   // THÊM: để dừng nhạc khi đóng form
+
             ((System.ComponentModel.ISupportInitialize)player).EndInit();
             ((System.ComponentModel.ISupportInitialize)boss).EndInit();
             ((System.ComponentModel.ISupportInitialize)playerBullet).EndInit();
+            pausePanel.ResumeLayout(false);
             ResumeLayout(false);
         }
     }

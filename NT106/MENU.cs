@@ -1,21 +1,68 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using WMPLib;   // ⭐ thêm
 
 namespace plan_fighting_super_start
 {
     public partial class Menu : Form
     {
+        // ⭐ player nhạc nền
+        private WindowsMediaPlayer bgmPlayer;
+
         public Menu()
         {
             InitializeComponent();
+
+            // đăng ký sự kiện để dọn nhạc khi đóng form
+            this.FormClosing += Menu_FormClosing;
+
+            InitBackgroundMusic();
+        }
+
+        // ===== Nhạc nền bossgame.mp3 =====
+        private void InitBackgroundMusic()
+        {
+            try
+            {
+                // Đường dẫn tới file bossgame.mp3 nằm trong thư mục exe
+                string mp3Path = System.IO.Path.Combine(
+                    Application.StartupPath,
+                    "bossgame.mp3");
+
+                bgmPlayer = new WindowsMediaPlayer();
+                bgmPlayer.URL = mp3Path;
+                bgmPlayer.settings.setMode("loop", true);  // lặp vô hạn
+                bgmPlayer.settings.volume = 40;            // âm lượng 0–100
+                bgmPlayer.controls.play();
+            }
+            catch (Exception ex)
+            {
+                // Nếu lỗi (thiếu file, thiếu COM, v.v.) thì chỉ báo nhẹ, không cho crash
+                MessageBox.Show("Không phát được nhạc nền: " + ex.Message,
+                    "Lỗi nhạc nền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        // Dừng nhạc, giải phóng khi đóng form
+        private void Menu_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (bgmPlayer != null)
+                {
+                    bgmPlayer.controls.stop();
+                    bgmPlayer.close();
+                    bgmPlayer = null;
+                }
+            }
+            catch { }
         }
 
         // ===== Hàm dùng chung để load dữ liệu và cập nhật UI =====
 
         private void RefreshAccountDataAndUI()
         {
-            // Tải dữ liệu tài khoản (nếu có API/DB và Username không null)
             try
             {
                 if (!string.IsNullOrEmpty(AccountData.Username))
@@ -25,10 +72,8 @@ namespace plan_fighting_super_start
             }
             catch
             {
-                // tránh sập app khi API lỗi; có thể log/MessageBox nếu muốn
             }
 
-            // Cập nhật các TextBox hiển thị số liệu
             if (textBoxGold != null) textBoxGold.Text = AccountData.Gold.ToString();
             if (textBox1 != null) textBox1.Text = AccountData.UpgradeHP.ToString();
             if (textBox2 != null) textBox2.Text = AccountData.UpgradeDamage.ToString();
@@ -38,17 +83,13 @@ namespace plan_fighting_super_start
         // Sự kiện load form (Designer đang gắn: Load += Form3_Load;)
         private void Form3_Load(object sender, EventArgs e)
         {
-            // Hiển thị thông tin người chơi
             if (labelWelcome != null)
             {
-                // Nếu muốn hiện tên sau này chỉ cần ghép AccountData.Username vào đây
                 labelWelcome.Text = "Xin chào";
             }
 
-            // Load dữ liệu + cập nhật UI
             RefreshAccountDataAndUI();
 
-            // Style cho các control
             if (buttonPlay != null) SetGameButton(buttonPlay);
             if (buttonUpgradeHP != null) SetGameButton(buttonUpgradeHP);
             if (buttonUpgradeDamage != null) SetGameButton(buttonUpgradeDamage);
@@ -125,20 +166,15 @@ namespace plan_fighting_super_start
 
         // ====== Handlers nút bấm (logic giữ nguyên) ======
 
-        // Chơi solo (nút Play)
         private void buttonPlay_Click(object sender, EventArgs e)
         {
             try
             {
-                // Mở GAMEBOSS dạng modal, Menu sẽ chờ đến khi GAMEBOSS đóng
                 using (var form = new GAMEBOSS())
                 {
                     form.ShowDialog(this);
                 }
 
-                // Sau khi GAMEBOSS đóng (thắng/thua bấm Thoát),
-                // dữ liệu đã được cộng Gold/Level và gọi UpdateAccountData trong GAMEBOSS
-                // → Giờ reload lại từ API + cập nhật UI
                 RefreshAccountDataAndUI();
             }
             catch (Exception ex)
@@ -147,7 +183,6 @@ namespace plan_fighting_super_start
             }
         }
 
-        // Nâng HP
         private void buttonUpgradeHP_Click(object sender, EventArgs e)
         {
             if (AccountData.Gold >= 10)
@@ -166,7 +201,6 @@ namespace plan_fighting_super_start
             }
         }
 
-        // Nâng Damage
         private void buttonUpgradeDamage_Click(object sender, EventArgs e)
         {
             if (AccountData.Gold >= 15)
@@ -185,20 +219,17 @@ namespace plan_fighting_super_start
             }
         }
 
-        // Thoát game
         private void buttonExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        // Chơi với người (button1)
         private void button1_Click(object sender, EventArgs e)
         {
             var form = new Room();
             form.Show();
         }
 
-        // Mở Rank (button2)
         private void button2_Click(object sender, EventArgs e)
         {
             var form = new Rank();

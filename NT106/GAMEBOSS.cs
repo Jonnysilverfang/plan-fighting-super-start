@@ -2,6 +2,9 @@ using plan_fighting_super_start.Properties;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
+using System.Media;
+using WMPLib;
 
 namespace plan_fighting_super_start
 {
@@ -24,6 +27,16 @@ namespace plan_fighting_super_start
         private int bossAttackFrequency = 50;
         private int maxBossBullets = 50;
 
+        // Trạng thái pause & end
+        private bool isPaused = false;
+        private bool gameEnded = false;
+
+        // (ĐÃ BỎ) Âm thanh – không dùng nữa
+        // private WindowsMediaPlayer bgmPlayer;
+        // private SoundPlayer hitSound;
+        // private SoundPlayer loseSound;
+        // private SoundPlayer winSound;
+
         public GAMEBOSS()
         {
             InitializeComponent();
@@ -39,13 +52,16 @@ namespace plan_fighting_super_start
                 Database.LoadAccountData(AccountData.Username);
             }
 
+            // ===== (ĐÃ BỎ) Âm thanh: nhạc nền + hiệu ứng =====
+            // Không khởi tạo, không play gì hết để không có âm thanh
+
             playerDamage = BASE_DAMAGE + AccountData.UpgradeDamage;
 
             playerHealthBar.Maximum = AccountData.UpgradeHP;
             playerHealthBar.Value = playerHealthBar.Maximum;
             playerHealthBar.ForeColor = Color.Lime;
 
-            // ⭐ Máu boss trâu theo level (tăng 30% mỗi level)
+            // Máu boss trâu theo level (tăng 30% mỗi level)
             int currentBossMaxHealth = GetBossMaxHealth();
             bossHealthBar.Maximum = currentBossMaxHealth;
             bossHealthBar.Value = currentBossMaxHealth;
@@ -58,7 +74,14 @@ namespace plan_fighting_super_start
             survivalTimer.Start();
         }
 
-        // ⭐ Hàm tính máu boss theo level (trâu dần)
+        // Form đã hiển thị xong -> clear focus
+        private void GAMEBOSS_Shown(object sender, EventArgs e)
+        {
+            this.ActiveControl = null;
+            this.Focus();
+        }
+
+        // Hàm tính máu boss theo level
         private int GetBossMaxHealth()
         {
             int level = Math.Max(1, AccountData.Level);
@@ -72,6 +95,8 @@ namespace plan_fighting_super_start
 
         private void mainGameTimerEvent(object sender, EventArgs e)
         {
+            if (isPaused) return;
+
             frameCounter++;
             txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
 
@@ -89,27 +114,24 @@ namespace plan_fighting_super_start
             if (bossAttackTimer > bossAttackFrequency)
             {
                 bossAttackTimer = 0;
-                ShootBossBulletFan();   // pattern bắn tia vàng tỏa quạt
+                ShootBossBulletFan();
             }
 
             int currentBossBullets = 0;
 
             foreach (Control x in this.Controls)
             {
-                // ===== Player bullet (tên lửa xanh) =====
+                // ===== Player bullet =====
                 if (x is PictureBox && (string)x.Tag == "playerBullet")
                 {
-                    // Vệt sáng phía sau
                     CreateBulletTrail(
                         x.Left + x.Width / 2,
                         x.Bottom,
                         Color.FromArgb(0, 200, 255)
                     );
 
-                    // Bay thẳng lên
                     x.Top -= bulletSpeed;
 
-                    // Ra khỏi màn hình thì xóa
                     if (x.Top < -x.Height)
                     {
                         this.Controls.Remove(x);
@@ -117,11 +139,13 @@ namespace plan_fighting_super_start
                         continue;
                     }
 
-                    // Trúng boss
                     if (x.Bounds.IntersectsWith(boss.Bounds))
                     {
                         bossHealthBar.Value = Math.Max(0, bossHealthBar.Value - playerDamage);
                         CreateExplosion(x.Left, x.Top, Color.Aqua);
+
+                        PlayHitSound(); // giờ là hàm rỗng, không phát gì
+
                         this.Controls.Remove(x);
                         x.Dispose();
 
@@ -161,6 +185,9 @@ namespace plan_fighting_super_start
                         if (playerHealthBar.Value < playerHealthBar.Maximum / 4) playerHealthBar.ForeColor = Color.Red;
 
                         CreateExplosion(x.Left, x.Top, Color.OrangeRed);
+
+                        PlayHitSound(); // cũng là hàm rỗng
+
                         this.Controls.Remove(x);
                         x.Dispose();
 
@@ -243,17 +270,16 @@ namespace plan_fighting_super_start
             this.Controls.Add(boom);
         }
 
-        // ⭐ Đạn boss kiểu tia vàng dài, bắn tỏa quạt
+        // Đạn boss kiểu tia vàng dài, bắn tỏa quạt
         private void ShootBossBulletFan()
         {
-            // Các hướng trải từ trái sang phải
             int[] spreadDirections = { -3, -2, -1, 0, 1, 2, 3 };
             int baseSpeed = 10;
 
             foreach (int directionX in spreadDirections)
             {
                 PictureBox bullet = new PictureBox();
-                bullet.Size = new Size(10, 40);   // nhỏ, dài
+                bullet.Size = new Size(10, 40);
                 bullet.Tag = "bossBullet";
                 bullet.BackColor = Color.Transparent;
 
@@ -302,12 +328,10 @@ namespace plan_fighting_super_start
                 bullet.Image = bmp;
                 bullet.SizeMode = PictureBoxSizeMode.Normal;
 
-                // Vị trí bắn: giữa boss, ngay dưới
                 bullet.Left = boss.Left + boss.Width / 2 - bullet.Width / 2;
                 bullet.Top = boss.Bottom - 5;
 
                 int moveSpeed = baseSpeed + rnd.Next(-2, 3);
-                // Lưu hướng + speed vào Name để xử lý trong mainGameTimerEvent
                 bullet.Name = $"angle:{directionX},speed:{moveSpeed}";
 
                 this.Controls.Add(bullet);
@@ -315,11 +339,11 @@ namespace plan_fighting_super_start
             }
         }
 
-        // ⚡ Đạn Player dạng tên lửa xanh
+        // Đạn Player dạng tên lửa xanh
         private void ShootPlayerBullet()
         {
             PictureBox bullet = new PictureBox();
-            bullet.Size = new Size(20, 60); // rộng hơn tí cho giống tên lửa
+            bullet.Size = new Size(20, 60);
             bullet.Tag = "playerBullet";
             bullet.BackColor = Color.Transparent;
 
@@ -331,7 +355,7 @@ namespace plan_fighting_super_start
 
                 float centerX = bullet.Width / 2f;
 
-                // --- Thân tên lửa ---
+                // Thân tên lửa
                 int bodyWidth = 8;
                 int bodyHeight = 26;
                 int bodyX = (int)(centerX - bodyWidth / 2f);
@@ -347,7 +371,7 @@ namespace plan_fighting_super_start
                     g.DrawRectangle(bodyPen, bodyRect);
                 }
 
-                // --- Đầu nhọn màu đỏ ---
+                // Đầu nhọn màu đỏ
                 PointF tip = new PointF(centerX, 0);
                 PointF leftBase = new PointF(bodyX, bodyY);
                 PointF rightBase = new PointF(bodyX + bodyWidth, bodyY);
@@ -357,14 +381,14 @@ namespace plan_fighting_super_start
                     g.FillPolygon(noseBrush, nose);
                 }
 
-                // --- Cửa sổ xanh ---
+                // Cửa sổ xanh
                 Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 4);
                 using (var windowBrush = new SolidBrush(Color.FromArgb(220, 80, 160, 255)))
                 {
                     g.FillEllipse(windowBrush, windowRect);
                 }
 
-                // --- Vây ngang hai bên ---
+                // Vây ngang 2 bên
                 using (var finBrush = new SolidBrush(Color.FromArgb(200, 0, 180, 255)))
                 {
                     // trái
@@ -386,7 +410,7 @@ namespace plan_fighting_super_start
                     g.FillPolygon(finBrush, rightFin);
                 }
 
-                // --- Vệt lửa xanh phía dưới ---
+                // Vệt lửa xanh
                 int flameHeight = 22;
                 Rectangle flameRect = new Rectangle(bodyX + 1, bodyY + bodyHeight, bodyWidth - 2, flameHeight);
 
@@ -399,7 +423,7 @@ namespace plan_fighting_super_start
                     g.FillRectangle(flameBrush, flameRect);
                 }
 
-                // --- Vệt sáng glow hình elip phía dưới ---
+                // Glow elip
                 Rectangle glowRect = new Rectangle(
                     flameRect.X - 8,
                     flameRect.Bottom - 10,
@@ -424,6 +448,8 @@ namespace plan_fighting_super_start
 
         private void survivalTimer_Tick(object sender, EventArgs e)
         {
+            if (isPaused) return;
+
             survivalTime--;
             if (survivalTime <= 0)
             {
@@ -433,8 +459,14 @@ namespace plan_fighting_super_start
 
         private void EndGame(bool win)
         {
+            if (gameEnded) return;
+            gameEnded = true;
+
             gameTimer.Stop();
             survivalTimer.Stop();
+            isPaused = false;
+
+            pausePanel.Visible = false;
 
             // Xoá bullet/trail/explosion
             var toRemove = new System.Collections.Generic.List<Control>();
@@ -461,31 +493,109 @@ namespace plan_fighting_super_start
                 AccountData.Level++;
                 Database.UpdateAccountData();
                 txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - WIN!";
+
+                PlayWinSound();   // giờ cũng là hàm rỗng
             }
             else
             {
                 AccountData.Gold += 50;
                 Database.UpdateAccountData();
                 txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - GAME OVER!";
+
+                PlayLoseSound(); // hàm rỗng
             }
 
+            buttonExit.Text = "Thoát về menu";
             buttonExit.Visible = true;
+        }
+
+        private void PauseGame()
+        {
+            if (isPaused || gameEnded) return;
+
+            isPaused = true;
+            gameTimer.Stop();
+            survivalTimer.Stop();
+
+            pausePanel.Visible = true;
+            pauseTextLabel.Text = "⏸ TẠM DỪNG";
+        }
+
+        private void ResumeGame()
+        {
+            if (!isPaused || gameEnded) return;
+
+            isPaused = false;
+            gameTimer.Start();
+            survivalTimer.Start();
+
+            pausePanel.Visible = false;
+        }
+
+        private void btnResume_Click(object sender, EventArgs e)
+        {
+            ResumeGame();
+        }
+
+        private void btnPauseExit_Click(object sender, EventArgs e)
+        {
+            if (gameEnded) return;
+
+            var result = MessageBox.Show(
+                "Bạn có chắc muốn thoát trận và quay về Menu?\nBạn sẽ không nhận thêm vàng cho trận này.",
+                "Thoát trận",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            try { Database.UpdateAccountData(); } catch { }
+            this.Close();
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
         {
-            Database.UpdateAccountData();
+            if (!gameEnded)
+            {
+                try { Database.UpdateAccountData(); } catch { }
+            }
             this.Close();
+        }
+
+        // Âm trúng đạn – tắt
+        private void PlayHitSound()
+        {
+            // Không làm gì hết => không có âm
+        }
+
+        // Âm thua – tắt
+        private void PlayLoseSound()
+        {
+            // Không làm gì hết
+        }
+
+        // Âm thắng – tắt
+        private void PlayWinSound()
+        {
+            // Không làm gì hết
         }
 
         private void keyisdown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Left) goLeft = true;
             if (e.KeyCode == Keys.Right) goRight = true;
-            if (e.KeyCode == Keys.Space && !shooting)
+
+            if (e.KeyCode == Keys.Space && !shooting && !isPaused && !gameEnded)
             {
                 shooting = true;
                 ShootPlayerBullet();
+            }
+
+            // Nhấn P để pause / resume
+            if (e.KeyCode == Keys.P)
+            {
+                if (!isPaused) PauseGame();
+                else ResumeGame();
             }
         }
 
@@ -498,6 +608,12 @@ namespace plan_fighting_super_start
 
         private void txtScore_Click(object sender, EventArgs e)
         {
+        }
+
+        // Dọn nhạc khi đóng form – giờ không dùng nhạc nữa, để trống
+        private void GAMEBOSS_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Không cần stop gì hết
         }
     }
 }
