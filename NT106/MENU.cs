@@ -41,69 +41,89 @@ namespace plan_fighting_super_start
             // Hiển thị thông tin người chơi
             if (labelWelcome != null)
             {
-                labelWelcome.Text = $"Xin chào";
+                // Nếu muốn hiện tên sau này chỉ cần ghép AccountData.Username vào đây
+                labelWelcome.Text = "Xin chào";
             }
 
             // Load dữ liệu + cập nhật UI
             RefreshAccountDataAndUI();
 
-            // Làm trong suốt / style cho các control (gọi với kiểu đầy đủ để tránh mơ hồ)
-            if (buttonPlay != null) SetTransparentButton(buttonPlay);
-            if (buttonUpgradeHP != null) SetTransparentButton(buttonUpgradeHP);
-            if (buttonUpgradeDamage != null) SetTransparentButton(buttonUpgradeDamage);
-            if (buttonExit != null) SetTransparentButton(buttonExit);
-            if (button1 != null) SetTransparentButton(button1);
-            if (button2 != null) SetTransparentButton(button2);
+            // Style cho các control
+            if (buttonPlay != null) SetGameButton(buttonPlay);
+            if (buttonUpgradeHP != null) SetGameButton(buttonUpgradeHP);
+            if (buttonUpgradeDamage != null) SetGameButton(buttonUpgradeDamage);
+            if (buttonExit != null) SetGameButton(buttonExit);
+            if (button1 != null) SetGameButton(button1);
+            if (button2 != null) SetGameButton(button2);
 
-            if (textBoxGold != null) SetTransparentTextBox(textBoxGold);
-            if (textBox1 != null) SetTransparentTextBox(textBox1);
-            if (textBox2 != null) SetTransparentTextBox(textBox2);
-            if (textBox3 != null) SetTransparentTextBox(textBox3);
+            if (textBoxGold != null) SetStatTextBox(textBoxGold);
+            if (textBox1 != null) SetStatTextBox(textBox1);
+            if (textBox2 != null) SetStatTextBox(textBox2);
+            if (textBox3 != null) SetStatTextBox(textBox3);
 
-            if (labelWelcome != null) SetTransparentLabel(labelWelcome);
+            if (labelWelcome != null) SetHeaderLabel(labelWelcome);
+            if (label1 != null) SetInfoLabel(label1);
+            if (label2 != null) SetInfoLabel(label2);
+            if (label3 != null) SetInfoLabel(label3);
+            if (label4 != null) SetInfoLabel(label4);
         }
 
-        // ===== Helpers: dùng kiểu đầy đủ để diệt xung đột kiểu =====
+        // ===== Helpers: chỉ UI, không đụng logic =====
 
-        private void SetTransparentButton(System.Windows.Forms.Button button)
+        private readonly Color Teal = Color.FromArgb(0, 192, 192);
+        private readonly Color BgDark = Color.FromArgb(10, 15, 30);
+        private readonly Color BgButton = Color.FromArgb(15, 25, 45);
+
+        private void SetGameButton(Button button)
         {
-            // Style tối giản, không đòi hỏi library ngoài
             button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.BackColor = Color.Transparent;
-            button.ForeColor = Color.FromArgb(0, 192, 192);
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = Teal;
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 120, 140);
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 80, 100);
+            button.BackColor = BgButton;
+            button.ForeColor = Teal;
             button.UseVisualStyleBackColor = false;
 
             button.MouseEnter += (_, __) =>
             {
-                button.ForeColor = Color.White;
-                button.FlatAppearance.BorderSize = 1;
-                button.FlatAppearance.BorderColor = Color.FromArgb(0, 192, 192);
+                button.BackColor = Teal;
+                button.ForeColor = Color.Black;
             };
 
             button.MouseLeave += (_, __) =>
             {
-                button.ForeColor = Color.FromArgb(0, 192, 192);
-                button.FlatAppearance.BorderSize = 0;
+                button.BackColor = BgButton;
+                button.ForeColor = Teal;
             };
         }
 
-        private void SetTransparentLabel(System.Windows.Forms.Label label)
+        private void SetHeaderLabel(Label label)
         {
             label.BackColor = Color.Transparent;
-            label.ForeColor = Color.FromArgb(0, 192, 192);
-            label.Parent = this;
-            label.BringToFront();
+            label.ForeColor = Teal;
+            label.Font = new Font("Segoe UI", 20f, FontStyle.Bold);
+            label.TextAlign = ContentAlignment.MiddleCenter;
         }
 
-        private void SetTransparentTextBox(System.Windows.Forms.TextBox textBox)
+        private void SetInfoLabel(Label label)
+        {
+            label.BackColor = Color.Transparent;
+            label.ForeColor = Teal;
+            label.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
+        }
+
+        private void SetStatTextBox(TextBox textBox)
         {
             textBox.BorderStyle = BorderStyle.FixedSingle;
-            textBox.BackColor = Color.FromArgb(20, 20, 20);
-            textBox.ForeColor = Color.FromArgb(0, 192, 192);
+            textBox.BackColor = Color.FromArgb(15, 22, 45);
+            textBox.ForeColor = Teal;
+            textBox.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
+            textBox.ReadOnly = true;
+            textBox.TextAlign = HorizontalAlignment.Center;
         }
 
-        // ====== Handlers nút bấm (giữ nguyên tên theo Designer) ======
+        // ====== Handlers nút bấm (logic giữ nguyên) ======
 
         // Chơi solo (nút Play)
         private void buttonPlay_Click(object sender, EventArgs e)
@@ -174,8 +194,7 @@ namespace plan_fighting_super_start
         // Chơi với người (button1)
         private void button1_Click(object sender, EventArgs e)
         {
-            // TODO: mở form/phòng online nếu có
-            var form = new Room(); // tạm
+            var form = new Room();
             form.Show();
         }
 
