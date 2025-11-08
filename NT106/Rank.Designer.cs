@@ -28,101 +28,82 @@
         /// </summary>
         private void InitializeComponent()
         {
-            pnlTop = new Panel();
+            label1 = new Label();
+            numericUpDown1 = new NumericUpDown();
             btnRefresh = new Button();
-            btnSubmit = new Button();
-            numLevel = new NumericUpDown();
-            lblLevel = new Label();
-            txtUser = new TextBox();
-            lblUser = new Label();
-            dgv = new DataGridView();
+            dgvRank = new DataGridView();
+            colHang = new DataGridViewTextBoxColumn();
+            colTen = new DataGridViewTextBoxColumn();
+            colLevel = new DataGridViewTextBoxColumn();
             statusStrip1 = new StatusStrip();
             statusLabel = new ToolStripStatusLabel();
-            pnlTop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numLevel).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgv).BeginInit();
+            label2 = new Label();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvRank).BeginInit();
             statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
-            // pnlTop
+            // label1
             // 
-            pnlTop.Controls.Add(btnRefresh);
-            pnlTop.Controls.Add(btnSubmit);
-            pnlTop.Controls.Add(numLevel);
-            pnlTop.Controls.Add(lblLevel);
-            pnlTop.Controls.Add(txtUser);
-            pnlTop.Controls.Add(lblUser);
-            pnlTop.Location = new Point(41, 64);
-            pnlTop.Name = "pnlTop";
-            pnlTop.Padding = new Padding(12);
-            pnlTop.Size = new Size(802, 112);
-            pnlTop.TabIndex = 6;
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            label1.Location = new Point(341, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(200, 31);
+            label1.TabIndex = 9;
+            label1.Text = "BẢNG XẾP HẠNG";
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Location = new Point(214, 65);
+            numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(230, 27);
+            numericUpDown1.TabIndex = 10;
+            numericUpDown1.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // btnRefresh
             // 
-            btnRefresh.Location = new Point(610, 68);
+            btnRefresh.Location = new Point(524, 67);
             btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(94, 29);
-            btnRefresh.TabIndex = 5;
-            btnRefresh.Text = "Tải TOP 10";
+            btnRefresh.Size = new Size(149, 29);
+            btnRefresh.TabIndex = 11;
+            btnRefresh.Text = "Tải bảng xếp hạng";
             btnRefresh.UseVisualStyleBackColor = true;
-            btnRefresh.Click += btnRefresh_Click;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+
             // 
-            // btnSubmit
+            // dgvRank
             // 
-            btnSubmit.Location = new Point(458, 68);
-            btnSubmit.Name = "btnSubmit";
-            btnSubmit.Size = new Size(94, 29);
-            btnSubmit.TabIndex = 4;
-            btnSubmit.Text = "Gửi điểm";
-            btnSubmit.UseVisualStyleBackColor = true;
-            btnSubmit.Click += btnSubmit_Click;
+            dgvRank.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvRank.Columns.AddRange(new DataGridViewColumn[] { colHang, colTen, colLevel });
+            dgvRank.Location = new Point(191, 135);
+            dgvRank.Name = "dgvRank";
+            dgvRank.RowHeadersWidth = 51;
+            dgvRank.Size = new Size(424, 182);
+            dgvRank.TabIndex = 12;
             // 
-            // numLevel
+            // colHang
             // 
-            numLevel.Location = new Point(458, 17);
-            numLevel.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
-            numLevel.Name = "numLevel";
-            numLevel.Size = new Size(80, 27);
-            numLevel.TabIndex = 3;
+            colHang.DataPropertyName = "TextBoxColumn";
+            colHang.HeaderText = "Hạng";
+            colHang.MinimumWidth = 6;
+            colHang.Name = "colHang";
+            colHang.Width = 80;
             // 
-            // lblLevel
+            // colTen
             // 
-            lblLevel.AutoSize = true;
-            lblLevel.Location = new Point(402, 20);
-            lblLevel.Name = "lblLevel";
-            lblLevel.Size = new Size(50, 20);
-            lblLevel.TabIndex = 2;
-            lblLevel.Text = "Level: ";
+            colTen.HeaderText = "Tên";
+            colTen.MinimumWidth = 6;
+            colTen.Name = "colTen";
+            colTen.Width = 200;
             // 
-            // txtUser
+            // colLevel
             // 
-            txtUser.Location = new Point(120, 17);
-            txtUser.Name = "txtUser";
-            txtUser.Size = new Size(220, 27);
-            txtUser.TabIndex = 1;
-            // 
-            // lblUser
-            // 
-            lblUser.AutoSize = true;
-            lblUser.Location = new Point(36, 20);
-            lblUser.Name = "lblUser";
-            lblUser.Size = new Size(78, 20);
-            lblUser.TabIndex = 0;
-            lblUser.Text = "Username:";
-            // 
-            // dgv
-            // 
-            dgv.AllowUserToAddRows = false;
-            dgv.AllowUserToDeleteRows = false;
-            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgv.Location = new Point(41, 182);
-            dgv.Name = "dgv";
-            dgv.ReadOnly = true;
-            dgv.RowHeadersWidth = 51;
-            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgv.Size = new Size(802, 346);
-            dgv.TabIndex = 7;
+            colLevel.HeaderText = "Level";
+            colLevel.MinimumWidth = 6;
+            colLevel.Name = "colLevel";
+            colLevel.Width = 90;
             // 
             // statusStrip1
             // 
@@ -131,7 +112,7 @@
             statusStrip1.Location = new Point(0, 527);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(882, 26);
-            statusStrip1.TabIndex = 8;
+            statusStrip1.TabIndex = 13;
             statusStrip1.Text = "statusStrip1";
             // 
             // statusLabel
@@ -140,22 +121,32 @@
             statusLabel.Size = new Size(68, 20);
             statusLabel.Text = "Sẵn sàng";
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(151, 67);
+            label2.Name = "label2";
+            label2.Size = new Size(38, 20);
+            label2.TabIndex = 14;
+            label2.Text = "TOP:";
+            // 
             // Rank
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(882, 553);
+            Controls.Add(label2);
             Controls.Add(statusStrip1);
-            Controls.Add(dgv);
-            Controls.Add(pnlTop);
+            Controls.Add(dgvRank);
+            Controls.Add(btnRefresh);
+            Controls.Add(numericUpDown1);
+            Controls.Add(label1);
             MinimumSize = new Size(900, 600);
             Name = "Rank";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Rank";
-            pnlTop.ResumeLayout(false);
-            pnlTop.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numLevel).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgv).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvRank).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);
@@ -163,16 +154,19 @@
         }
 
         #endregion
-
-        private Panel pnlTop;
-        private NumericUpDown numLevel;
-        private Label lblLevel;
-        private TextBox txtUser;
-        private Label lblUser;
+        private Label label1;
+        private NumericUpDown numericUpDown1;
         private Button btnRefresh;
-        private Button btnSubmit;
-        private DataGridView dgv;
+        private DataGridView dgvRank;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel statusLabel;
+        private DataGridViewTextBoxColumn Hạng;
+        private DataGridViewTextBoxColumn Tên;
+        private DataGridViewTextBoxColumn Level;
+        private StatusStrip statusStrip2;
+        private DataGridViewTextBoxColumn colHang;
+        private DataGridViewTextBoxColumn colTen;
+        private DataGridViewTextBoxColumn colLevel;
+        private Label label2;
     }
 }

@@ -1,137 +1,103 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace plan_fighting_super_start
 {
     public partial class Rank : Form
     {
-        // ▼ Client gọi API
+        // Đặt đúng root của API Gateway (stage $default)
+        private const string API_BASE = "https://f1oj97uhee.execute-api.ap-southeast-1.amazonaws.com";
+
         private static readonly HttpClient http = new HttpClient();
+        private readonly JsonSerializerOptions jsonOpt = new() { PropertyNameCaseInsensitive = true };
 
-        // ▼ API bảng xếp hạng
-        private const string URL_BANGXEPHANG = "https://f1oj97uhee.execute-api.ap-southeast-1.amazonaws.com";
-
-        // ▼ Hỗ trợ đọc JSON không phân biệt hoa thường
-        private readonly JsonSerializerOptions tuyChonJson = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        // ▼ Model item trong bảng xếp hạng
-        private class DongXepHang
+        private class RankItem
         {
             public string Username { get; set; } = "";
             public int Level { get; set; }
             public int Rank { get; set; }
         }
 
-        // ▼ Dữ liệu GET trả về
-        private class PhanHoiGET
+        private class GetResp
         {
             public bool ok { get; set; }
-            public List<DongXepHang> ranking { get; set; } = new();
+            public List<RankItem> ranking { get; set; } = new();
         }
-
-        // ▼ Dữ liệu POST trả về
-        private class PhanHoiPOST
-        {
-            public bool ok { get; set; }
-            public string message { get; set; } = "";
-            public int currentLevel { get; set; }
-            public List<DongXepHang> ranking { get; set; } = new();
-        }
-
-        // --------------------------------------------------
 
         public Rank()
         {
             InitializeComponent();
 
-            // Điền username và level hiện có (từ Database)
-            if (!string.IsNullOrWhiteSpace(AccountData.Username))
+            // Cấu hình lưới và map DataPropertyName khớp JSON
+            dgvRank.AutoGenerateColumns = false;
+            dgvRank.Columns.Clear();
+            dgvRank.Columns.Add(new DataGridViewTextBoxColumn
             {
-                txtUser.Text = AccountData.Username;
-                txtUser.ReadOnly = true;
-                numLevel.Value = AccountData.Level;
-            }
+                HeaderText = "Hạng",
+                DataPropertyName = "Rank",
+                Width = 70,
+                ReadOnly = true
+            });
+            dgvRank.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Tên",
+                DataPropertyName = "Username",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                ReadOnly = true
+            });
+            dgvRank.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Level",
+                DataPropertyName = "Level",
+                Width = 80,
+                ReadOnly = true
+            });
 
-            this.Shown += async (_, __) => await TaiTopAsync(10);
+            statusLabel.Text = "Sẵn sàng";
+            this.Shown += async (_, __) => await TaiBangXepHangAsync((int)numericUpDown1.Value);
         }
 
-        // ---------------- HÀM HỖ TRỢ ----------------
-
-        // Tải TOP N
-        private async System.Threading.Tasks.Task TaiTopAsync(int soLuong)
+        private async Task TaiBangXepHangAsync(int topN)
         {
             try
             {
-                statusLabel.Text = $"Đang tải TOP {soLuong} ...";
+                statusLabel.Text = $"Đang tải TOP {topN}...";
+                var url = $"{API_BASE}/get?limit={topN}";
+                var resp = await http.GetFromJsonAsync<GetResp>(url, jsonOpt);
 
-                var json = await http.GetStringAsync($"{URL_BANGXEPHANG}/get?limit={soLuong}");
-                var duLieu = JsonSerializer.Deserialize<PhanHoiGET>(json, tuyChonJson);
+                var list = resp?.ranking ?? new List<RankItem>();
+                dgvRank.DataSource = list;
 
-                dgv.DataSource = duLieu!.ranking;
-                statusLabel.Text = $"Đã tải TOP {soLuong}!";
+                // Tô sáng user hiện tại (nếu có)
+                if (!string.IsNullOrWhiteSpace(AccountData.Username))
+                {
+                    foreach (DataGridViewRow row in dgvRank.Rows)
+                    {
+                        if (row.DataBoundItem is RankItem it &&
+                            string.Equals(it.Username, AccountData.Username, StringComparison.OrdinalIgnoreCase))
+                        {
+                            row.DefaultCellStyle.BackColor = System.Drawing.Color.LightYellow;
+                            row.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9, System.Drawing.FontStyle.Bold);
+                        }
+                    }
+                }
+
+                statusLabel.Text = $"Đã tải TOP {topN}.";
             }
             catch (Exception ex)
             {
-                statusLabel.Text = "Lỗi tải bảng xếp hạng: " + ex.Message;
+                statusLabel.Text = "Lỗi khi tải bảng xếp hạng: " + ex.Message;
             }
         }
 
-        // Gửi level lên server
-        private async System.Threading.Tasks.Task GuiDiemLenMayChu(string ten, int level)
-        {
-            var resp = await http.PostAsJsonAsync($"{URL_BANGXEPHANG}/post", new { username = ten, level });
-            resp.EnsureSuccessStatusCode();
-
-            var duLieu = await resp.Content.ReadFromJsonAsync<PhanHoiPOST>(tuyChonJson);
-
-            dgv.DataSource = duLieu!.ranking;
-            statusLabel.Text = $"Cập nhật thành công! Level hiện tại: {duLieu.currentLevel}";
-        }
-
-        // ------------------ SỰ KIỆN ------------------
-
-        // Nút Gửi Điểm
-        private async void btnSubmit_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string ten = txtUser.Text.Trim();
-                int level = (int)numLevel.Value;
-
-                if (string.IsNullOrWhiteSpace(ten))
-                {
-                    MessageBox.Show("Vui lòng nhập Username!");
-                    return;
-                }
-
-                statusLabel.Text = "Đang gửi ...";
-
-                // Đồng bộ Level với tài khoản đang dùng
-                if (ten == AccountData.Username)
-                {
-                    AccountData.Level = level;
-                    Database.UpdateAccountData();
-                }
-
-                await GuiDiemLenMayChu(ten, level);
-            }
-            catch (Exception ex)
-            {
-                statusLabel.Text = "Lỗi gửi điểm: " + ex.Message;
-            }
-        }
-
-        // Nút Tải TOP
         private async void btnRefresh_Click(object sender, EventArgs e)
         {
-            await TaiTopAsync(10);
+            await TaiBangXepHangAsync((int)numericUpDown1.Value);
         }
     }
 }
