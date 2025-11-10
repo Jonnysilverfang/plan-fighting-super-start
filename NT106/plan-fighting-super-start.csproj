@@ -63,6 +63,7 @@
 	  </Content>
 	</ItemGroup>
 	<ItemGroup>
+	  <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="4.0.4.2" />
 	  <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0-preview2.25289.6" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
 	</ItemGroup>

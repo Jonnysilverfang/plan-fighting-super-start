@@ -42,9 +42,10 @@ namespace plan_fighting_super_start
             gameTimer = new System.Windows.Forms.Timer(components);
             survivalTimer = new System.Windows.Forms.Timer(components);
             pausePanel = new Panel();
-            pauseTextLabel = new Label();
-            btnResume = new Button();
             btnPauseExit = new Button();
+            btnResume = new Button();
+            pauseTextLabel = new Label();
+            lblHint = new Label();
             ((System.ComponentModel.ISupportInitialize)player).BeginInit();
             ((System.ComponentModel.ISupportInitialize)boss).BeginInit();
             ((System.ComponentModel.ISupportInitialize)playerBullet).BeginInit();
@@ -55,7 +56,7 @@ namespace plan_fighting_super_start
             // 
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
-            player.Image = Properties.Resource.playerrr;       // giữ nguyên
+            player.Image = Properties.Resource.playerrr;
             player.Location = new Point(350, 520);
             player.Name = "player";
             player.Size = new Size(62, 80);
@@ -67,7 +68,7 @@ namespace plan_fighting_super_start
             // 
             boss.BackColor = Color.Transparent;
             boss.BackgroundImageLayout = ImageLayout.Stretch;
-            boss.Image = Properties.Resource.boss_manh;        // giữ nguyên
+            boss.Image = Properties.Resource.boss_manh;
             boss.Location = new Point(340, 50);
             boss.Name = "boss";
             boss.Size = new Size(120, 100);
@@ -122,10 +123,10 @@ namespace plan_fighting_super_start
             buttonExit.Name = "buttonExit";
             buttonExit.Size = new Size(140, 40);
             buttonExit.TabIndex = 6;
+            buttonExit.TabStop = false;
             buttonExit.Text = "Thoát";
             buttonExit.UseVisualStyleBackColor = true;
             buttonExit.Visible = false;
-            buttonExit.TabStop = false; // không cho focus
             buttonExit.Click += buttonExit_Click;
             // 
             // gameTimer
@@ -150,6 +151,36 @@ namespace plan_fighting_super_start
             pausePanel.TabIndex = 8;
             pausePanel.Visible = false;
             // 
+            // btnPauseExit
+            // 
+            btnPauseExit.BackColor = Color.FromArgb(20, 30, 50);
+            btnPauseExit.FlatStyle = FlatStyle.Flat;
+            btnPauseExit.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnPauseExit.ForeColor = Color.FromArgb(0, 192, 192);
+            btnPauseExit.Location = new Point(220, 80);
+            btnPauseExit.Name = "btnPauseExit";
+            btnPauseExit.Size = new Size(120, 40);
+            btnPauseExit.TabIndex = 2;
+            btnPauseExit.TabStop = false;
+            btnPauseExit.Text = "Thoát";
+            btnPauseExit.UseVisualStyleBackColor = false;
+            btnPauseExit.Click += btnPauseExit_Click;
+            // 
+            // btnResume
+            // 
+            btnResume.BackColor = Color.FromArgb(20, 30, 50);
+            btnResume.FlatStyle = FlatStyle.Flat;
+            btnResume.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnResume.ForeColor = Color.FromArgb(0, 192, 192);
+            btnResume.Location = new Point(60, 80);
+            btnResume.Name = "btnResume";
+            btnResume.Size = new Size(120, 40);
+            btnResume.TabIndex = 1;
+            btnResume.TabStop = false;
+            btnResume.Text = "Tiếp tục";
+            btnResume.UseVisualStyleBackColor = false;
+            btnResume.Click += btnResume_Click;
+            // 
             // pauseTextLabel
             // 
             pauseTextLabel.BackColor = Color.Transparent;
@@ -162,37 +193,17 @@ namespace plan_fighting_super_start
             pauseTextLabel.Text = "⏸ TẠM DỪNG";
             pauseTextLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // btnResume
+            // lblHint
             // 
-            btnResume.BackColor = Color.FromArgb(20, 30, 50);
-            btnResume.FlatAppearance.BorderSize = 1;
-            btnResume.FlatStyle = FlatStyle.Flat;
-            btnResume.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            btnResume.ForeColor = Color.FromArgb(0, 192, 192);
-            btnResume.Location = new Point(60, 80);
-            btnResume.Name = "btnResume";
-            btnResume.Size = new Size(120, 40);
-            btnResume.TabIndex = 1;
-            btnResume.Text = "Tiếp tục";
-            btnResume.UseVisualStyleBackColor = false;
-            btnResume.TabStop = false;
-            btnResume.Click += btnResume_Click;
-            // 
-            // btnPauseExit
-            // 
-            btnPauseExit.BackColor = Color.FromArgb(20, 30, 50);
-            btnPauseExit.FlatAppearance.BorderSize = 1;
-            btnPauseExit.FlatStyle = FlatStyle.Flat;
-            btnPauseExit.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            btnPauseExit.ForeColor = Color.FromArgb(0, 192, 192);
-            btnPauseExit.Location = new Point(220, 80);
-            btnPauseExit.Name = "btnPauseExit";
-            btnPauseExit.Size = new Size(120, 40);
-            btnPauseExit.TabIndex = 2;
-            btnPauseExit.Text = "Thoát";
-            btnPauseExit.UseVisualStyleBackColor = false;
-            btnPauseExit.TabStop = false;
-            btnPauseExit.Click += btnPauseExit_Click;
+            lblHint.AutoSize = true;
+            lblHint.BackColor = Color.Transparent;
+            lblHint.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblHint.ForeColor = Color.FromArgb(0, 192, 192);
+            lblHint.Location = new Point(10, 10);
+            lblHint.Name = "lblHint";
+            lblHint.Size = new Size(257, 23);
+            lblHint.TabIndex = 9;
+            lblHint.Text = "Nhấn P để tạm dừng / tiếp tục";
             // 
             // GAMEBOSS
             // 
@@ -208,38 +219,24 @@ namespace plan_fighting_super_start
             Controls.Add(playerBullet);
             Controls.Add(boss);
             Controls.Add(player);
-
-            DoubleBuffered = true;          // THÊM: cho game mượt, đỡ giật
+            Controls.Add(lblHint);
+            DoubleBuffered = true;
             KeyPreview = true;
             Name = "GAMEBOSS";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Boss Shooter Game";
-
-            // Label hint: Nhấn P để tạm dừng
-            Label lblHint = new Label();
-            lblHint.AutoSize = true;
-            lblHint.BackColor = Color.Transparent;
-            lblHint.ForeColor = Color.FromArgb(0, 192, 192);
-            lblHint.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblHint.Location = new Point(10, 10);
-            lblHint.Text = "Nhấn P để tạm dừng / tiếp tục";
-            lblHint.BringToFront();
-            Controls.Add(lblHint);
-
-            this.AcceptButton = null;
-            this.CancelButton = null;
-
+            FormClosed += GAMEBOSS_FormClosed;
             Load += Form4_Load;
             Shown += GAMEBOSS_Shown;
             KeyDown += keyisdown;
             KeyUp += keyisup;
-            FormClosed += GAMEBOSS_FormClosed;   // THÊM: để dừng nhạc khi đóng form
-
             ((System.ComponentModel.ISupportInitialize)player).EndInit();
             ((System.ComponentModel.ISupportInitialize)boss).EndInit();
             ((System.ComponentModel.ISupportInitialize)playerBullet).EndInit();
             pausePanel.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
+        private Label lblHint;
     }
 }

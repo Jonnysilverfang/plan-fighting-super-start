@@ -102,5 +102,10 @@ namespace plan_fighting_super_start
         {
             await TaiBangXepHangAsync((int)numericUpDown1.Value);
         }
+
+        private void Rank_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

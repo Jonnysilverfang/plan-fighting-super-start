@@ -37,6 +37,7 @@
             pictureBox2 = new PictureBox();
             label3 = new Label();
             label2 = new Label();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
@@ -77,7 +78,7 @@
             checkBoxShow.BackColor = Color.Transparent;
             checkBoxShow.Font = new Font("Segoe UI", 10F);
             checkBoxShow.ForeColor = Color.FromArgb(0, 192, 192);
-            checkBoxShow.Location = new Point(162, 368);
+            checkBoxShow.Location = new Point(163, 354);
             checkBoxShow.Margin = new Padding(3, 4, 3, 4);
             checkBoxShow.Name = "checkBoxShow";
             checkBoxShow.Size = new Size(144, 27);
@@ -91,7 +92,7 @@
             buttonLogin.FlatStyle = FlatStyle.Flat;
             buttonLogin.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             buttonLogin.ForeColor = Color.FromArgb(0, 192, 192);
-            buttonLogin.Location = new Point(74, 319);
+            buttonLogin.Location = new Point(74, 307);
             buttonLogin.Margin = new Padding(3, 4, 3, 4);
             buttonLogin.Name = "buttonLogin";
             buttonLogin.Size = new Size(126, 41);
@@ -106,7 +107,7 @@
             buttonRegister.FlatStyle = FlatStyle.Flat;
             buttonRegister.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 163);
             buttonRegister.ForeColor = Color.FromArgb(0, 192, 192);
-            buttonRegister.Location = new Point(274, 319);
+            buttonRegister.Location = new Point(274, 307);
             buttonRegister.Margin = new Padding(3, 4, 3, 4);
             buttonRegister.Name = "buttonRegister";
             buttonRegister.Size = new Size(119, 41);
@@ -120,7 +121,7 @@
             pictureBox1.BackColor = Color.Transparent;
             pictureBox1.BackgroundImage = Properties.Resource.Screenshot_2025_09_21_180231;
             pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBox1.Location = new Point(-27, 390);
+            pictureBox1.Location = new Point(-53, 388);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(183, 97);
             pictureBox1.TabIndex = 6;
@@ -161,12 +162,26 @@
             label2.TabIndex = 13;
             label2.Text = "👤";
             // 
+            // button1
+            // 
+            button1.FlatStyle = FlatStyle.Popup;
+            button1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            button1.ForeColor = Color.FromArgb(0, 192, 192);
+            button1.Location = new Point(172, 388);
+            button1.Name = "button1";
+            button1.Size = new Size(122, 67);
+            button1.TabIndex = 15;
+            button1.Text = "Bạn Quên mật khẩu?";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(469, 467);
+            Controls.Add(button1);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(pictureBox2);
@@ -203,5 +218,6 @@
         private PictureBox pictureBox2;
         private Label label3;
         private Label label2;
+        private Button button1;
     }
 }
