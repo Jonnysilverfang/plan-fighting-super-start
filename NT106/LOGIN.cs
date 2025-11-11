@@ -114,7 +114,7 @@ namespace plan_fighting_super_start
         private void button1_Click(object sender, EventArgs e)
         {
             this.Hide();
-            using (var reset = new Resetpassword())
+            using (var reset = new FogotPass())
             {
                 reset.StartPosition = FormStartPosition.CenterParent;
                 reset.ShowDialog(this);  // modal

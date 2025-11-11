@@ -235,5 +235,11 @@ namespace plan_fighting_super_start
             var form = new Rank();
             form.Show();
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var form = new ChangePass();
+            form.Show();
+        }
     }
 }

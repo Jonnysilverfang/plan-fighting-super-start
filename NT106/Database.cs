@@ -12,37 +12,42 @@ namespace plan_fighting_super_start
     // Model account từ Lambda
     public class AccountModel
     {
-        public string? Username { get; set; } // Dùng string?
+        public string? Username { get; set; }
         public string? Password { get; set; }
+        public string? Email { get; set; }      // Email đã đăng ký
+
         public int Gold { get; set; }
         public int UpgradeHP { get; set; }
         public int UpgradeDamage { get; set; }
         public int Level { get; set; }
     }
 
-    // 🚨 KHẮC PHỤC LỖI TRỌNG YẾU: Model lịch sử đấu
+    // Model lịch sử đấu
     public class ClientMatchHistoryModel
     {
         public string? Id { get; set; }
         public string? WinnerUsername { get; set; }
         public string? LoserUsername { get; set; }
-        public string? MatchDate { get; set; } // 🚨 Đã sửa thành string?
+        public string? MatchDate { get; set; }
     }
 
     public static class Database
     {
-        // 🚨 URL API GATEWAY CỦA BẠN
-        private static readonly string ApiBaseUrl = "https://4xt8f352xe.execute-api.ap-southeast-1.amazonaws.com/";
+        // URL API Gateway (nhớ chỉnh đúng Stage của bạn nếu khác)
+        private static readonly string ApiBaseUrl =
+            "https://4xt8f352xe.execute-api.ap-southeast-1.amazonaws.com/";
+
         private static readonly HttpClient client = new HttpClient();
 
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,
-            PropertyNameCaseInsensitive = true // Giúp đọc JSON từ Python dễ dàng hơn
+            PropertyNameCaseInsensitive = true
         };
 
-        // --- ACCOUNT LOGIC ---
-
+        // ==============================
+        // 1️⃣ ĐĂNG NHẬP
+        // ==============================
         public static bool CheckLogin(string username, string password)
         {
             try
@@ -56,7 +61,12 @@ namespace plan_fighting_super_start
                 if (!response.IsSuccessStatusCode)
                 {
                     var msg = response.Content.ReadAsStringAsync().Result;
-                    MessageBox.Show($"Đăng nhập thất bại! {msg}", "Lỗi Đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        $"Đăng nhập thất bại! {msg}",
+                        "Lỗi Đăng nhập",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return false;
                 }
 
@@ -64,6 +74,9 @@ namespace plan_fighting_super_start
                 if (account != null)
                 {
                     AccountData.Username = account.Username;
+                    AccountData.Password = password;      // lưu pass người dùng nhập
+                    AccountData.Email = account.Email;    // lưu Email
+
                     AccountData.Gold = account.Gold;
                     AccountData.UpgradeHP = account.UpgradeHP;
                     AccountData.UpgradeDamage = account.UpgradeDamage;
@@ -81,6 +94,9 @@ namespace plan_fighting_super_start
             }
         }
 
+        // ==============================
+        // 2️⃣ LOAD ACCOUNT THEO USERNAME
+        // ==============================
         public static bool LoadAccountData(string username)
         {
             try
@@ -90,7 +106,9 @@ namespace plan_fighting_super_start
                 if (!response.IsSuccessStatusCode)
                 {
                     var msg = response.Content.ReadAsStringAsync().Result;
-                    MessageBox.Show($"Tải dữ liệu thất bại! API trả về {response.StatusCode}. Chi tiết: {msg}");
+                    MessageBox.Show(
+                        $"Tải dữ liệu thất bại! API trả về {response.StatusCode}. Chi tiết: {msg}"
+                    );
                     return false;
                 }
 
@@ -98,10 +116,13 @@ namespace plan_fighting_super_start
                 if (account != null)
                 {
                     AccountData.Username = account.Username;
+                    AccountData.Email = account.Email;
+
                     AccountData.Gold = account.Gold;
                     AccountData.UpgradeHP = account.UpgradeHP;
                     AccountData.UpgradeDamage = account.UpgradeDamage;
                     AccountData.Level = account.Level;
+
                     return true;
                 }
 
@@ -115,11 +136,20 @@ namespace plan_fighting_super_start
             }
         }
 
-        public static bool RegisterAccount(string username, string password)
+        // ==============================
+        // 3️⃣ ĐĂNG KÝ (CÓ EMAIL)
+        // ==============================
+        public static bool RegisterAccount(string username, string password, string email)
         {
             try
             {
-                var bodyData = new { Username = username, Password = password };
+                var bodyData = new
+                {
+                    Username = username,
+                    Password = password,
+                    Email = email
+                };
+
                 string jsonBody = JsonSerializer.Serialize(bodyData, JsonOptions);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
@@ -128,7 +158,12 @@ namespace plan_fighting_super_start
                 if (!response.IsSuccessStatusCode)
                 {
                     var msg = response.Content.ReadAsStringAsync().Result;
-                    MessageBox.Show($"Đăng ký thất bại! {msg}", "Lỗi Đăng ký", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        $"Đăng ký thất bại! {msg}",
+                        "Lỗi Đăng ký",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return false;
                 }
 
@@ -141,10 +176,24 @@ namespace plan_fighting_super_start
             }
         }
 
+        // ==============================
+        // 4️⃣ CẬP NHẬT ACCOUNT (VÀNG, LV…)
+        // ==============================
         public static void UpdateAccountData()
         {
             try
             {
+                if (string.IsNullOrEmpty(AccountData.Username))
+                {
+                    MessageBox.Show(
+                        "Không có Username để cập nhật account!",
+                        "Lỗi dữ liệu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return;
+                }
+
                 var bodyData = new
                 {
                     Username = AccountData.Username,
@@ -162,7 +211,12 @@ namespace plan_fighting_super_start
                 if (!response.IsSuccessStatusCode)
                 {
                     var msg = response.Content.ReadAsStringAsync().Result;
-                    MessageBox.Show("Cập nhật thất bại! " + msg, "Lỗi Cập nhật", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "Cập nhật thất bại! " + msg,
+                        "Lỗi Cập nhật",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                 }
             }
             catch (Exception ex)
@@ -171,8 +225,143 @@ namespace plan_fighting_super_start
             }
         }
 
-        // --- MATCH HISTORY LOGIC ---
+        // ==============================
+        // 5️⃣ QUÊN MẬT KHẨU – GỬI MÃ
+        // ==============================
+        public static bool RequestResetCode(string username, string email)
+        {
+            try
+            {
+                var bodyData = new
+                {
+                    Username = username,
+                    Email = email
+                };
 
+                string jsonBody = JsonSerializer.Serialize(bodyData, JsonOptions);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                var response = client.PostAsync(ApiBaseUrl + "account/request-reset", content).Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var msg = response.Content.ReadAsStringAsync().Result;
+                    MessageBox.Show(
+                        "Yêu cầu quên mật khẩu thất bại: " + msg,
+                        "Lỗi quên mật khẩu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Lỗi kết nối khi gửi yêu cầu quên mật khẩu: " + ex.Message,
+                    "Lỗi quên mật khẩu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return false;
+            }
+        }
+
+        // ==============================
+        // 6️⃣ QUÊN MẬT KHẨU – XÁC NHẬN MÃ + ĐỔI MẬT KHẨU
+        // ==============================
+        public static bool ConfirmResetPassword(string username, string email, string code, string newPassword)
+        {
+            try
+            {
+                var bodyData = new
+                {
+                    Username = username,
+                    Email = email,
+                    Code = code,
+                    NewPassword = newPassword
+                };
+
+                string jsonBody = JsonSerializer.Serialize(bodyData, JsonOptions);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                var response = client.PostAsync(ApiBaseUrl + "account/confirm-reset", content).Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var msg = response.Content.ReadAsStringAsync().Result;
+                    MessageBox.Show(
+                        "Xác nhận mã/đổi mật khẩu thất bại: " + msg,
+                        "Lỗi đổi mật khẩu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Lỗi kết nối khi xác nhận mã: " + ex.Message,
+                    "Lỗi đổi mật khẩu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return false;
+            }
+        }
+
+        // ==============================
+        // 7️⃣ ĐỔI MẬT KHẨU TRỰC TIẾP (ĐANG ĐĂNG NHẬP)
+        // ==============================
+        public static bool ChangePassword(string username, string newPassword)
+        {
+            try
+            {
+                var bodyData = new
+                {
+                    Username = username,
+                    NewPassword = newPassword
+                };
+
+                string jsonBody = JsonSerializer.Serialize(bodyData, JsonOptions);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                var response = client.PostAsync(ApiBaseUrl + "account/change-password", content).Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var msg = response.Content.ReadAsStringAsync().Result;
+                    MessageBox.Show(
+                        "Đổi mật khẩu thất bại: " + msg,
+                        "Lỗi đổi mật khẩu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Lỗi kết nối khi đổi mật khẩu: " + ex.Message,
+                    "Lỗi đổi mật khẩu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return false;
+            }
+        }
+
+        // ==============================
+        // 8️⃣ LƯU LỊCH SỬ ĐẤU
+        // ==============================
         public static void RecordMatchHistory(string winnerUsername, string loserUsername)
         {
             try
@@ -191,7 +380,12 @@ namespace plan_fighting_super_start
                 if (!response.IsSuccessStatusCode)
                 {
                     var msg = response.Content.ReadAsStringAsync().Result;
-                    MessageBox.Show($"Lỗi ghi lịch sử đấu! {msg}", "Lỗi Ghi log", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(
+                        $"Lỗi ghi lịch sử đấu! {msg}",
+                        "Lỗi Ghi log",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
                 }
             }
             catch (Exception ex)
@@ -200,12 +394,19 @@ namespace plan_fighting_super_start
             }
         }
 
+        // ==============================
+        // 9️⃣ LẤY LỊCH SỬ ĐẤU
+        // ==============================
         public static List<ClientMatchHistoryModel> GetMatchHistory(string? username)
         {
-            // 🚨 SỬA LỖI: Kiểm tra null trước khi gọi API
             if (string.IsNullOrEmpty(username))
             {
-                MessageBox.Show("Lỗi: Không tìm thấy Username để tải lịch sử đấu.", "Lỗi Dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    "Lỗi: Không tìm thấy Username để tải lịch sử đấu.",
+                    "Lỗi Dữ liệu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
                 return new List<ClientMatchHistoryModel>();
             }
 
@@ -218,11 +419,18 @@ namespace plan_fighting_super_start
                     if (!response.IsSuccessStatusCode)
                     {
                         var msg = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show("Lỗi tải lịch sử đấu: " + msg, "Lỗi Lịch sử đấu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(
+                            "Lỗi tải lịch sử đấu: " + msg,
+                            "Lỗi Lịch sử đấu",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
                         return new List<ClientMatchHistoryModel>();
                     }
 
-                    var historyList = await response.Content.ReadFromJsonAsync<List<ClientMatchHistoryModel>>(JsonOptions);
+                    var historyList =
+                        await response.Content.ReadFromJsonAsync<List<ClientMatchHistoryModel>>(JsonOptions);
+
                     return historyList ?? new List<ClientMatchHistoryModel>();
                 }).GetAwaiter().GetResult();
 
@@ -230,7 +438,12 @@ namespace plan_fighting_super_start
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi kết nối khi tải lịch sử đấu: " + ex.Message);
+                MessageBox.Show(
+                    "Lỗi kết nối khi tải lịch sử đấu: " + ex.Message,
+                    "Lỗi Lịch sử đấu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
                 return new List<ClientMatchHistoryModel>();
             }
         }
