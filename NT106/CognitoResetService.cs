@@ -9,8 +9,8 @@ namespace NT106
     public static class CognitoResetService
     {
         // điền của bạn:
-        private const string REGION = "ap-southeast-1";
-        private const string APP_CLIENT_ID = "YOUR_APP_CLIENT_ID";
+        private const string REGION = "ap-southeast-1_Prh0r45EK";
+        private const string APP_CLIENT_ID = "4m92gsf11p9480bn12tvsjq8un";
 
         private static IAmazonCognitoIdentityProvider Client =>
             new AmazonCognitoIdentityProviderClient(RegionEndpoint.GetBySystemName(REGION));
@@ -71,3 +71,4 @@ namespace NT106
         }
     }
 }
+

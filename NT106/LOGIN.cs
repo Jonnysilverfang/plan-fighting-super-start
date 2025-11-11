@@ -113,13 +113,13 @@ namespace plan_fighting_super_start
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Đóng form Login hiện tại
-            this.Hide(); // hoặc this.Close(); nếu bạn muốn hủy hoàn toàn form Login
-
-            // Mở form Resetpassword (form để quên mật khẩu)
-            var resetForm = new Resetpassword();
-            resetForm.StartPosition = FormStartPosition.CenterScreen;
-            resetForm.Show();
+            this.Hide();
+            using (var reset = new Resetpassword())
+            {
+                reset.StartPosition = FormStartPosition.CenterParent;
+                reset.ShowDialog(this);  // modal
+            }
+            this.Show();
         }
     }
 }
