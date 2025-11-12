@@ -62,6 +62,7 @@
             textBoxUser.Name = "textBoxUser";
             textBoxUser.Size = new Size(319, 34);
             textBoxUser.TabIndex = 1;
+            textBoxUser.TextChanged += textBoxUser_TextChanged;
             // 
             // textBoxPass
             // 
@@ -89,13 +90,14 @@
             // buttonLogin
             // 
             buttonLogin.BackColor = Color.Transparent;
+            buttonLogin.FlatAppearance.BorderSize = 2;
             buttonLogin.FlatStyle = FlatStyle.Flat;
             buttonLogin.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             buttonLogin.ForeColor = Color.FromArgb(0, 192, 192);
             buttonLogin.Location = new Point(74, 307);
             buttonLogin.Margin = new Padding(3, 4, 3, 4);
             buttonLogin.Name = "buttonLogin";
-            buttonLogin.Size = new Size(126, 41);
+            buttonLogin.Size = new Size(131, 41);
             buttonLogin.TabIndex = 4;
             buttonLogin.Text = "Đăng nhập";
             buttonLogin.UseVisualStyleBackColor = false;
@@ -104,6 +106,7 @@
             // buttonRegister
             // 
             buttonRegister.BackColor = Color.Transparent;
+            buttonRegister.FlatAppearance.BorderSize = 2;
             buttonRegister.FlatStyle = FlatStyle.Flat;
             buttonRegister.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 163);
             buttonRegister.ForeColor = Color.FromArgb(0, 192, 192);
@@ -164,15 +167,17 @@
             // 
             // button1
             // 
-            button1.FlatStyle = FlatStyle.Popup;
+            button1.BackColor = Color.Transparent;
+            button1.FlatAppearance.BorderSize = 2;
+            button1.FlatStyle = FlatStyle.Flat;
             button1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button1.ForeColor = Color.FromArgb(0, 192, 192);
-            button1.Location = new Point(172, 388);
+            button1.Location = new Point(150, 388);
             button1.Name = "button1";
-            button1.Size = new Size(122, 67);
+            button1.Size = new Size(157, 46);
             button1.TabIndex = 15;
-            button1.Text = "Bạn Quên mật khẩu?";
-            button1.UseVisualStyleBackColor = true;
+            button1.Text = "Quên pass hả??";
+            button1.UseVisualStyleBackColor = false;
             button1.Click += button1_Click;
             // 
             // Login

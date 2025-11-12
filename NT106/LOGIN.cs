@@ -121,5 +121,10 @@ namespace plan_fighting_super_start
             }
             this.Show();
         }
+
+        private void textBoxUser_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

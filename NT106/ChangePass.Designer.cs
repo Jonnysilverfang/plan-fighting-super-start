@@ -22,40 +22,43 @@ namespace plan_fighting_super_start
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             labelTitle = new Label();
             labelNewPass = new Label();
             textBoxNewPass = new TextBox();
             buttonChange = new Button();
             buttonCancel = new Button();
-
             SuspendLayout();
             // 
             // labelTitle
             // 
             labelTitle.AutoSize = true;
+            labelTitle.BackColor = Color.Transparent;
             labelTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point, 163);
             labelTitle.ForeColor = Color.FromArgb(0, 192, 192);
-            labelTitle.Location = new Point(50, 20);
+            labelTitle.Location = new Point(53, 12);
             labelTitle.Name = "labelTitle";
-            labelTitle.Size = new Size(178, 32);
+            labelTitle.Size = new Size(194, 32);
             labelTitle.TabIndex = 0;
             labelTitle.Text = "ĐỔI MẬT KHẨU";
             // 
             // labelNewPass
             // 
             labelNewPass.AutoSize = true;
-            labelNewPass.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 163);
-            labelNewPass.Location = new Point(25, 75);
+            labelNewPass.BackColor = Color.Transparent;
+            labelNewPass.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            labelNewPass.ForeColor = Color.FromArgb(0, 192, 192);
+            labelNewPass.Location = new Point(29, 84);
             labelNewPass.Name = "labelNewPass";
-            labelNewPass.Size = new Size(105, 23);
+            labelNewPass.Size = new Size(123, 23);
             labelNewPass.TabIndex = 1;
             labelNewPass.Text = "Mật khẩu mới";
             // 
             // textBoxNewPass
             // 
+            textBoxNewPass.BackColor = Color.FromArgb(15, 25, 45);
             textBoxNewPass.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 163);
-            textBoxNewPass.Location = new Point(25, 100);
+            textBoxNewPass.ForeColor = Color.FromArgb(0, 192, 192);
+            textBoxNewPass.Location = new Point(29, 120);
             textBoxNewPass.Name = "textBoxNewPass";
             textBoxNewPass.PlaceholderText = "Nhập mật khẩu mới";
             textBoxNewPass.Size = new Size(260, 30);
@@ -64,28 +67,30 @@ namespace plan_fighting_super_start
             // 
             // buttonChange
             // 
+            buttonChange.BackColor = Color.FromArgb(15, 25, 45);
             buttonChange.FlatStyle = FlatStyle.Flat;
             buttonChange.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
             buttonChange.ForeColor = Color.FromArgb(0, 192, 192);
-            buttonChange.Location = new Point(25, 150);
+            buttonChange.Location = new Point(29, 170);
             buttonChange.Name = "buttonChange";
             buttonChange.Size = new Size(120, 35);
             buttonChange.TabIndex = 1;
             buttonChange.Text = "Đổi mật khẩu";
-            buttonChange.UseVisualStyleBackColor = true;
+            buttonChange.UseVisualStyleBackColor = false;
             buttonChange.Click += buttonChange_Click;
             // 
             // buttonCancel
             // 
+            buttonCancel.BackColor = Color.FromArgb(15, 25, 45);
             buttonCancel.FlatStyle = FlatStyle.Flat;
-            buttonCancel.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 163);
-            buttonCancel.ForeColor = Color.Gray;
-            buttonCancel.Location = new Point(165, 150);
+            buttonCancel.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            buttonCancel.ForeColor = Color.FromArgb(0, 192, 192);
+            buttonCancel.Location = new Point(169, 170);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(120, 35);
             buttonCancel.TabIndex = 2;
             buttonCancel.Text = "Hủy";
-            buttonCancel.UseVisualStyleBackColor = true;
+            buttonCancel.UseVisualStyleBackColor = false;
             buttonCancel.Click += buttonCancel_Click;
             // 
             // ChangePass
@@ -93,7 +98,9 @@ namespace plan_fighting_super_start
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(310, 210);
+            BackgroundImage = Properties.Resource.Gemini_Generated_Image_47v10s47v10s47v1;
+            BackgroundImageLayout = ImageLayout.Center;
+            ClientSize = new Size(309, 221);
             Controls.Add(buttonCancel);
             Controls.Add(buttonChange);
             Controls.Add(textBoxNewPass);
