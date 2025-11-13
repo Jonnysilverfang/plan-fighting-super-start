@@ -36,6 +36,10 @@ namespace plan_fighting_super_start
         // URL API Gateway (nhớ chỉnh đúng Stage của bạn nếu khác)
         private static readonly string ApiBaseUrl =
             "https://4xt8f352xe.execute-api.ap-southeast-1.amazonaws.com/";
+        // Base dành riêng cho MatchHistory
+        private static readonly string MatchApiBaseUrl =
+            "https://840blg9a68.execute-api.ap-southeast-1.amazonaws.com/";
+
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -362,6 +366,8 @@ namespace plan_fighting_super_start
         // ==============================
         // 8️⃣ LƯU LỊCH SỬ ĐẤU
         // ==============================
+        // 8️⃣ LƯU LỊCH SỬ ĐẤU
+        // 8️⃣ LƯU LỊCH SỬ ĐẤU (POST /matchhistory/add)
         public static void RecordMatchHistory(string winnerUsername, string loserUsername)
         {
             try
@@ -375,14 +381,14 @@ namespace plan_fighting_super_start
                 string jsonBody = JsonSerializer.Serialize(matchData, JsonOptions);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-                var response = client.PostAsync(ApiBaseUrl + "matchhistory/add", content).Result;
+                var response = client.PostAsync(MatchApiBaseUrl + "matchhistory/add", content).Result;
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var msg = response.Content.ReadAsStringAsync().Result;
                     MessageBox.Show(
-                        $"Lỗi ghi lịch sử đấu! {msg}",
-                        "Lỗi Ghi log",
+                        $"Ghi lịch sử đấu thất bại: {response.StatusCode}\n{msg}",
+                        "MatchHistory",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning
                     );
@@ -390,62 +396,49 @@ namespace plan_fighting_super_start
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi kết nối khi ghi lịch sử đấu: " + ex.Message);
+                MessageBox.Show("Lỗi kết nối khi ghi lịch sử đấu: " + ex.Message, "MatchHistory");
             }
         }
 
-        // ==============================
-        // 9️⃣ LẤY LỊCH SỬ ĐẤU
-        // ==============================
+        // 9️⃣ LẤY LỊCH SỬ ĐẤU (GET /matchhistory/{username})
         public static List<ClientMatchHistoryModel> GetMatchHistory(string? username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                MessageBox.Show(
-                    "Lỗi: Không tìm thấy Username để tải lịch sử đấu.",
-                    "Lỗi Dữ liệu",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                MessageBox.Show("Lỗi: Không có Username để tải lịch sử đấu.",
+                    "MatchHistory", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return new List<ClientMatchHistoryModel>();
             }
 
             try
             {
-                var history = Task.Run(async () =>
+                var response = client.GetAsync(MatchApiBaseUrl + "matchhistory/" + username).Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return new List<ClientMatchHistoryModel>();
+
+                if (!response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(ApiBaseUrl + "matchhistory/" + username);
+                    var msg = response.Content.ReadAsStringAsync().Result;
+                    MessageBox.Show(
+                        $"Tải lịch sử đấu thất bại: {response.StatusCode}\n{msg}",
+                        "MatchHistory",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return new List<ClientMatchHistoryModel>();
+                }
 
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var msg = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show(
-                            "Lỗi tải lịch sử đấu: " + msg,
-                            "Lỗi Lịch sử đấu",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                        return new List<ClientMatchHistoryModel>();
-                    }
-
-                    var historyList =
-                        await response.Content.ReadFromJsonAsync<List<ClientMatchHistoryModel>>(JsonOptions);
-
-                    return historyList ?? new List<ClientMatchHistoryModel>();
-                }).GetAwaiter().GetResult();
-
-                return history;
+                var list = response.Content.ReadFromJsonAsync<List<ClientMatchHistoryModel>>(JsonOptions).Result;
+                return list ?? new List<ClientMatchHistoryModel>();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Lỗi kết nối khi tải lịch sử đấu: " + ex.Message,
-                    "Lỗi Lịch sử đấu",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                MessageBox.Show("Lỗi kết nối khi tải lịch sử đấu: " + ex.Message, "MatchHistory");
                 return new List<ClientMatchHistoryModel>();
             }
         }
+
+
     }
 }
