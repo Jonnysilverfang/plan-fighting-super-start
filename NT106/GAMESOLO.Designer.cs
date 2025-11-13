@@ -1,51 +1,79 @@
-﻿namespace plan_fighting_super_start
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace plan_fighting_super_start
 {
     partial class GAMESOLO
     {
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Button btnExit;
+        private Button btnExit;
+        private Label lblStatusGame;
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-                components.Dispose();
+            if (disposing && (components != null)) components.Dispose();
             base.Dispose(disposing);
         }
 
         #region Windows Form Designer generated code
-
         private void InitializeComponent()
         {
-            this.btnExit = new System.Windows.Forms.Button();
-            this.SuspendLayout();
-
+            components = new System.ComponentModel.Container();
+            btnExit = new Button();
+            lblStatusGame = new Label();
+            SuspendLayout();
             // 
             // btnExit
             // 
-            this.btnExit.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-            this.btnExit.Location = new System.Drawing.Point(10, 10);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(80, 30);
-            this.btnExit.TabIndex = 0;
-            this.btnExit.Text = "Thoát";
-            this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            btnExit.Location = new Point(10, 10);
+            btnExit.Name = "btnExit";
+            btnExit.Size = new Size(80, 30);
+            btnExit.TabIndex = 0;
+            btnExit.Text = "Thoát";
+            btnExit.UseVisualStyleBackColor = true;
+            btnExit.Click += btnExit_Click;
 
+            // ⭐ tránh ăn focus / Space click trước khi kết thúc trận
+            btnExit.TabStop = false;
+            btnExit.Visible = false;
+            btnExit.PreviewKeyDown += AnyControl_PreviewKeyDown;
             // 
-            // Form6
+            // lblStatusGame
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(900, 600);
-            this.Controls.Add(this.btnExit);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "Form6";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "LAN Shooting Game";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form6_FormClosing);
-            this.ResumeLayout(false);
+            lblStatusGame.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            lblStatusGame.AutoSize = true;
+            lblStatusGame.BackColor = Color.Transparent;
+            lblStatusGame.ForeColor = Color.White;
+            lblStatusGame.Location = new Point(12, 570);
+            lblStatusGame.Name = "lblStatusGame";
+            lblStatusGame.Size = new Size(105, 15);
+            lblStatusGame.TabIndex = 1;
+            lblStatusGame.Text = "Đang chuẩn bị…";
+            lblStatusGame.PreviewKeyDown += AnyControl_PreviewKeyDown;
+            // 
+            // GAMESOLO
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Black;
+            ClientSize = new Size(900, 600);
+            Controls.Add(lblStatusGame);
+            Controls.Add(btnExit);
+            DoubleBuffered = true;
+            KeyPreview = true;
+            Name = "GAMESOLO";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "LAN Shooting Game";
+            FormClosing += Form6_FormClosing;
+
+            // ⭐ bắt phím ở cấp form
+            KeyDown += GAMESOLO_KeyDown;
+            KeyUp += GAMESOLO_KeyUp;
+            PreviewKeyDown += AnyControl_PreviewKeyDown;
+
+            ResumeLayout(false);
+            PerformLayout();
         }
-
         #endregion
     }
 }
