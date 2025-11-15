@@ -10,5 +10,9 @@ namespace plan_fighting_super_start
         public static int UpgradeHP;
         public static int UpgradeDamage;
         public static int Level;
+
+        public static bool RewardLv10Claimed;
+        public static bool RewardLv50Claimed;
+        public static bool RewardLv100Claimed;
     }
 }

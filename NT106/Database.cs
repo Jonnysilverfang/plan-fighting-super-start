@@ -20,6 +20,10 @@ namespace plan_fighting_super_start
         public int UpgradeHP { get; set; }
         public int UpgradeDamage { get; set; }
         public int Level { get; set; }
+
+        public bool RewardLv10Claimed { get; set; }
+        public bool RewardLv50Claimed { get; set; }
+        public bool RewardLv100Claimed { get; set; }
     }
 
     // Model lịch sử đấu
@@ -85,6 +89,9 @@ namespace plan_fighting_super_start
                     AccountData.UpgradeHP = account.UpgradeHP;
                     AccountData.UpgradeDamage = account.UpgradeDamage;
                     AccountData.Level = account.Level;
+                    AccountData.RewardLv10Claimed = account.RewardLv10Claimed;
+                    AccountData.RewardLv50Claimed = account.RewardLv50Claimed;
+                    AccountData.RewardLv100Claimed = account.RewardLv100Claimed;
                     return true;
                 }
 
@@ -126,6 +133,10 @@ namespace plan_fighting_super_start
                     AccountData.UpgradeHP = account.UpgradeHP;
                     AccountData.UpgradeDamage = account.UpgradeDamage;
                     AccountData.Level = account.Level;
+
+                    AccountData.RewardLv10Claimed = account.RewardLv10Claimed;
+                    AccountData.RewardLv50Claimed = account.RewardLv50Claimed;
+                    AccountData.RewardLv100Claimed = account.RewardLv100Claimed;
 
                     return true;
                 }
@@ -204,7 +215,11 @@ namespace plan_fighting_super_start
                     Gold = AccountData.Gold,
                     UpgradeHP = AccountData.UpgradeHP,
                     UpgradeDamage = AccountData.UpgradeDamage,
-                    Level = AccountData.Level
+                    Level = AccountData.Level,
+
+                     RewardLv10Claimed = AccountData.RewardLv10Claimed,
+                    RewardLv50Claimed = AccountData.RewardLv50Claimed,
+                    RewardLv100Claimed = AccountData.RewardLv100Claimed
                 };
 
                 string jsonBody = JsonSerializer.Serialize(bodyData, JsonOptions);
