@@ -28,51 +28,54 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelInfo = new System.Windows.Forms.Label();
-            this.btnClaimReward = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            labelInfo = new Label();
+            btnClaimReward = new Button();
+            SuspendLayout();
             // 
             // labelInfo
             // 
-            this.labelInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top
-                                    | System.Windows.Forms.AnchorStyles.Bottom)
-                                    | System.Windows.Forms.AnchorStyles.Left)
-                                    | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelInfo.AutoSize = false;
-            this.labelInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.labelInfo.Location = new System.Drawing.Point(12, 9);
-            this.labelInfo.Name = "labelInfo";
-            this.labelInfo.Size = new System.Drawing.Size(360, 110);
-            this.labelInfo.TabIndex = 0;
-            this.labelInfo.Text = "Thông tin phần thưởng sẽ hiển thị ở đây.";
-            this.labelInfo.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            labelInfo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            labelInfo.BackColor = Color.Transparent;
+            labelInfo.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            labelInfo.ForeColor = Color.White;
+            labelInfo.Location = new Point(14, 12);
+            labelInfo.Name = "labelInfo";
+            labelInfo.Size = new Size(411, 147);
+            labelInfo.TabIndex = 0;
+            labelInfo.Text = "Thông tin phần thưởng sẽ hiển thị ở đây.";
             // 
             // btnClaimReward
             // 
-            this.btnClaimReward.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnClaimReward.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClaimReward.Location = new System.Drawing.Point(120, 130);
-            this.btnClaimReward.Name = "btnClaimReward";
-            this.btnClaimReward.Size = new System.Drawing.Size(150, 35);
-            this.btnClaimReward.TabIndex = 1;
-            this.btnClaimReward.Text = "Nhận phần thưởng";
-            this.btnClaimReward.UseVisualStyleBackColor = true;
-            // (Sự kiện Click đã gán trong Reward.cs, nên Designer không gán ở đây)
+            btnClaimReward.Anchor = AnchorStyles.Bottom;
+            btnClaimReward.BackColor = Color.Transparent;
+            btnClaimReward.FlatStyle = FlatStyle.Flat;
+            btnClaimReward.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnClaimReward.ForeColor = Color.White;
+            btnClaimReward.Location = new Point(137, 183);
+            btnClaimReward.Margin = new Padding(3, 4, 3, 4);
+            btnClaimReward.Name = "btnClaimReward";
+            btnClaimReward.Size = new Size(171, 45);
+            btnClaimReward.TabIndex = 1;
+            btnClaimReward.Text = "Nhận phần thưởng";
+            btnClaimReward.UseVisualStyleBackColor = false;
             // 
             // Reward
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 181);
-            this.Controls.Add(this.btnClaimReward);
-            this.Controls.Add(this.labelInfo);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "Reward";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Phần thưởng Level";
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
+            BackgroundImageLayout = ImageLayout.Stretch;
+            ClientSize = new Size(439, 241);
+            Controls.Add(btnClaimReward);
+            Controls.Add(labelInfo);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(3, 4, 3, 4);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "Reward";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Phần thưởng Level";
+            ResumeLayout(false);
         }
 
         #endregion
