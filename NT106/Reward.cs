@@ -19,9 +19,9 @@ namespace plan_fighting_super_start
 
         private readonly List<RewardInfo> _rewards = new List<RewardInfo>
         {
-            new RewardInfo { Level = 10,  DamageBonus = 5,  GoldBonus = 100 },
-            new RewardInfo { Level = 50, DamageBonus = 15, GoldBonus = 500 },
-            new RewardInfo { Level = 100,DamageBonus = 30, GoldBonus = 2000 }
+            new RewardInfo { Level = 10,  DamageBonus = 500,  GoldBonus = 1000 },
+            new RewardInfo { Level = 50, DamageBonus = 1500, GoldBonus = 5000 },
+            new RewardInfo { Level = 100,DamageBonus = 3000, GoldBonus = 20000 }
         };
 
         public Reward()
