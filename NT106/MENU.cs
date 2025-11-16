@@ -1,63 +1,25 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using WMPLib;   // ⭐ thêm
 
 namespace plan_fighting_super_start
 {
     public partial class Menu : Form
     {
         // ⭐ player nhạc nền
-        private WindowsMediaPlayer bgmPlayer;
 
         public Menu()
         {
             InitializeComponent();
 
             // đăng ký sự kiện để dọn nhạc khi đóng form
-            this.FormClosing += Menu_FormClosing;
-
-            InitBackgroundMusic();
         }
 
         // ===== Nhạc nền bossgame.mp3 =====
-        private void InitBackgroundMusic()
-        {
-            try
-            {
-                // Đường dẫn tới file bossgame.mp3 nằm trong thư mục exe
-                string mp3Path = System.IO.Path.Combine(
-                    Application.StartupPath,
-                    "bossgame.mp3");
-
-                bgmPlayer = new WindowsMediaPlayer();
-                bgmPlayer.URL = mp3Path;
-                bgmPlayer.settings.setMode("loop", true);  // lặp vô hạn
-                bgmPlayer.settings.volume = 40;            // âm lượng 0–100
-                bgmPlayer.controls.play();
-            }
-            catch (Exception ex)
-            {
-                // Nếu lỗi (thiếu file, thiếu COM, v.v.) thì chỉ báo nhẹ, không cho crash
-                MessageBox.Show("Không phát được nhạc nền: " + ex.Message,
-                    "Lỗi nhạc nền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
+      
 
         // Dừng nhạc, giải phóng khi đóng form
-        private void Menu_FormClosing(object? sender, FormClosingEventArgs e)
-        {
-            try
-            {
-                if (bgmPlayer != null)
-                {
-                    bgmPlayer.controls.stop();
-                    bgmPlayer.close();
-                    bgmPlayer = null;
-                }
-            }
-            catch { }
-        }
+       
 
         // ===== Hàm dùng chung để load dữ liệu và cập nhật UI =====
 
