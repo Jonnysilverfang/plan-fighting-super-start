@@ -29,7 +29,7 @@ namespace plan_fighting_super_start
         }
 
         // ===== Nhạc nền bossgame.mp3 dùng NAudio =====
-        private void InitBackgroundMusic()s
+        private void InitBackgroundMusic()
         {
             try
             {
