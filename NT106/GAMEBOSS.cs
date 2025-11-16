@@ -44,7 +44,12 @@ namespace plan_fighting_super_start
 
         private void Form4_Load(object sender, EventArgs e)
         {
-            this.BackColor = Color.White;
+            string bgPath = Path.Combine(Application.StartupPath, "resources", "NenBOSS.jpg");
+            if (File.Exists(bgPath))
+            {
+                this.BackgroundImage = Image.FromFile(bgPath);
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
 
             // Load lại dữ liệu account từ API, nếu đã có Username sau đăng nhập
             if (!string.IsNullOrEmpty(AccountData.Username))
@@ -614,6 +619,11 @@ namespace plan_fighting_super_start
         private void GAMEBOSS_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Không cần stop gì hết
+        }
+
+        private void boss_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

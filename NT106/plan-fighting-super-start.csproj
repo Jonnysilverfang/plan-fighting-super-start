@@ -44,7 +44,10 @@
 		<Page Remove="Leaderboard.Api\**\*" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="boss.png" />
 	  <None Remove="bossgame.mp3" />
+	  <None Remove="resources\boss.png" />
+	  <None Remove="resources\playerrr.png" />
 	</ItemGroup>
 	<ItemGroup>
 	  <COMReference Include="WMPLib">
@@ -66,6 +69,11 @@
 	  <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="4.0.4.2" />
 	  <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0-preview2.25289.6" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="resources\NenBOSS.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

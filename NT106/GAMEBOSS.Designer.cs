@@ -32,6 +32,7 @@ namespace plan_fighting_super_start
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GAMEBOSS));
             player = new PictureBox();
             boss = new PictureBox();
             playerBullet = new PictureBox();
@@ -56,7 +57,7 @@ namespace plan_fighting_super_start
             // 
             player.BackColor = Color.Transparent;
             player.BackgroundImageLayout = ImageLayout.Zoom;
-            player.Image = Properties.Resource.playerrr;
+            player.Image = (Image)resources.GetObject("player.Image");
             player.Location = new Point(350, 520);
             player.Name = "player";
             player.Size = new Size(62, 80);
@@ -68,13 +69,14 @@ namespace plan_fighting_super_start
             // 
             boss.BackColor = Color.Transparent;
             boss.BackgroundImageLayout = ImageLayout.Stretch;
-            boss.Image = Properties.Resource.boss_manh;
+            boss.Image = (Image)resources.GetObject("boss.Image");
             boss.Location = new Point(340, 50);
             boss.Name = "boss";
             boss.Size = new Size(120, 100);
             boss.SizeMode = PictureBoxSizeMode.StretchImage;
             boss.TabIndex = 1;
             boss.TabStop = false;
+            boss.Click += boss_Click;
             // 
             // playerBullet
             // 
@@ -88,6 +90,7 @@ namespace plan_fighting_super_start
             // 
             // txtScore
             // 
+            txtScore.BackColor = Color.Transparent;
             txtScore.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
             txtScore.ForeColor = Color.FromArgb(0, 192, 192);
             txtScore.Location = new Point(0, 36);
