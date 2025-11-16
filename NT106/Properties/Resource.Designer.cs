@@ -83,6 +83,16 @@ namespace plan_fighting_super_start.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ChatGPT_Image_Nov_16__2025__11_43_20_PM {
+            get {
+                object obj = ResourceManager.GetObject("ChatGPT Image Nov 16, 2025, 11_43_20 PM", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Gemini_Generated_Image_47v10s47v10s47v1 {
             get {
                 object obj = ResourceManager.GetObject("Gemini_Generated_Image_47v10s47v10s47v1", resourceCulture);
@@ -106,6 +116,16 @@ namespace plan_fighting_super_start.Properties {
         internal static System.Drawing.Bitmap Gemini_Generated_Image_dy9x6hdy9x6hdy9x {
             get {
                 object obj = ResourceManager.GetObject("Gemini_Generated_Image_dy9x6hdy9x6hdy9x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap player {
+            get {
+                object obj = ResourceManager.GetObject("player", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
