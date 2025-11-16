@@ -1,25 +1,92 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+using NAudio.Wave;   // ⭐ dùng NAudio để phát nhạc
 
 namespace plan_fighting_super_start
 {
     public partial class Menu : Form
     {
-        // ⭐ player nhạc nền
+        // ⭐ player nhạc nền với NAudio
+        private IWavePlayer waveOut;
+        private AudioFileReader audioFile;
+
+        // ===== Màu UI =====
+        private readonly Color Teal = Color.FromArgb(0, 192, 192);
+        private readonly Color BgDark = Color.FromArgb(10, 15, 30);
+        private readonly Color BgButton = Color.FromArgb(15, 25, 45);
 
         public Menu()
         {
             InitializeComponent();
 
             // đăng ký sự kiện để dọn nhạc khi đóng form
+            this.FormClosing += Menu_FormClosing;
+
+            // khởi tạo nhạc nền
+            InitBackgroundMusic();
         }
 
-        // ===== Nhạc nền bossgame.mp3 =====
-      
+        // ===== Nhạc nền bossgame.mp3 dùng NAudio =====
+        private void InitBackgroundMusic()s
+        {
+            try
+            {
+                string mp3Path = Path.Combine(Application.StartupPath, "bossgame.mp3");
+
+                if (!File.Exists(mp3Path))
+                {
+                    // Không có file thì thôi, khỏi báo lỗi ầm ĩ
+                    return;
+                }
+
+                // WaveOutEvent là player nhẹ, phù hợp game
+                waveOut = new WaveOutEvent();
+                audioFile = new AudioFileReader(mp3Path);
+
+                waveOut.Init(audioFile);
+                waveOut.Play();
+
+                // Loop nhạc: khi dừng thì quay lại đầu và play tiếp
+                waveOut.PlaybackStopped += (s, e) =>
+                {
+                    if (audioFile != null && waveOut != null)
+                    {
+                        audioFile.Position = 0;
+                        waveOut.Play();
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không phát được nhạc nền: " + ex.Message,
+                    "Lỗi nhạc nền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
         // Dừng nhạc, giải phóng khi đóng form
-       
+        private void Menu_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (waveOut != null)
+                {
+                    waveOut.Stop();
+                    waveOut.Dispose();
+                    waveOut = null;
+                }
+
+                if (audioFile != null)
+                {
+                    audioFile.Dispose();
+                    audioFile = null;
+                }
+            }
+            catch
+            {
+            }
+        }
 
         // ===== Hàm dùng chung để load dữ liệu và cập nhật UI =====
 
@@ -42,9 +109,12 @@ namespace plan_fighting_super_start
             if (textBox3 != null) textBox3.Text = AccountData.Level.ToString();
         }
 
-        // Sự kiện load form (Designer đang gắn: Load += Form3_Load;)
+        // Sự kiện load form (Designer: Load += Form3_Load;)
         private void Form3_Load(object sender, EventArgs e)
         {
+            // nền form nếu muốn tối màu
+            this.BackColor = BgDark;
+
             if (labelWelcome != null)
             {
                 labelWelcome.Text = "Xin chào";
@@ -58,6 +128,8 @@ namespace plan_fighting_super_start
             if (buttonExit != null) SetGameButton(buttonExit);
             if (button1 != null) SetGameButton(button1);
             if (button2 != null) SetGameButton(button2);
+            if (button3 != null) SetGameButton(button3);
+            if (button4 != null) SetGameButton(button4);
 
             if (textBoxGold != null) SetStatTextBox(textBoxGold);
             if (textBox1 != null) SetStatTextBox(textBox1);
@@ -72,10 +144,6 @@ namespace plan_fighting_super_start
         }
 
         // ===== Helpers: chỉ UI, không đụng logic =====
-
-        private readonly Color Teal = Color.FromArgb(0, 192, 192);
-        private readonly Color BgDark = Color.FromArgb(10, 15, 30);
-        private readonly Color BgButton = Color.FromArgb(15, 25, 45);
 
         private void SetGameButton(Button button)
         {
