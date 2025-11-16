@@ -19,7 +19,6 @@ namespace plan_fighting_super_start
         private int _playerSpeed = 7;
         private int _bulletSpeed = 12;
 
-        // -1: lên, +1: xuống
         private int _playerBulletDir;
         private int _opponentBulletDir;
 
@@ -30,22 +29,23 @@ namespace plan_fighting_super_start
         private string _localName;
         private string _opponentName = "Đối thủ";
 
-        // HP & HUD
         private int _playerHp = 3;
         private int _opponentHp = 3;
         private Label _hudYou, _hudEnemy;
 
-        // Pause overlay
         private Panel _pausePanel;
         private Button _btnResume, _btnQuit;
 
-        public GAMESOLO() : this(new NetworkManager(), true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
-        public GAMESOLO(NetworkManager network) : this(network, true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
+        public GAMESOLO()
+            : this(new NetworkManager(), true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
+
+        public GAMESOLO(NetworkManager network)
+            : this(network, true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
+
         public GAMESOLO(NetworkManager network, bool isHost, string roomId)
         {
             InitializeComponent();
 
-            // không để control nào giữ focus (Space sẽ không click button)
             this.ActiveControl = null;
 
             _network = network ?? new NetworkManager();
@@ -68,7 +68,6 @@ namespace plan_fighting_super_start
             WireNetworkEvents();
         }
 
-        // ƯU TIÊN SPACE/ESC ở mức form
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (!_gameEnded && keyData == Keys.Space)
@@ -107,23 +106,23 @@ namespace plan_fighting_super_start
             _playerBullet = new PictureBox { Width = 8, Height = 20, BackColor = Color.Yellow, Visible = false };
             _opponentBullet = new PictureBox { Width = 8, Height = 20, BackColor = Color.Lime, Visible = false };
 
-            this.Controls.Add(_player);
-            this.Controls.Add(_opponent);
-            this.Controls.Add(_playerBullet);
-            this.Controls.Add(_opponentBullet);
+            Controls.Add(_player);
+            Controls.Add(_opponent);
+            Controls.Add(_playerBullet);
+            Controls.Add(_opponentBullet);
 
-            _player.BringToFront(); _opponent.BringToFront();
-            _playerBullet.BringToFront(); _opponentBullet.BringToFront();
+            _player.BringToFront();
+            _opponent.BringToFront();
+            _playerBullet.BringToFront();
+            _opponentBullet.BringToFront();
 
             try { btnExit.BringToFront(); } catch { }
 
-            // để mũi tên luôn được coi là input
             this.PreviewKeyDown += AnyControl_PreviewKeyDown;
             try { btnExit.PreviewKeyDown += AnyControl_PreviewKeyDown; } catch { }
             _player.PreviewKeyDown += AnyControl_PreviewKeyDown;
             _opponent.PreviewKeyDown += AnyControl_PreviewKeyDown;
 
-            // bắt phím
             this.KeyDown += GAMESOLO_KeyDown;
             this.KeyUp += GAMESOLO_KeyUp;
         }
@@ -143,7 +142,7 @@ namespace plan_fighting_super_start
                 BackColor = Color.Transparent,
                 Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
                 Left = 10,
-                Top = (_isHost ? this.ClientSize.Height - 35 : 10)
+                Top = (_isHost ? ClientSize.Height - 35 : 10)
             };
             _hudEnemy = new Label
             {
@@ -152,10 +151,10 @@ namespace plan_fighting_super_start
                 BackColor = Color.Transparent,
                 Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
                 Left = 10,
-                Top = (_isHost ? 10 : this.ClientSize.Height - 35)
+                Top = (_isHost ? 10 : ClientSize.Height - 35)
             };
-            this.Controls.Add(_hudYou);
-            this.Controls.Add(_hudEnemy);
+            Controls.Add(_hudYou);
+            Controls.Add(_hudEnemy);
             UpdateHud();
         }
 
@@ -174,21 +173,21 @@ namespace plan_fighting_super_start
                 BackColor = Color.FromArgb(180, 0, 0, 0),
                 Left = 0,
                 Top = 0,
-                Width = this.ClientSize.Width,
-                Height = this.ClientSize.Height,
+                Width = ClientSize.Width,
+                Height = ClientSize.Height,
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
             };
             _btnResume = new Button { Text = "Tiếp tục (ESC)", Width = 160, Height = 40 };
             _btnQuit = new Button { Text = "Thoát trận", Width = 160, Height = 40, Top = 60 };
-            _btnResume.Left = _btnQuit.Left = (this.ClientSize.Width - _btnResume.Width) / 2;
-            _btnResume.Top = (this.ClientSize.Height - 100) / 2;
+            _btnResume.Left = _btnQuit.Left = (ClientSize.Width - _btnResume.Width) / 2;
+            _btnResume.Top = (ClientSize.Height - 100) / 2;
 
             _btnResume.Click += (s, e) => TogglePause();
             _btnQuit.Click += (s, e) => ConfirmExit();
 
             _pausePanel.Controls.Add(_btnResume);
             _pausePanel.Controls.Add(_btnQuit);
-            this.Controls.Add(_pausePanel);
+            Controls.Add(_pausePanel);
             _pausePanel.BringToFront();
         }
 
@@ -204,7 +203,7 @@ namespace plan_fighting_super_start
 
         private void SetupTimer()
         {
-            _gameTimer = new System.Windows.Forms.Timer { Interval = 16 }; // ~60fps
+            _gameTimer = new System.Windows.Forms.Timer { Interval = 16 };
             _gameTimer.Tick += GameTimer_Tick;
             _gameTimer.Start();
         }
@@ -236,30 +235,31 @@ namespace plan_fighting_super_start
             if (_paused || _gameEnded || _player == null) return;
 
             int padding = 20;
-            int midY = this.ClientSize.Height / 2;
+            int midY = ClientSize.Height / 2;
 
             int minY = _isHost ? midY : padding;
-            int maxY = _isHost ? (this.ClientSize.Height - _player.Height - padding)
+            int maxY = _isHost ? (ClientSize.Height - _player.Height - padding)
                                : (midY - _player.Height);
 
             if (_goLeft && _player.Left > padding) _player.Left -= _playerSpeed;
-            if (_goRight && _player.Right < this.ClientSize.Width - padding) _player.Left += _playerSpeed;
+            if (_goRight && _player.Right < ClientSize.Width - padding) _player.Left += _playerSpeed;
             if (_goUp && _player.Top > minY) _player.Top -= _playerSpeed;
             if (_goDown && _player.Top < maxY) _player.Top += _playerSpeed;
 
             if (_playerBullet.Visible)
             {
                 _playerBullet.Top += _playerBulletDir * _bulletSpeed;
-                if (_playerBullet.Top < 0 || _playerBullet.Top > this.ClientSize.Height) _playerBullet.Visible = false;
+                if (_playerBullet.Top < 0 || _playerBullet.Top > ClientSize.Height)
+                    _playerBullet.Visible = false;
             }
 
             if (_opponentBullet.Visible)
             {
                 _opponentBullet.Top += _opponentBulletDir * _bulletSpeed;
-                if (_opponentBullet.Top < 0 || _opponentBullet.Top > this.ClientSize.Height) _opponentBullet.Visible = false;
+                if (_opponentBullet.Top < 0 || _opponentBullet.Top > ClientSize.Height)
+                    _opponentBullet.Visible = false;
             }
 
-            // host làm trọng tài
             if (_isHost)
             {
                 if (_playerBullet.Visible && _opponent != null &&
@@ -277,7 +277,6 @@ namespace plan_fighting_super_start
                 }
             }
 
-            // gửi state ~30fps
             _stateTickCounter++;
             if (_stateTickCounter % 2 == 0) SendPlayerState();
         }
@@ -288,12 +287,11 @@ namespace plan_fighting_super_start
             else _playerHp = Math.Max(0, _playerHp - 1);
 
             UpdateHud();
-            // broadcast HP mới
             SafeSend(new { type = "hp", p = _playerHp, o = _opponentHp });
 
             if (_opponentHp <= 0 || _playerHp <= 0)
             {
-                bool youWin = _opponentHp <= 0; // host là mình
+                bool youWin = _opponentHp <= 0;
                 EndGame(youWin, fromNetwork: false);
             }
         }
@@ -307,7 +305,7 @@ namespace plan_fighting_super_start
         private void ProcessNetworkMessage(string msg)
         {
             if (string.IsNullOrWhiteSpace(msg)) return;
-            if (msg == "START_GAME" || msg == "ROOM_NOT_FOUND") return;
+            if (msg == "START_GAME") return;
 
             try
             {
@@ -331,16 +329,17 @@ namespace plan_fighting_super_start
                     case "state":
                         if (_opponent == null) return;
                         if (root.TryGetProperty("x", out var x) && root.TryGetProperty("y", out var y))
-                        { _opponent.Left = x.GetInt32(); _opponent.Top = y.GetInt32(); }
+                        {
+                            _opponent.Left = x.GetInt32();
+                            _opponent.Top = y.GetInt32();
+                        }
                         break;
 
                     case "shoot":
-                        // hiện tại không dùng WS "shoot" để tránh disconnect
                         SpawnOpponentBullet();
                         break;
 
                     case "hp":
-                        // đồng bộ HP từ host
                         if (root.TryGetProperty("p", out var p) && root.TryGetProperty("o", out var o))
                         {
                             _playerHp = p.GetInt32();
@@ -360,7 +359,10 @@ namespace plan_fighting_super_start
                         break;
                 }
             }
-            catch { /* bỏ qua message không hợp lệ */ }
+            catch
+            {
+                // bỏ qua message lỗi
+            }
         }
 
         private void OnDisconnectedUI()
@@ -368,10 +370,10 @@ namespace plan_fighting_super_start
             if (_gameEnded) return;
             _gameEnded = true;
             _gameTimer?.Stop();
-            lblStatusGame.Text = "Mất kết nối tới server.";
+            lblStatusGame.Text = "Mất kết nối.";
             MessageBox.Show("Kết nối bị ngắt. Quay lại lobby hoặc tạo phòng khác.", "Ngắt kết nối",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.Close();
+            Close();
         }
 
         private void SafeSend(object obj)
@@ -384,7 +386,7 @@ namespace plan_fighting_super_start
                     _network.Send(json);
                 }
             }
-            catch { /* không để crash UI khi gửi WS */ }
+            catch { }
         }
 
         private void FirePlayerBullet()
@@ -394,9 +396,10 @@ namespace plan_fighting_super_start
 
             _playerBullet.Visible = true;
             _playerBullet.Left = _player.Left + _player.Width / 2 - _playerBullet.Width / 2;
-            _playerBullet.Top = (_playerBulletDir < 0) ? (_player.Top - _playerBullet.Height) : _player.Bottom;
+            _playerBullet.Top = (_playerBulletDir < 0)
+                ? (_player.Top - _playerBullet.Height)
+                : _player.Bottom;
 
-            // Không gửi "shoot" lên WS (tránh disconnect)
             SafeSend(new { type = "shoot" });
         }
 
@@ -407,7 +410,9 @@ namespace plan_fighting_super_start
 
             _opponentBullet.Visible = true;
             _opponentBullet.Left = _opponent.Left + _opponent.Width / 2 - _opponentBullet.Width / 2;
-            _opponentBullet.Top = (_opponentBulletDir < 0) ? (_opponent.Top - _opponentBullet.Height) : _opponent.Bottom;
+            _opponentBullet.Top = (_opponentBulletDir < 0)
+                ? (_opponent.Top - _opponentBullet.Height)
+                : _opponent.Bottom;
         }
 
         private void EndGame(bool youWin, bool fromNetwork)
@@ -418,7 +423,6 @@ namespace plan_fighting_super_start
             _paused = false;
             _pausePanel.Visible = false;
 
-            // Host ghi log lịch sử (Database.cs gọi API Gateway/DynamoDB)
             if (_isHost)
             {
                 try
@@ -430,23 +434,26 @@ namespace plan_fighting_super_start
                 catch { }
             }
 
-            if (!fromNetwork) SafeSend(new { type = "result", winner = youWin ? _localName : _opponentName });
+            if (!fromNetwork)
+                SafeSend(new { type = "result", winner = youWin ? _localName : _opponentName });
 
             MessageBox.Show(
-                (youWin ? "🎉 Bạn THẮNG!\n" : "💥 Bạn THUA!\n") + $"Bạn: {_localName}\nĐối thủ: {_opponentName}",
-                "Kết thúc trận đấu", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                (youWin ? "🎉 Bạn THẮNG!\n" : "💥 Bạn THUA!\n") +
+                $"Bạn: {_localName}\nĐối thủ: {_opponentName}",
+                "Kết thúc trận đấu",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
 
             try
             {
                 btnExit.Text = "Thoát trận";
-                btnExit.Visible = true;     // chỉ hiện khi kết thúc trận
+                btnExit.Visible = true;
                 btnExit.Enabled = true;
                 btnExit.BringToFront();
             }
             catch { }
         }
 
-        // ===== Arrow keys không bị ăn focus =====
         private void AnyControl_PreviewKeyDown(object? sender, PreviewKeyDownEventArgs e)
         {
             if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right ||
@@ -456,35 +463,22 @@ namespace plan_fighting_super_start
             }
         }
 
-        // ===== Input =====
         private void GAMESOLO_KeyDown(object? sender, KeyEventArgs e)
         {
             if (_gameEnded || _paused) return;
 
-            // Arrow keys
-            if (e.KeyCode == Keys.Left) _goLeft = true;
-            if (e.KeyCode == Keys.Right) _goRight = true;
-            if (e.KeyCode == Keys.Up) _goUp = true;
-            if (e.KeyCode == Keys.Down) _goDown = true;
-
-            // WASD
-            if (e.KeyCode == Keys.A) _goLeft = true;
-            if (e.KeyCode == Keys.D) _goRight = true;
-            if (e.KeyCode == Keys.W) _goUp = true;
-            if (e.KeyCode == Keys.S) _goDown = true;
+            if (e.KeyCode == Keys.Left || e.KeyCode == Keys.A) _goLeft = true;
+            if (e.KeyCode == Keys.Right || e.KeyCode == Keys.D) _goRight = true;
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W) _goUp = true;
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S) _goDown = true;
         }
 
         private void GAMESOLO_KeyUp(object? sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Left) _goLeft = false;
-            if (e.KeyCode == Keys.Right) _goRight = false;
-            if (e.KeyCode == Keys.Up) _goUp = false;
-            if (e.KeyCode == Keys.Down) _goDown = false;
-
-            if (e.KeyCode == Keys.A) _goLeft = false;
-            if (e.KeyCode == Keys.D) _goRight = false;
-            if (e.KeyCode == Keys.W) _goUp = false;
-            if (e.KeyCode == Keys.S) _goDown = false;
+            if (e.KeyCode == Keys.Left || e.KeyCode == Keys.A) _goLeft = false;
+            if (e.KeyCode == Keys.Right || e.KeyCode == Keys.D) _goRight = false;
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W) _goUp = false;
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S) _goDown = false;
         }
 
         private void btnExit_Click(object sender, EventArgs e) => ConfirmExit();
@@ -497,13 +491,23 @@ namespace plan_fighting_super_start
             {
                 try { _gameTimer?.Stop(); } catch { }
                 try { (_network as IDisposable)?.Dispose(); _network = null; } catch { }
-                this.Close();
+                Close();
             }
         }
 
         private void Form6_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try { _gameTimer?.Stop(); (_network as IDisposable)?.Dispose(); _network = null; } catch { }
+            try
+            {
+                _gameTimer?.Stop();
+                (_network as IDisposable)?.Dispose();
+                _network = null;
+            }
+            catch { }
+        }
+
+        private void GAMESOLO_Load(object sender, EventArgs e)
+        {
         }
     }
 }

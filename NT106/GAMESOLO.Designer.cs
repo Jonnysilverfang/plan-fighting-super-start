@@ -18,24 +18,22 @@ namespace plan_fighting_super_start
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             btnExit = new Button();
             lblStatusGame = new Label();
             SuspendLayout();
             // 
             // btnExit
             // 
-            btnExit.Location = new Point(10, 10);
+            btnExit.Location = new Point(11, 13);
+            btnExit.Margin = new Padding(3, 4, 3, 4);
             btnExit.Name = "btnExit";
-            btnExit.Size = new Size(80, 30);
+            btnExit.Size = new Size(91, 40);
             btnExit.TabIndex = 0;
+            btnExit.TabStop = false;
             btnExit.Text = "Thoát";
             btnExit.UseVisualStyleBackColor = true;
-            btnExit.Click += btnExit_Click;
-
-            // ⭐ tránh ăn focus / Space click trước khi kết thúc trận
-            btnExit.TabStop = false;
             btnExit.Visible = false;
+            btnExit.Click += btnExit_Click;
             btnExit.PreviewKeyDown += AnyControl_PreviewKeyDown;
             // 
             // lblStatusGame
@@ -44,33 +42,32 @@ namespace plan_fighting_super_start
             lblStatusGame.AutoSize = true;
             lblStatusGame.BackColor = Color.Transparent;
             lblStatusGame.ForeColor = Color.White;
-            lblStatusGame.Location = new Point(12, 570);
+            lblStatusGame.Location = new Point(14, 760);
             lblStatusGame.Name = "lblStatusGame";
-            lblStatusGame.Size = new Size(105, 15);
+            lblStatusGame.Size = new Size(116, 20);
             lblStatusGame.TabIndex = 1;
             lblStatusGame.Text = "Đang chuẩn bị…";
             lblStatusGame.PreviewKeyDown += AnyControl_PreviewKeyDown;
             // 
             // GAMESOLO
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Black;
-            ClientSize = new Size(900, 600);
+            ClientSize = new Size(1029, 800);
             Controls.Add(lblStatusGame);
             Controls.Add(btnExit);
             DoubleBuffered = true;
             KeyPreview = true;
+            Margin = new Padding(3, 4, 3, 4);
             Name = "GAMESOLO";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LAN Shooting Game";
             FormClosing += Form6_FormClosing;
-
-            // ⭐ bắt phím ở cấp form
+            Load += GAMESOLO_Load;
             KeyDown += GAMESOLO_KeyDown;
             KeyUp += GAMESOLO_KeyUp;
             PreviewKeyDown += AnyControl_PreviewKeyDown;
-
             ResumeLayout(false);
             PerformLayout();
         }

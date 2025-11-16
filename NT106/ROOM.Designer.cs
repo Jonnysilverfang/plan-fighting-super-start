@@ -180,6 +180,7 @@ namespace plan_fighting_super_start
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Lobby – Solo LAN";
             FormClosing += Form5_FormClosing;
+            Load += Room_Load;
             ResumeLayout(false);
             PerformLayout();
         }

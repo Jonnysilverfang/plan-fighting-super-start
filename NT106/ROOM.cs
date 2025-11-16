@@ -7,9 +7,13 @@ namespace plan_fighting_super_start
     public partial class Room : Form
     {
         private NetworkManager networkManager;
+        private LANBroadcast lanBroadcast;
+
         private bool isHost;
         private string currentRoomId;
-        private const int GAME_PORT = 8888; // giữ lại cho đủ tham số, không dùng nữa
+
+        // Cổng TCP cho game LAN
+        private const int GAME_PORT = 9000;
 
         public Room()
         {
@@ -19,6 +23,7 @@ namespace plan_fighting_super_start
         private void Form5_FormClosing(object sender, FormClosingEventArgs e)
         {
             try { networkManager?.Dispose(); } catch { }
+            try { lanBroadcast?.Dispose(); } catch { }
         }
 
         private void SetStatus(string message)
@@ -33,6 +38,12 @@ namespace plan_fighting_super_start
             return rnd.Next(100000, 999999).ToString();
         }
 
+        private void UI(Action a)
+        {
+            if (InvokeRequired) BeginInvoke(a);
+            else a();
+        }
+
         private void WireNetworkEvents()
         {
             if (networkManager == null) return;
@@ -41,8 +52,15 @@ namespace plan_fighting_super_start
             {
                 UI(() =>
                 {
-                    btnStartGame.Enabled = true;
-                    SetStatus($"Phòng {currentRoomId}: ĐÃ ĐỦ 2 NGƯỜI. Bạn có thể bấm Bắt đầu.");
+                    if (isHost)
+                    {
+                        btnStartGame.Enabled = true;
+                        SetStatus($"Phòng {currentRoomId}: ĐÃ ĐỦ 2 NGƯỜI. Host có thể bấm BẮT ĐẦU.");
+                    }
+                    else
+                    {
+                        SetStatus($"Đã kết nối tới phòng {currentRoomId}. Chờ host bấm BẮT ĐẦU.");
+                    }
                 });
             };
 
@@ -51,14 +69,6 @@ namespace plan_fighting_super_start
                 if (msg == "START_GAME")
                 {
                     UI(OpenGame);
-                }
-                else if (msg == "ROOM_NOT_FOUND")
-                {
-                    UI(() =>
-                    {
-                        SetStatus("Không tìm thấy phòng. Kiểm tra lại Room ID.");
-                        btnJoinRoom.Enabled = true;
-                    });
                 }
             };
 
@@ -72,12 +82,6 @@ namespace plan_fighting_super_start
             };
         }
 
-        private void UI(Action a)
-        {
-            if (InvokeRequired) BeginInvoke(a);
-            else a();
-        }
-
         // ====== TẠO PHÒNG (HOST) ======
         private void btnCreateRoom_Click(object sender, EventArgs e)
         {
@@ -85,7 +89,7 @@ namespace plan_fighting_super_start
             {
                 if (!NetworkManager.IsNetworkAvailable())
                 {
-                    SetStatus("Không có mạng! Không thể tạo phòng.");
+                    SetStatus("Không phát hiện mạng (LAN) khả dụng!");
                     return;
                 }
 
@@ -94,58 +98,95 @@ namespace plan_fighting_super_start
                     : txtRoomID.Text.Trim();
                 txtRoomID.Text = currentRoomId;
 
-                networkManager?.Dispose();
+                // Dọn cũ
+                try { networkManager?.Dispose(); } catch { }
+                try { lanBroadcast?.Dispose(); } catch { }
+
+                // Tạo server TCP
                 networkManager = new NetworkManager();
                 WireNetworkEvents();
-
                 isHost = true;
                 btnStartGame.Enabled = false;
 
-                SetStatus($"Đang tạo phòng {currentRoomId} trên server...");
-                networkManager.StartHost(currentRoomId, GAME_PORT);
-                // Khi client join, Lambda sẽ gửi START_GAME → OnPeerConnected → nút BẮT ĐẦU sáng
+                networkManager.StartHost(GAME_PORT);
+
+                // Broadcast phòng cho client trong LAN
+                lanBroadcast = new LANBroadcast();
+                lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
+
+                SetStatus($"[HOST] Đã tạo phòng {currentRoomId}. Đang chờ người chơi khác trong LAN...");
             }
             catch (Exception ex)
             {
-                SetStatus("Lỗi tạo phòng: " + ex.Message);
+                SetStatus("Lỗi tạo phòng (LAN): " + ex.Message);
             }
         }
 
         // ====== THAM GIA PHÒNG (CLIENT) ======
-        private async void btnJoinRoom_Click(object sender, EventArgs e)
+        private void btnJoinRoom_Click(object sender, EventArgs e)
         {
             string roomId = txtRoomID.Text.Trim();
             if (string.IsNullOrEmpty(roomId))
             {
-                SetStatus("Nhập Room ID trước!");
+                SetStatus("Nhập Room ID trước khi tham gia phòng!");
                 return;
             }
 
-            try
+            if (!NetworkManager.IsNetworkAvailable())
             {
-                if (!NetworkManager.IsNetworkAvailable())
+                SetStatus("Không phát hiện mạng (LAN) khả dụng!");
+                return;
+            }
+
+            currentRoomId = roomId;
+            isHost = false;
+            btnJoinRoom.Enabled = false;
+            btnStartGame.Enabled = false;
+
+            try { networkManager?.Dispose(); } catch { }
+            try { lanBroadcast?.Dispose(); } catch { }
+
+            lanBroadcast = new LANBroadcast();
+            SetStatus($"[CLIENT] Đang tìm phòng {roomId} trong LAN...");
+
+            // Khi tìm thấy host, kết nối TCP
+            lanBroadcast.OnRoomFound += async (foundRoomId, hostIp, port) =>
+            {
+                // LANBroadcast đã lọc theo roomIdFilter, nhưng ta check lại cho chắc
+                if (!string.Equals(foundRoomId, currentRoomId, StringComparison.Ordinal)) return;
+
+                try
                 {
-                    SetStatus("Không có mạng! Không thể tham gia phòng.");
-                    return;
+                    // Dừng listen để tránh xử lý lặp
+                    lanBroadcast.StopListen();
+
+                    this.Invoke(new Action(() =>
+                    {
+                        SetStatus($"Tìm thấy host {hostIp}:{port}, đang kết nối...");
+                    }));
+
+                    networkManager = new NetworkManager();
+                    WireNetworkEvents();
+
+                    await networkManager.JoinHost(hostIp, port);
+
+                    this.Invoke(new Action(() =>
+                    {
+                        SetStatus($"Đã kết nối tới host {hostIp}. Chờ host bấm BẮT ĐẦU.");
+                    }));
                 }
+                catch (Exception ex)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        SetStatus("Lỗi kết nối host: " + ex.Message);
+                        btnJoinRoom.Enabled = true;
+                    }));
+                }
+            };
 
-                currentRoomId = roomId;
-                isHost = false;
-                btnJoinRoom.Enabled = false;
-                SetStatus($"Đang tham gia phòng {roomId} trên server...");
-
-                networkManager?.Dispose();
-                networkManager = new NetworkManager();
-                WireNetworkEvents();
-
-                await networkManager.JoinHost(currentRoomId, GAME_PORT);
-                // Sau khi join, Lambda sẽ gửi JOIN_OK + START_GAME (nếu đủ 2 người)
-            }
-            catch (Exception ex)
-            {
-                SetStatus("Lỗi tham gia phòng: " + ex.Message);
-                btnJoinRoom.Enabled = true;
-            }
+            // Bắt đầu nghe broadcast trong LAN
+            lanBroadcast.StartListen(currentRoomId);
         }
 
         // ====== NÚT BẮT ĐẦU (HOST BẤM) ======
@@ -153,11 +194,11 @@ namespace plan_fighting_super_start
         {
             if (networkManager == null || !networkManager.IsConnected)
             {
-                SetStatus("Chưa kết nối với người chơi kia!");
+                SetStatus("Chưa kết nối đủ 2 người!");
                 return;
             }
 
-            // Host gửi tín hiệu START_GAME cho đối thủ
+            // Host gửi tín hiệu START_GAME cho client
             networkManager.Send("START_GAME");
             OpenGame();
         }
@@ -167,6 +208,7 @@ namespace plan_fighting_super_start
             var game = new GAMESOLO(networkManager, isHost, currentRoomId);
             game.Show();
             this.Hide();
+
             game.FormClosed += (_, __) =>
             {
                 try
@@ -199,6 +241,11 @@ namespace plan_fighting_super_start
             {
                 MessageBox.Show("Không thể mở lịch sử đấu: " + ex.Message);
             }
+        }
+
+        private void Room_Load(object sender, EventArgs e)
+        {
+            SetStatus("Chưa tạo/tham gia phòng.");
         }
     }
 }

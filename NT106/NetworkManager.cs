@@ -1,40 +1,38 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Net.NetworkInformation;
-using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace plan_fighting_super_start
 {
+    /// <summary>
+    /// NetworkManager phiên bản LAN:
+    ///  - Host: StartHost(port)
+    ///  - Client: JoinHost(hostIp, port)
+    ///  - Send(string msg): gửi chuỗi, mỗi message kết thúc bằng '\n'
+    ///  - OnMessageReceived: nhận lại từng chuỗi
+    /// </summary>
     public class NetworkManager : IDisposable
     {
-        // =============== CONFIG ===============
-        // Đổi URL này bằng WebSocket URL của API Gateway
-        private static readonly Uri Endpoint =
-            new Uri("wss://78r8y26ose.execute-api.ap-southeast-1.amazonaws.com/production");
-
-        private ClientWebSocket _ws;
+        private TcpListener _listener;
+        private TcpClient _client;
+        private NetworkStream _stream;
         private CancellationTokenSource _cts;
+        private readonly object _sendLock = new();
 
-        private string _roomId;
-        private readonly string _username;
-
-        // Event callback
         public event Action OnPeerConnected;
         public event Action<string> OnMessageReceived;
         public event Action OnDisconnected;
 
-        public bool IsConnected => _ws != null && _ws.State == WebSocketState.Open;
+        public bool IsConnected =>
+            _client != null &&
+            _client.Connected &&
+            _stream != null;
 
-        // ======================================
-        public NetworkManager() : this(AccountData.Username ?? "Player") { }
-
-        public NetworkManager(string username)
-        {
-            _username = string.IsNullOrWhiteSpace(username) ? "Player" : username;
-        }
+        public NetworkManager() { }
 
         public static bool IsNetworkAvailable()
         {
@@ -42,163 +40,141 @@ namespace plan_fighting_super_start
             catch { return true; }
         }
 
-        // =============== HOST TẠO PHÒNG ===============
-        public void StartHost(string roomId, int portIgnored)
+        // ================= HOST =================
+
+        /// <summary>
+        /// Host lắng nghe trên port cho 1 client duy nhất.
+        /// </summary>
+        public void StartHost(int port)
         {
-            _roomId = roomId;
+            StopInternal();
 
-            _ = EnsureConnectedAndSendAsync(new
+            _cts = new CancellationTokenSource();
+            _listener = new TcpListener(IPAddress.Any, port);
+            _listener.Start();
+
+            Task.Run(async () =>
             {
-                action = "createRoom",
-                roomId = _roomId,
-                username = _username
-            });
-        }
-
-        // =============== CLIENT JOIN PHÒNG ===============
-        public async Task JoinHost(string roomId, int portIgnored)
-        {
-            _roomId = roomId;
-
-            await EnsureConnectedAndSendAsync(new
-            {
-                action = "joinRoom",
-                roomId = _roomId,
-                username = _username
-            });
-        }
-
-        // Kết nối WebSocket (nếu chưa) rồi gửi request đầu tiên
-        private async Task EnsureConnectedAndSendAsync(object firstPayload)
-        {
-            if (!IsConnected)
-            {
-                _ws = new ClientWebSocket();
-                _cts = new CancellationTokenSource();
-
-                await _ws.ConnectAsync(Endpoint, _cts.Token);
-
-                // Start background receiver
-                _ = Task.Run(ReceiveLoopAsync);
-            }
-
-            await SendCoreAsync(firstPayload);
-        }
-
-        // =============== RECEIVE LOOP ===============
-        private async Task ReceiveLoopAsync()
-        {
-            var buffer = new byte[8192];
-
-            try
-            {
-                while (_ws.State == WebSocketState.Open)
+                try
                 {
-                    var result = await _ws.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
-                    if (result.MessageType == WebSocketMessageType.Close)
-                        break;
+                    var client = await _listener.AcceptTcpClientAsync(_cts.Token);
+                    if (_cts.IsCancellationRequested) return;
 
-                    var jsonText = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    HandleIncoming(jsonText);
+                    _client = client;
+                    _stream = _client.GetStream();
+
+                    OnPeerConnected?.Invoke();
+                    _ = ReceiveLoopAsync(_cts.Token);
                 }
-            }
-            catch
-            {
-                // ignore
-            }
-            finally
-            {
-                OnDisconnected?.Invoke();
-            }
+                catch
+                {
+                    RaiseDisconnected();
+                }
+            }, _cts.Token);
         }
 
-        // =============== HANDLE MESSAGE ===============
-        private void HandleIncoming(string text)
+        // ================= CLIENT =================
+
+        /// <summary>
+        /// Client kết nối tới Host qua hostIp:port.
+        /// </summary>
+        public async Task JoinHost(string hostIp, int port)
         {
+            StopInternal();
+            _cts = new CancellationTokenSource();
+
+            _client = new TcpClient();
+            await _client.ConnectAsync(hostIp, port);
+            _stream = _client.GetStream();
+
+            OnPeerConnected?.Invoke();
+            _ = ReceiveLoopAsync(_cts.Token);
+        }
+
+        // ================= RECEIVE LOOP =================
+
+        private async Task ReceiveLoopAsync(CancellationToken token)
+        {
+            var buffer = new byte[4096];
+            var sb = new StringBuilder();
+
             try
             {
-                using var doc = JsonDocument.Parse(text);
-                var root = doc.RootElement;
-
-                // Lambda gửi dạng:
-                // { "event": "xxx", ... }
-
-                if (root.TryGetProperty("event", out var evProp))
+                while (!token.IsCancellationRequested && _client != null && _client.Connected)
                 {
-                    string ev = evProp.GetString();
+                    int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
+                    if (read <= 0) break;
 
-                    switch (ev)
+                    string chunk = Encoding.UTF8.GetString(buffer, 0, read);
+                    sb.Append(chunk);
+
+                    while (true)
                     {
-                        case "ROOM_CREATED":
-                            // host đã tạo phòng xong
-                            break;
+                        string cur = sb.ToString();
+                        int idx = cur.IndexOf('\n');
+                        if (idx < 0) break;
 
-                        case "JOIN_OK":
-                            // client join thành công
-                            break;
+                        string line = cur.Substring(0, idx);
+                        sb.Remove(0, idx + 1);
 
-                        case "START_GAME":
-                            // đủ 2 người → bật nút Start
-                            OnPeerConnected?.Invoke();
-                            break;
-
-                        case "GAME_UPDATE":
-                            if (root.TryGetProperty("data", out var dataProp))
-                            {
-                                OnMessageReceived?.Invoke(dataProp.GetString());
-                            }
-                            break;
-
-                        case "ROOM_NOT_FOUND":
-                            OnMessageReceived?.Invoke("ROOM_NOT_FOUND");
-                            break;
+                        if (!string.IsNullOrWhiteSpace(line))
+                            OnMessageReceived?.Invoke(line);
                     }
                 }
-                else
+            }
+            catch
+            {
+                // ignore, sẽ raise disconnect phía dưới
+            }
+
+            RaiseDisconnected();
+        }
+
+        // ================= SEND =================
+
+        /// <summary>
+        /// Gửi 1 message (string). Hàm sẽ tự thêm '\n' làm delimiter.
+        /// </summary>
+        public void Send(string msg)
+        {
+            if (!IsConnected || string.IsNullOrEmpty(msg)) return;
+
+            try
+            {
+                byte[] data = Encoding.UTF8.GetBytes(msg + "\n");
+                lock (_sendLock)
                 {
-                    // Message thuần text
-                    OnMessageReceived?.Invoke(text);
+                    _stream.Write(data, 0, data.Length);
                 }
             }
             catch
             {
-                OnMessageReceived?.Invoke(text);
+                RaiseDisconnected();
             }
         }
 
-        // =============== SEND GAME MESSAGE ===============
-        public void Send(string msg)
+        private void RaiseDisconnected()
         {
-            if (!IsConnected || string.IsNullOrEmpty(msg) || string.IsNullOrEmpty(_roomId))
-                return;
-
-            _ = SendCoreAsync(new
-            {
-                action = "gameMessage",
-                roomId = _roomId,
-                data = msg
-            });
+            StopInternal();
+            OnDisconnected?.Invoke();
         }
 
-        // Send JSON payload
-        private async Task SendCoreAsync(object payload)
-        {
-            string json = JsonSerializer.Serialize(payload);
-            byte[] data = Encoding.UTF8.GetBytes(json);
-
-            await _ws.SendAsync(
-                new ArraySegment<byte>(data),
-                WebSocketMessageType.Text,
-                true,
-                CancellationToken.None);
-        }
-
-        // Dispose
-        public void Dispose()
+        private void StopInternal()
         {
             try { _cts?.Cancel(); } catch { }
-            try { _ws?.Abort(); } catch { }
-            try { _ws?.Dispose(); } catch { }
+            try { _stream?.Close(); } catch { }
+            try { _client?.Close(); } catch { }
+            try { _listener?.Stop(); } catch { }
+
+            _cts = null;
+            _stream = null;
+            _client = null;
+            _listener = null;
+        }
+
+        public void Dispose()
+        {
+            StopInternal();
         }
     }
 }
