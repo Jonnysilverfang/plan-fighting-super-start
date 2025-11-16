@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace plan_fighting_super_start
 {
     public partial class Reward : Form
     {
-        // Thiết kế quà theo mốc level:
-        //  - mỗi mốc nhận 1 lần duy nhất (dùng flag lưu trong DB)
-        //  - bạn chỉnh lại số Damage/Gold theo ý muốn
-
         private class RewardInfo
         {
             public int Level { get; set; }
@@ -24,6 +21,12 @@ namespace plan_fighting_super_start
             new RewardInfo { Level = 100,DamageBonus = 30, GoldBonus = 2000 }
         };
 
+        // ===== Màu UI giống Menu =====
+        private readonly Color Teal = Color.FromArgb(0, 192, 192);
+        private readonly Color BgDark = Color.FromArgb(10, 15, 30);
+        private readonly Color BgPanel = Color.FromArgb(15, 22, 45);
+        private readonly Color BgButton = Color.FromArgb(15, 25, 45);
+
         public Reward()
         {
             InitializeComponent();
@@ -34,10 +37,59 @@ namespace plan_fighting_super_start
 
         private void Reward_Load(object? sender, EventArgs e)
         {
+            ApplyTheme();
             UpdateRewardUI();
         }
 
-        // Kiểm tra 1 mốc đã được claim chưa dựa vào flag trong AccountData
+        // ===== Áp dụng theme cho form =====
+        private void ApplyTheme()
+        {
+            // Nếu bạn vẫn muốn giữ BackgroundImage thì không cần set BackColor,
+            // còn nếu muốn nền tối giống Menu thì uncomment dòng dưới:
+            // this.BackgroundImage = null;
+            this.BackColor = BgDark;
+
+            // Label info
+            labelInfo.BackColor = Color.Transparent;
+            labelInfo.ForeColor = Teal;
+            labelInfo.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+
+            // CheckedListBox
+            checkedListRewards.BackColor = BgPanel;
+            checkedListRewards.ForeColor = Teal;
+            checkedListRewards.BorderStyle = BorderStyle.FixedSingle;
+
+            // Button
+            SetGameButton(btnClaimReward);
+        }
+
+        private void SetGameButton(Button button)
+        {
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = Teal;
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 120, 140);
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 80, 100);
+            button.BackColor = BgButton;
+            button.ForeColor = Teal;
+            button.UseVisualStyleBackColor = false;
+            button.Cursor = Cursors.Hand;
+
+            button.MouseEnter += (_, __) =>
+            {
+                button.BackColor = Teal;
+                button.ForeColor = Color.Black;
+            };
+
+            button.MouseLeave += (_, __) =>
+            {
+                button.BackColor = BgButton;
+                button.ForeColor = Teal;
+            };
+        }
+
+        // ===== Logic reward =====
+
         private bool IsLevelClaimed(int level)
         {
             switch (level)
@@ -49,7 +101,6 @@ namespace plan_fighting_super_start
             }
         }
 
-        // Đánh dấu 1 mốc đã claim
         private void SetLevelClaimed(int level)
         {
             switch (level)
@@ -70,31 +121,48 @@ namespace plan_fighting_super_start
         {
             int level = AccountData.Level;
 
+            // ----- Cập nhật danh sách checkbox -----
+            checkedListRewards.Items.Clear();
+
+            foreach (var r in _rewards)
+            {
+                bool claimed = IsLevelClaimed(r.Level);
+                string text = $"Lv {r.Level}: +{r.DamageBonus} DMG, +{r.GoldBonus} Gold";
+
+                int idx = checkedListRewards.Items.Add(text);
+                checkedListRewards.SetItemChecked(idx, claimed); // đã nhận thì tick
+            }
+
+            checkedListRewards.Enabled = false; // chỉ hiển thị, không cho tự tick
+
+            // ----- Label + nút -----
+            bool anyAvailable = false;
             List<string> available = new List<string>();
 
             foreach (var r in _rewards)
             {
                 if (level >= r.Level && !IsLevelClaimed(r.Level))
                 {
+                    anyAvailable = true;
                     available.Add(
-                        $"Lv {r.Level}: +{r.DamageBonus} Damage, +{r.GoldBonus} Gold (chưa nhận)"
+                        $"Lv {r.Level}: +{r.DamageBonus} DMG, +{r.GoldBonus} Gold (chưa nhận)"
                     );
                 }
             }
 
-            if (available.Count == 0)
+            if (!anyAvailable)
             {
                 labelInfo.Text =
                     $"Level hiện tại: {level}\n" +
                     "Bạn không còn phần thưởng level nào chưa nhận.\n" +
-                    "Mỗi mốc chỉ được nhận 1 lần duy nhất.";
+                    "Mỗi mốc chỉ nhận được 1 lần.";
                 btnClaimReward.Enabled = false;
             }
             else
             {
                 labelInfo.Text =
                     $"Level hiện tại: {level}\n" +
-                    "Các mốc có thể nhận:\n" +
+                    "Các mốc có thể nhận thêm:\n" +
                     string.Join("\n", available) +
                     "\n\nNhấn nút để nhận tất cả phần thưởng chưa nhận.";
                 btnClaimReward.Enabled = true;
@@ -116,7 +184,7 @@ namespace plan_fighting_super_start
                     totalGold += r.GoldBonus;
                     SetLevelClaimed(r.Level);
 
-                    detail.Add($"Lv {r.Level}: +{r.DamageBonus} Damage, +{r.GoldBonus} Gold");
+                    detail.Add($"Lv {r.Level}: +{r.DamageBonus} DMG, +{r.GoldBonus} Gold");
                 }
             }
 
@@ -132,11 +200,9 @@ namespace plan_fighting_super_start
                 return;
             }
 
-            // Cộng vào tài khoản hiện tại
             AccountData.UpgradeDamage += totalDamage;
             AccountData.Gold += totalGold;
 
-            // Lưu cả Damage, Gold và cờ RewardLvXXClaimed lên DB
             Database.UpdateAccountData();
 
             MessageBox.Show(
