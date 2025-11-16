@@ -89,7 +89,7 @@ namespace plan_fighting_super_start
         // ============================
         //         TẠO PHÒNG HOST
         // ============================
-        private void btnCreateRoom_Click(object sender, EventArgs e)
+        private async void btnCreateRoom_Click(object sender, EventArgs e)
         {
             try
             {
@@ -122,9 +122,20 @@ namespace plan_fighting_super_start
 
                 SetStatus($"[HOST] Đã tạo phòng {currentRoomId}. Đang chờ người chơi khác...");
 
-                // Log lên DynamoDB
-                var hostName = string.IsNullOrWhiteSpace(AccountData.Username) ? "Host" : AccountData.Username;
+                // Tên host
+                var hostName = string.IsNullOrWhiteSpace(AccountData.Username)
+                    ? "Host"
+                    : AccountData.Username;
+
+                // Log cũ nếu bạn dùng
                 _ = RoomLogger.LogHost(currentRoomId, hostName);
+
+                // POST lên API Gateway: action = create
+                var ok = await RoomApi.CreateRoomAsync(currentRoomId, hostName);
+                if (!ok)
+                {
+                    SetStatus($"[HOST] Đã tạo phòng {currentRoomId} (LAN OK) nhưng POST API thất bại.");
+                }
             }
             catch (Exception ex)
             {
@@ -180,9 +191,21 @@ namespace plan_fighting_super_start
 
                     UI(() => SetStatus($"Đã kết nối tới host {hostIp}. Chờ host bấm BẮT ĐẦU."));
 
-                    // Log lên DynamoDB
-                    var guestName = string.IsNullOrWhiteSpace(AccountData.Username) ? "Client" : AccountData.Username;
+                    // Tên guest
+                    var guestName = string.IsNullOrWhiteSpace(AccountData.Username)
+                        ? "Client"
+                        : AccountData.Username;
+
+                    // Log cũ nếu bạn dùng
                     _ = RoomLogger.LogGuest(currentRoomId, guestName);
+
+                    // POST lên API Gateway: action = join
+                    var ok = await RoomApi.JoinRoomAsync(currentRoomId, guestName);
+                    if (!ok)
+                    {
+                        UI(() => SetStatus(
+                            $"Đã join LAN nhưng POST API join thất bại (phòng {currentRoomId})."));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -200,12 +223,23 @@ namespace plan_fighting_super_start
         // ============================
         //         HOST BẤM START
         // ============================
-        private void btnStartGame_Click(object sender, EventArgs e)
+        private async void btnStartGame_Click(object sender, EventArgs e)
         {
             if (networkManager == null || !networkManager.IsConnected)
             {
                 SetStatus("Chưa đủ 2 người để bắt đầu!");
                 return;
+            }
+
+            // Chỉ host mới POST start
+            if (isHost)
+            {
+                var hostName = string.IsNullOrWhiteSpace(AccountData.Username)
+                    ? "Host"
+                    : AccountData.Username;
+
+                // POST action = start (fire-and-forget, không cần chờ kết quả)
+                _ = RoomApi.StartRoomAsync(currentRoomId, hostName);
             }
 
             networkManager.Send("START_GAME");
