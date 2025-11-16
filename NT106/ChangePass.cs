@@ -52,5 +52,10 @@ namespace plan_fighting_super_start
         {
             this.Close();
         }
+
+        private void ChangePass_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

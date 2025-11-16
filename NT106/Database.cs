@@ -37,7 +37,7 @@ namespace plan_fighting_super_start
 
     public static class Database
     {
-        // URL API Gateway (nhớ chỉnh đúng Stage của bạn nếu khác)
+        // URL API Gateway 
         private static readonly string ApiBaseUrl =
             "https://4xt8f352xe.execute-api.ap-southeast-1.amazonaws.com/";
         // Base dành riêng cho MatchHistory

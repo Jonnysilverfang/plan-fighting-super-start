@@ -255,6 +255,7 @@ namespace plan_fighting_super_start
             Name = "FogotPass";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Quên mật khẩu";
+            Load += FogotPass_Load;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -8,9 +8,7 @@ namespace plan_fighting_super_start
 {
     public static class RoomLogger
     {
-        // ĐỔI thành HTTP API Invoke URL của bạn (không có dấu / ở cuối)
         private const string API_BASE = "https://r4zi9q5t1l.execute-api.ap-southeast-1.amazonaws.com";
-        // ↑ sửa nếu URL của bạn khác
 
         private static readonly HttpClient http = new HttpClient();
         private static readonly JsonSerializerOptions jsonOpts = new()
@@ -41,9 +39,9 @@ namespace plan_fighting_super_start
                     "application/json"
                 );
 
-                // POST /sololan hoặc /rooms tùy bạn cấu hình route
+                // POST /sololan hoặc /rooms tùy cấu hình route
                 await http.PostAsync($"{API_BASE}/sololan", content);
-                // Nếu route của bạn là /rooms thì đổi lại:
+                // Nếu route của là /rooms thì đổi lại:
                 // await http.PostAsync($"{API_BASE}/rooms", content);
             }
             catch

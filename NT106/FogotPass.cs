@@ -17,7 +17,7 @@ namespace plan_fighting_super_start
             BaseAddress = new Uri("https://4xt8f352xe.execute-api.ap-southeast-1.amazonaws.com/")
         };
 
-        // ----- Cấu hình mail server (bạn THAY THÔNG TIN NÀY BẰNG TÀI KHOẢN CỦA BẠN) -----
+        // ----- Cấu hình mail server  -----
         private const string SmtpHost = "smtp.gmail.com";   // ví dụ dùng Gmail
         private const int SmtpPort = 587;
         private const string FromEmail = "minhnhat2k6hcm@gmail.com";       // email gửi
@@ -310,6 +310,11 @@ namespace plan_fighting_super_start
                 // ignore
             }
             return null;
+        }
+
+        private void FogotPass_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

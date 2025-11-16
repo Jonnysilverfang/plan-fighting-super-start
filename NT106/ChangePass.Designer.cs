@@ -112,6 +112,7 @@ namespace plan_fighting_super_start
             Name = "ChangePass";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Đổi mật khẩu";
+            Load += ChangePass_Load;
             ResumeLayout(false);
             PerformLayout();
         }
