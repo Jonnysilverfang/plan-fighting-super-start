@@ -38,16 +38,18 @@
             label3 = new Label();
             label2 = new Label();
             button1 = new Button();
+            pictureBox3 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
             SuspendLayout();
             // 
             // labelTitle
             // 
             labelTitle.BackColor = Color.Transparent;
-            labelTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            labelTitle.Font = new Font("Segoe UI", 19.8000011F, FontStyle.Bold, GraphicsUnit.Point, 163);
             labelTitle.ForeColor = Color.FromArgb(0, 192, 192);
-            labelTitle.Location = new Point(111, 107);
+            labelTitle.Location = new Point(110, 17);
             labelTitle.Name = "labelTitle";
             labelTitle.Size = new Size(256, 60);
             labelTitle.TabIndex = 0;
@@ -180,12 +182,24 @@
             button1.UseVisualStyleBackColor = false;
             button1.Click += button1_Click;
             // 
+            // pictureBox3
+            // 
+            pictureBox3.BackColor = Color.Transparent;
+            pictureBox3.BackgroundImage = Properties.Resource.Screenshot_2025_09_19_232602;
+            pictureBox3.BackgroundImageLayout = ImageLayout.Zoom;
+            pictureBox3.Location = new Point(150, 80);
+            pictureBox3.Name = "pictureBox3";
+            pictureBox3.Size = new Size(174, 114);
+            pictureBox3.TabIndex = 16;
+            pictureBox3.TabStop = false;
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(469, 467);
+            Controls.Add(pictureBox3);
             Controls.Add(button1);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -206,6 +220,7 @@
             Load += Login_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
             ResumeLayout(false);
             PerformLayout();
 
@@ -224,5 +239,6 @@
         private Label label3;
         private Label label2;
         private Button button1;
+        private PictureBox pictureBox3;
     }
 }

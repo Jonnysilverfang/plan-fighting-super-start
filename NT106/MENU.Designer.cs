@@ -50,6 +50,7 @@ namespace plan_fighting_super_start
             saveFileDialog1 = new SaveFileDialog();
             button2 = new Button();
             button3 = new Button();
+            button4 = new Button();
             SuspendLayout();
             // 
             // textBoxGold
@@ -262,6 +263,20 @@ namespace plan_fighting_super_start
             button3.UseVisualStyleBackColor = false;
             button3.Click += button3_Click;
             // 
+            // button4
+            // 
+            button4.BackColor = Color.Transparent;
+            button4.FlatStyle = FlatStyle.Flat;
+            button4.Font = new Font("Segoe UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            button4.ForeColor = Color.FromArgb(0, 192, 192);
+            button4.Location = new Point(485, 12);
+            button4.Name = "button4";
+            button4.Size = new Size(63, 29);
+            button4.TabIndex = 19;
+            button4.Text = "🎁";
+            button4.UseVisualStyleBackColor = false;
+            button4.Click += button4_Click;
+            // 
             // Menu
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -270,6 +285,7 @@ namespace plan_fighting_super_start
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_dy9x6hdy9x6hdy9x;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(560, 680);
+            Controls.Add(button4);
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(buttonExit);
@@ -297,5 +313,6 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         private Button button3;
+        private Button button4;
     }
 }

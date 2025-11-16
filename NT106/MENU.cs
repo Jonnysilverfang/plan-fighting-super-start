@@ -241,5 +241,11 @@ namespace plan_fighting_super_start
             var form = new ChangePass();
             form.Show();
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var form = new Reward();
+            form.Show();
+        }
     }
 }
