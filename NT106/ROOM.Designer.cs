@@ -164,7 +164,7 @@ namespace plan_fighting_super_start
             BackColor = Color.FromArgb(10, 15, 30);
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(620, 500);
+            ClientSize = new Size(922, 500);
             Controls.Add(btnHistory);
             Controls.Add(lblStatus);
             Controls.Add(btnStartGame);
