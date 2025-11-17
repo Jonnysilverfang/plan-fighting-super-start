@@ -1,6 +1,4 @@
 ﻿using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using Font = System.Drawing.Font;
 using Image = System.Drawing.Image;
 using System.Drawing;
@@ -13,16 +11,20 @@ namespace plan_fighting_super_start
 
         private TextBox textBoxUser;
         private TextBox textBoxPass;
-        private TextBox textBoxEmail;      // 🔹 GMAIL
+        private TextBox textBoxEmail;
         private Button buttonRegister;
 
         private PictureBox pictureBox2;
         private Label label1;
         private Label label3;
         private Label label2;
-        private Label label4;              // 🔹 ICON EMAIL
+        private Label label4;
         private PictureBox pictureBox1;
         private PictureBox pictureBox3;
+
+        // 🔹 MỚI
+        private PictureBox pictureBoxAvatar;
+        private Button buttonChooseAvatar;
 
         protected override void Dispose(bool disposing)
         {
@@ -46,9 +48,12 @@ namespace plan_fighting_super_start
             label4 = new Label();
             pictureBox1 = new PictureBox();
             pictureBox3 = new PictureBox();
+            pictureBoxAvatar = new PictureBox();
+            buttonChooseAvatar = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).BeginInit();
             SuspendLayout();
             // 
             // textBoxUser
@@ -63,18 +68,6 @@ namespace plan_fighting_super_start
             textBoxUser.TabIndex = 0;
             textBoxUser.Text = "Tên đăng nhập";
             // 
-            // textBoxEmail
-            // 
-            textBoxEmail.BackColor = Color.White;
-            textBoxEmail.Font = new Font("Segoe UI", 10.2F);
-            textBoxEmail.ForeColor = Color.FromArgb(0, 192, 192);
-            textBoxEmail.Location = new Point(127, 280);
-            textBoxEmail.Name = "textBoxEmail";
-            textBoxEmail.PlaceholderText = "Gmail";
-            textBoxEmail.Size = new Size(200, 30);
-            textBoxEmail.TabIndex = 1;
-            textBoxEmail.Text = "Gmail";
-            // 
             // textBoxPass
             // 
             textBoxPass.BackColor = Color.White;
@@ -88,6 +81,18 @@ namespace plan_fighting_super_start
             textBoxPass.Text = "Mật khẩu";
             textBoxPass.UseSystemPasswordChar = true;
             textBoxPass.TextChanged += textBoxPass_TextChanged;
+            // 
+            // textBoxEmail
+            // 
+            textBoxEmail.BackColor = Color.White;
+            textBoxEmail.Font = new Font("Segoe UI", 10.2F);
+            textBoxEmail.ForeColor = Color.FromArgb(0, 192, 192);
+            textBoxEmail.Location = new Point(127, 280);
+            textBoxEmail.Name = "textBoxEmail";
+            textBoxEmail.PlaceholderText = "Gmail";
+            textBoxEmail.Size = new Size(200, 30);
+            textBoxEmail.TabIndex = 1;
+            textBoxEmail.Text = "Gmail";
             // 
             // buttonRegister
             // 
@@ -114,7 +119,7 @@ namespace plan_fighting_super_start
             pictureBox2.TabIndex = 7;
             pictureBox2.TabStop = false;
             // 
-            // label1 (REGISTER)
+            // label1
             // 
             label1.AutoSize = true;
             label1.BackColor = Color.Transparent;
@@ -126,7 +131,7 @@ namespace plan_fighting_super_start
             label1.TabIndex = 10;
             label1.Text = "REGISTER";
             // 
-            // label3 (🔒 password)
+            // label3
             // 
             label3.AutoSize = true;
             label3.BackColor = Color.White;
@@ -138,7 +143,7 @@ namespace plan_fighting_super_start
             label3.TabIndex = 12;
             label3.Text = "🔒";
             // 
-            // label2 (👤 user)
+            // label2
             // 
             label2.AutoSize = true;
             label2.BackColor = Color.White;
@@ -150,7 +155,7 @@ namespace plan_fighting_super_start
             label2.TabIndex = 11;
             label2.Text = "👤";
             // 
-            // label4 (✉️ email)
+            // label4
             // 
             label4.AutoSize = true;
             label4.BackColor = Color.White;
@@ -185,6 +190,31 @@ namespace plan_fighting_super_start
             pictureBox3.TabIndex = 15;
             pictureBox3.TabStop = false;
             // 
+            // pictureBoxAvatar
+            // 
+            pictureBoxAvatar.BackColor = Color.White;
+            pictureBoxAvatar.BorderStyle = BorderStyle.FixedSingle;
+            pictureBoxAvatar.Location = new Point(11, 12);
+            pictureBoxAvatar.Name = "pictureBoxAvatar";
+            pictureBoxAvatar.Size = new Size(80, 80);
+            pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxAvatar.TabIndex = 16;
+            pictureBoxAvatar.TabStop = false;
+            // 
+            // buttonChooseAvatar
+            // 
+            buttonChooseAvatar.BackColor = Color.Transparent;
+            buttonChooseAvatar.FlatStyle = FlatStyle.Flat;
+            buttonChooseAvatar.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            buttonChooseAvatar.ForeColor = Color.FromArgb(0, 192, 192);
+            buttonChooseAvatar.Location = new Point(11, 107);
+            buttonChooseAvatar.Name = "buttonChooseAvatar";
+            buttonChooseAvatar.Size = new Size(100, 28);
+            buttonChooseAvatar.TabIndex = 4;
+            buttonChooseAvatar.Text = "Chọn avatar";
+            buttonChooseAvatar.UseVisualStyleBackColor = false;
+            buttonChooseAvatar.Click += buttonChooseAvatar_Click;
+            // 
             // Register
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -203,12 +233,15 @@ namespace plan_fighting_super_start
             Controls.Add(textBoxEmail);
             Controls.Add(textBoxPass);
             Controls.Add(buttonRegister);
+            Controls.Add(pictureBoxAvatar);
+            Controls.Add(buttonChooseAvatar);
             Name = "Register";
             Text = "Đăng ký";
-            Load += Form2_Load;        // 🔹 gắn sự kiện Load
+            Load += Form2_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

@@ -6,6 +6,12 @@ namespace plan_fighting_super_start
 {
     public partial class Register : Form
     {
+        // Dịch vụ làm việc với S3
+        private readonly S3ImageService _imageService = new S3ImageService();
+
+        // Đường dẫn ảnh avatar mà user chọn trên máy
+        private string _avatarFilePath = null;
+
         public Register()
         {
             InitializeComponent();
@@ -13,26 +19,42 @@ namespace plan_fighting_super_start
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            // Nếu muốn xài placeholder mặc định thì có thể bỏ luôn đoạn này.
-            // Ở đây mình set cho cả 3 textbox cho chắc.
+            // Placeholder cho 3 textbox
+            if (string.IsNullOrWhiteSpace(textBoxUser.Text) ||
+                textBoxUser.Text == "Tên đăng nhập")
+            {
+                textBoxUser.Text = "Tên đăng nhập";
+                textBoxUser.ForeColor = Color.Gray;
+            }
 
-            textBoxUser.Text = "Tên đăng nhập";
-            textBoxUser.ForeColor = Color.Gray;
+            if (string.IsNullOrWhiteSpace(textBoxEmail.Text) ||
+                textBoxEmail.Text == "Gmail")
+            {
+                textBoxEmail.Text = "Gmail";
+                textBoxEmail.ForeColor = Color.Gray;
+            }
 
-            textBoxEmail.Text = "Gmail";
-            textBoxEmail.ForeColor = Color.Gray;
+            if (string.IsNullOrWhiteSpace(textBoxPass.Text) ||
+                textBoxPass.Text == "Mật khẩu")
+            {
+                textBoxPass.Text = "Mật khẩu";
+                textBoxPass.ForeColor = Color.Gray;
+                textBoxPass.UseSystemPasswordChar = false;
+            }
 
-            textBoxPass.Text = "Mật khẩu";
-            textBoxPass.ForeColor = Color.Gray;
-            textBoxPass.UseSystemPasswordChar = false;
+            // Có thể set avatar default nếu muốn
+            // pictureBoxAvatar.Image = Properties.Resource.DefaultAvatar;
+            // pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
-        private void buttonRegister_Click(object sender, EventArgs e)
+        // NÚT ĐĂNG KÝ – có async vì cần await upload ảnh
+        private async void buttonRegister_Click(object sender, EventArgs e)
         {
             string user = textBoxUser.Text.Trim();
             string pass = textBoxPass.Text.Trim();
             string email = textBoxEmail.Text.Trim();
 
+            // Kiểm tra nhập đầy đủ
             if (string.IsNullOrWhiteSpace(user) || user == "Tên đăng nhập" ||
                 string.IsNullOrWhiteSpace(pass) || pass == "Mật khẩu" ||
                 string.IsNullOrWhiteSpace(email) || email == "Gmail")
@@ -48,7 +70,27 @@ namespace plan_fighting_super_start
                 return;
             }
 
+            // 🔥 BẮT BUỘC PHẢI CHỌN ẢNH AVATAR
+            if (string.IsNullOrEmpty(_avatarFilePath))
+            {
+                MessageBox.Show("Vui lòng chọn ảnh avatar trước khi đăng ký!");
+                return;
+            }
+
+            // Upload avatar lên S3 với tên avatars/{username}.png
+            try
+            {
+                await _imageService.UploadImageAsync(_avatarFilePath, user);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Upload ảnh avatar thất bại: " + ex.Message);
+                return;
+            }
+
+            // Gọi lại hàm đăng ký cũ – 3 tham số như trước
             bool success = Database.RegisterAccount(user, pass, email);
+
             if (success)
             {
                 MessageBox.Show("Đăng ký thành công!");
@@ -60,9 +102,9 @@ namespace plan_fighting_super_start
             }
         }
 
+        // Ẩn password khi bắt đầu gõ
         private void textBoxPass_TextChanged(object sender, EventArgs e)
         {
-            // Nếu muốn: khi user bắt đầu gõ thì bật ẩn password, v.v…
             if (textBoxPass.ForeColor == Color.Gray && textBoxPass.Text == "Mật khẩu")
             {
                 textBoxPass.Text = "";
@@ -71,9 +113,38 @@ namespace plan_fighting_super_start
             }
         }
 
+        // Nếu bạn muốn pictureBox1 là nút đóng form / quay lại
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            // nếu muốn: pictureBox1 làm nút đóng form hoặc quay lại
+            // this.Close();
+            // hoặc this.Hide();
+        }
+
+        // NÚT CHỌN ẢNH AVATAR
+        private void buttonChooseAvatar_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Chọn ảnh avatar";
+                ofd.Filter = "Image Files|*.png;*.jpg;*.jpeg;*.gif";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    _avatarFilePath = ofd.FileName;
+
+                    try
+                    {
+                        var img = Image.FromFile(_avatarFilePath);
+                        pictureBoxAvatar.Image = img;
+                        pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Không thể load ảnh: " + ex.Message);
+                        _avatarFilePath = null;
+                    }
+                }
+            }
         }
     }
 }

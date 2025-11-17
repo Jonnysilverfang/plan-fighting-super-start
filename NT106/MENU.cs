@@ -12,6 +12,9 @@ namespace plan_fighting_super_start
         private IWavePlayer waveOut;
         private AudioFileReader audioFile;
 
+        // ⭐ dịch vụ ảnh S3
+        private readonly S3ImageService _imageService = new S3ImageService();
+
         // ===== Màu UI =====
         private readonly Color Teal = Color.FromArgb(0, 192, 192);
         private readonly Color BgDark = Color.FromArgb(10, 15, 30);
@@ -109,6 +112,28 @@ namespace plan_fighting_super_start
             if (textBox3 != null) textBox3.Text = AccountData.Level.ToString();
         }
 
+        // 🔹 Load avatar từ S3: avatars/{username}.png
+        private async void LoadAvatarAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(AccountData.Username)) return;
+
+                string key = $"avatars/avatars/{AccountData.Username}.png";
+                var img = await _imageService.GetImageAsync(key);
+
+                if (pictureBoxAvatar != null && img != null)
+                {
+                    pictureBoxAvatar.Image = img;
+                    pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+                }
+            }
+            catch
+            {
+                // Nếu không có avatar hoặc lỗi S3 thì thôi, không báo ầm ĩ
+            }
+        }
+
         // Sự kiện load form (Designer: Load += Form3_Load;)
         private void Form3_Load(object sender, EventArgs e)
         {
@@ -117,10 +142,14 @@ namespace plan_fighting_super_start
 
             if (labelWelcome != null)
             {
-                labelWelcome.Text = "Xin chào";
+                if (!string.IsNullOrEmpty(AccountData.Username))
+                    labelWelcome.Text = $"Xin chào, {AccountData.Username}";
+                else
+                    labelWelcome.Text = "Xin chào";
             }
 
             RefreshAccountDataAndUI();
+            LoadAvatarAsync();  // 🔹 load avatar khi vào Menu
 
             if (buttonPlay != null) SetGameButton(buttonPlay);
             if (buttonUpgradeHP != null) SetGameButton(buttonUpgradeHP);
@@ -130,6 +159,7 @@ namespace plan_fighting_super_start
             if (button2 != null) SetGameButton(button2);
             if (button3 != null) SetGameButton(button3);
             if (button4 != null) SetGameButton(button4);
+            if (button5 != null) SetGameButton(button5);
 
             if (textBoxGold != null) SetStatTextBox(textBoxGold);
             if (textBox1 != null) SetStatTextBox(textBox1);

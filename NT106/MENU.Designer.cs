@@ -24,6 +24,12 @@ namespace plan_fighting_super_start
         private Label labelWelcome;
         private SaveFileDialog saveFileDialog1;
         private Button button2;    // Rank
+        private Button button3;
+        private Button button4;
+        private Button button5;
+
+        // 🔹 avatar user
+        private PictureBox pictureBoxAvatar;
 
         protected override void Dispose(bool disposing)
         {
@@ -52,6 +58,8 @@ namespace plan_fighting_super_start
             button3 = new Button();
             button4 = new Button();
             button5 = new Button();
+            pictureBoxAvatar = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).BeginInit();
             SuspendLayout();
             // 
             // textBoxGold
@@ -229,9 +237,9 @@ namespace plan_fighting_super_start
             labelWelcome.BackColor = Color.Transparent;
             labelWelcome.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point, 163);
             labelWelcome.ForeColor = Color.FromArgb(0, 192, 192);
-            labelWelcome.Location = new Point(50, 30);
+            labelWelcome.Location = new Point(100, 30);
             labelWelcome.Name = "labelWelcome";
-            labelWelcome.Size = new Size(460, 45);
+            labelWelcome.Size = new Size(360, 45);
             labelWelcome.TabIndex = 0;
             labelWelcome.Text = "Xin chào";
             labelWelcome.TextAlign = ContentAlignment.MiddleCenter;
@@ -292,6 +300,17 @@ namespace plan_fighting_super_start
             button5.UseVisualStyleBackColor = false;
             button5.Click += button5_Click;
             // 
+            // pictureBoxAvatar
+            // 
+            pictureBoxAvatar.BackColor = Color.FromArgb(15, 22, 45);
+            pictureBoxAvatar.BorderStyle = BorderStyle.FixedSingle;
+            pictureBoxAvatar.Location = new Point(12, 50);
+            pictureBoxAvatar.Name = "pictureBoxAvatar";
+            pictureBoxAvatar.Size = new Size(70, 70);
+            pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxAvatar.TabIndex = 21;
+            pictureBoxAvatar.TabStop = false;
+            // 
             // Menu
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -300,6 +319,7 @@ namespace plan_fighting_super_start
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_dy9x6hdy9x6hdy9x;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(560, 680);
+            Controls.Add(pictureBoxAvatar);
             Controls.Add(button5);
             Controls.Add(button4);
             Controls.Add(button3);
@@ -325,11 +345,9 @@ namespace plan_fighting_super_start
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Menu Game";
             Load += Form3_Load;
+            ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
-        private Button button3;
-        private Button button4;
-        private Button button5;
     }
 }
