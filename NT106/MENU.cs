@@ -143,7 +143,7 @@ namespace plan_fighting_super_start
             if (labelWelcome != null)
             {
                 if (!string.IsNullOrEmpty(AccountData.Username))
-                    labelWelcome.Text = $"Xin chào, {AccountData.Username}";
+                    labelWelcome.Text = $"Xin chào {AccountData.Username}";
                 else
                     labelWelcome.Text = "Xin chào";
             }

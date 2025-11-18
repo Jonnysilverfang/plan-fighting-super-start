@@ -68,7 +68,7 @@ namespace plan_fighting_super_start
             textBoxGold.BorderStyle = BorderStyle.FixedSingle;
             textBoxGold.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             textBoxGold.ForeColor = Color.FromArgb(0, 192, 192);
-            textBoxGold.Location = new Point(230, 183);
+            textBoxGold.Location = new Point(250, 212);
             textBoxGold.Name = "textBoxGold";
             textBoxGold.ReadOnly = true;
             textBoxGold.Size = new Size(140, 30);
@@ -137,7 +137,7 @@ namespace plan_fighting_super_start
             label1.BackColor = Color.Transparent;
             label1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             label1.ForeColor = Color.FromArgb(0, 192, 192);
-            label1.Location = new Point(140, 185);
+            label1.Location = new Point(160, 214);
             label1.Name = "label1";
             label1.Size = new Size(50, 23);
             label1.TabIndex = 6;
@@ -149,7 +149,7 @@ namespace plan_fighting_super_start
             label2.BackColor = Color.Transparent;
             label2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             label2.ForeColor = Color.FromArgb(0, 192, 192);
-            label2.Location = new Point(140, 230);
+            label2.Location = new Point(160, 259);
             label2.Name = "label2";
             label2.Size = new Size(33, 23);
             label2.TabIndex = 7;
@@ -161,7 +161,7 @@ namespace plan_fighting_super_start
             textBox1.BorderStyle = BorderStyle.FixedSingle;
             textBox1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             textBox1.ForeColor = Color.FromArgb(0, 192, 192);
-            textBox1.Location = new Point(230, 228);
+            textBox1.Location = new Point(250, 257);
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
             textBox1.Size = new Size(140, 30);
@@ -174,7 +174,7 @@ namespace plan_fighting_super_start
             label3.BackColor = Color.Transparent;
             label3.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             label3.ForeColor = Color.FromArgb(0, 192, 192);
-            label3.Location = new Point(140, 275);
+            label3.Location = new Point(160, 304);
             label3.Name = "label3";
             label3.Size = new Size(84, 23);
             label3.TabIndex = 9;
@@ -186,7 +186,7 @@ namespace plan_fighting_super_start
             textBox2.BorderStyle = BorderStyle.FixedSingle;
             textBox2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             textBox2.ForeColor = Color.FromArgb(0, 192, 192);
-            textBox2.Location = new Point(230, 273);
+            textBox2.Location = new Point(250, 302);
             textBox2.Name = "textBox2";
             textBox2.ReadOnly = true;
             textBox2.Size = new Size(140, 30);
@@ -213,7 +213,7 @@ namespace plan_fighting_super_start
             textBox3.BorderStyle = BorderStyle.FixedSingle;
             textBox3.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             textBox3.ForeColor = Color.FromArgb(0, 192, 192);
-            textBox3.Location = new Point(230, 138);
+            textBox3.Location = new Point(250, 167);
             textBox3.Name = "textBox3";
             textBox3.ReadOnly = true;
             textBox3.Size = new Size(140, 30);
@@ -226,7 +226,7 @@ namespace plan_fighting_super_start
             label4.BackColor = Color.Transparent;
             label4.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             label4.ForeColor = Color.FromArgb(0, 192, 192);
-            label4.Location = new Point(140, 140);
+            label4.Location = new Point(160, 169);
             label4.Name = "label4";
             label4.Size = new Size(51, 23);
             label4.TabIndex = 16;
@@ -237,7 +237,7 @@ namespace plan_fighting_super_start
             labelWelcome.BackColor = Color.Transparent;
             labelWelcome.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point, 163);
             labelWelcome.ForeColor = Color.FromArgb(0, 192, 192);
-            labelWelcome.Location = new Point(100, 30);
+            labelWelcome.Location = new Point(100, 9);
             labelWelcome.Name = "labelWelcome";
             labelWelcome.Size = new Size(360, 45);
             labelWelcome.TabIndex = 0;
@@ -304,9 +304,9 @@ namespace plan_fighting_super_start
             // 
             pictureBoxAvatar.BackColor = Color.FromArgb(15, 22, 45);
             pictureBoxAvatar.BorderStyle = BorderStyle.FixedSingle;
-            pictureBoxAvatar.Location = new Point(12, 50);
+            pictureBoxAvatar.Location = new Point(232, 57);
             pictureBoxAvatar.Name = "pictureBoxAvatar";
-            pictureBoxAvatar.Size = new Size(70, 70);
+            pictureBoxAvatar.Size = new Size(92, 89);
             pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxAvatar.TabIndex = 21;
             pictureBoxAvatar.TabStop = false;

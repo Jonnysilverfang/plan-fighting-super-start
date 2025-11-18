@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -10,54 +13,26 @@ namespace plan_fighting_super_start
 {
     public class S3ImageService
     {
-        // 🔹 API của bạn
         private const string API_IMAGE = "https://2cd28uutce.execute-api.ap-southeast-1.amazonaws.com/image";
 
         private static readonly HttpClient http = new HttpClient();
 
-        // =====================================================================
-        // 1) UPLOAD ẢNH THEO FILE GỐC (nếu bạn cần)
-        // =====================================================================
-        public async Task<string> UploadByOriginalNameAsync(string filePath)
-        {
-            byte[] bytes = File.ReadAllBytes(filePath);
-            string base64 = Convert.ToBase64String(bytes);
-
-            string fileName = Path.GetFileName(filePath);
-            string contentType = GetContentType(filePath);
-
-            var body = new
-            {
-                action = "upload",
-                fileName = fileName,
-                imageBase64 = base64,
-                contentType = contentType
-            };
-
-            string json = JsonSerializer.Serialize(body);
-
-            using var resp = await http.PostAsync(
-                API_IMAGE,
-                new StringContent(json, Encoding.UTF8, "application/json"));
-
-            resp.EnsureSuccessStatusCode();
-
-            string text = await resp.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(text);
-
-            return doc.RootElement.GetProperty("key").GetString();
-        }
+        // 🔹 Cache avatar theo key (avatars/username.png)
+        private static readonly Dictionary<string, Image> _imageCache = new Dictionary<string, Image>();
 
         // =====================================================================
-        // 2) UPLOAD ẢNH THEO TÊN USER => avatars/{username}.png
+        // 1) UPLOAD ẢNH THEO TÊN USER => avatars/{username}.png
+        //     - Tự động RESIZE + NÉN ảnh để nhanh hơn
         // =====================================================================
         public async Task<string> UploadImageAsync(string filePath, string username)
         {
-            byte[] bytes = File.ReadAllBytes(filePath);
-            string base64 = Convert.ToBase64String(bytes);
+            // Tối ưu: resize + nén ảnh trước khi upload
+            byte[] optimizedBytes = OptimizeImage(filePath);
 
-            string fileName = $"avatars/{username}.png";   // 🔥 key cố định theo username
-            string contentType = GetContentType(filePath);
+            string fileName = $"avatars/{username}.png";   // key trên S3
+            string contentType = "image/png";              // mình xuất PNG/JPEG đều ok
+
+            string base64 = Convert.ToBase64String(optimizedBytes);
 
             var body = new
             {
@@ -78,14 +53,33 @@ namespace plan_fighting_super_start
             string text = await resp.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(text);
 
-            return doc.RootElement.GetProperty("key").GetString();   // => "avatars/user.png"
+            string key = doc.RootElement.GetProperty("key").GetString();
+
+            // Xoá cache cũ (nếu user đổi avatar)
+            if (!string.IsNullOrEmpty(key) && _imageCache.ContainsKey(key))
+            {
+                _imageCache[key].Dispose();
+                _imageCache.Remove(key);
+            }
+
+            return key;   // "avatars/username.png"
         }
 
         // =====================================================================
-        // 3) DOWNLOAD ẢNH TỪ S3 THEO KEY
+        // 2) LẤY ẢNH TỪ S3 THEO KEY – CÓ CACHE
         // =====================================================================
         public async Task<Image> GetImageAsync(string key)
         {
+            if (string.IsNullOrEmpty(key))
+                return null;
+
+            // 🔹 Nếu đã có trong cache thì trả luôn, khỏi gọi S3
+            if (_imageCache.TryGetValue(key, out var cachedImg) && cachedImg != null)
+            {
+                // Trả bản clone cho an toàn
+                return (Image)cachedImg.Clone();
+            }
+
             var body = new
             {
                 action = "getUrl",
@@ -109,22 +103,61 @@ namespace plan_fighting_super_start
             byte[] bytes = await http.GetByteArrayAsync(url);
             using var ms = new MemoryStream(bytes);
 
-            return Image.FromStream(ms);
+            var img = Image.FromStream(ms);
+
+            // Lưu vào cache để lần sau không phải tải lại
+            if (_imageCache.ContainsKey(key))
+            {
+                _imageCache[key].Dispose();
+                _imageCache[key] = (Image)img.Clone();
+            }
+            else
+            {
+                _imageCache.Add(key, (Image)img.Clone());
+            }
+
+            return img;
         }
 
         // =====================================================================
-        // 🔧 HÀM PHỤ: xác định loại ảnh
+        // 3) HÀM TỐI ƯU ẢNH (resize + nén)
         // =====================================================================
-        private string GetContentType(string filePath)
+        private byte[] OptimizeImage(string filePath)
         {
-            string ext = Path.GetExtension(filePath)?.ToLower();
+            using var original = Image.FromFile(filePath);
 
-            return ext switch
+            // Giới hạn tối đa 256x256 cho avatar
+            const int maxSize = 256;
+            int w = original.Width;
+            int h = original.Height;
+
+            // Nếu ảnh đã nhỏ rồi thì vẫn convert sang PNG/JPEG cho gọn
+            if (w <= maxSize && h <= maxSize)
             {
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".gif" => "image/gif",
-                _ => "image/png"
-            };
+                using var ms = new MemoryStream();
+                original.Save(ms, ImageFormat.Png);   // hoặc ImageFormat.Jpeg
+                return ms.ToArray();
+            }
+
+            // Tính tỉ lệ scale
+            float scale = (float)maxSize / Math.Max(w, h);
+            int newW = (int)(w * scale);
+            int newH = (int)(h * scale);
+
+            // Resize với chất lượng tốt
+            using var bmp = new Bitmap(newW, newH);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.HighQuality;
+
+                g.DrawImage(original, 0, 0, newW, newH);
+            }
+
+            using var msOut = new MemoryStream();
+            bmp.Save(msOut, ImageFormat.Png);   // PNG chất lượng cao, dung lượng vẫn nhỏ vì size 256x256
+            return msOut.ToArray();
         }
     }
 }
