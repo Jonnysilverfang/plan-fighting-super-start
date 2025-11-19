@@ -62,5 +62,15 @@ namespace plan_fighting_super_start
                 host = hostName
             });
         }
+
+        // ĐÁNH DẤU PHÒNG KẾT THÚC (END)
+        public static Task<bool> EndRoomAsync(string roomId)
+        {
+            return PostAsync(new
+            {
+                action = "end",
+                roomId = roomId
+            });
+        }
     }
 }

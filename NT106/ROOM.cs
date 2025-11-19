@@ -24,10 +24,25 @@ namespace plan_fighting_super_start
             SetStatus("Chưa tạo/tham gia phòng.");
         }
 
+        // ===== FORM CLOSING: đánh dấu END nếu đã có phòng =====
         private void Form5_FormClosing(object sender, FormClosingEventArgs e)
         {
             try { networkManager?.Dispose(); } catch { }
             try { lanBroadcast?.Dispose(); } catch { }
+
+            // Chỉ host mới báo END (tuỳ bạn, có thể bỏ isHost nếu muốn cả client cũng END)
+            try
+            {
+                if (isHost && !string.IsNullOrEmpty(currentRoomId))
+                {
+                    // fire-and-forget, không cần await
+                    _ = RoomApi.EndRoomAsync(currentRoomId);
+                }
+            }
+            catch
+            {
+                // nuốt lỗi, không làm crash form
+            }
         }
 
         private void SetStatus(string msg)
