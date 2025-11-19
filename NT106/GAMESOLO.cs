@@ -437,6 +437,24 @@ namespace plan_fighting_super_start
             lblStatusGame.Text = "Đang chờ đối thủ…";
         }
 
+        // ================== ROOM STATUS (END) ==================
+
+        private void MarkRoomEnd()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(_roomId))
+                {
+                    // Fire-and-forget, không cần await
+                    _ = RoomApi.EndRoomAsync(_roomId);
+                }
+            }
+            catch
+            {
+                // tránh crash nếu lỗi mạng
+            }
+        }
+
         // ================== GAME LOOP ==================
 
         private void GameTimer_Tick(object? sender, EventArgs e)
@@ -677,6 +695,9 @@ namespace plan_fighting_super_start
             _paused = false;
             _pausePanel.Visible = false;
 
+            // 🔹 Đánh dấu phòng END khi trận kết thúc
+            MarkRoomEnd();
+
             if (_isHost)
             {
                 try
@@ -745,6 +766,9 @@ namespace plan_fighting_super_start
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (ask == DialogResult.Yes)
             {
+                // 🔹 Đánh dấu phòng END khi người chơi chủ động thoát
+                MarkRoomEnd();
+
                 try { _gameTimer?.Stop(); } catch { }
                 try { (_network as IDisposable)?.Dispose(); _network = null; } catch { }
                 Close();
@@ -753,6 +777,9 @@ namespace plan_fighting_super_start
 
         private void Form6_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // 🔹 Phòng ngừa: nếu form bị đóng trực tiếp, vẫn đánh dấu END
+            MarkRoomEnd();
+
             try
             {
                 _gameTimer?.Stop();
