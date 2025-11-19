@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace plan_fighting_super_start
@@ -37,7 +36,7 @@ namespace plan_fighting_super_start
         private Panel _pausePanel;
         private Button _btnResume, _btnQuit;
 
-        // ⭐ Dùng service có sẵn để lấy ảnh từ S3
+        // Service lấy ảnh từ S3 (không sửa file S3ImageService.cs)
         private readonly S3ImageService _s3 = new S3ImageService();
 
         public GAMESOLO()
@@ -71,7 +70,7 @@ namespace plan_fighting_super_start
             SetupTimer();
             WireNetworkEvents();
 
-            // ⭐ Sau khi tạo ship xong thì load avatar cho người chơi
+            // Sau khi tạo xong player thì load avatar cho user local
             LoadPlayerAvatarAsync();
         }
 
@@ -94,7 +93,7 @@ namespace plan_fighting_super_start
         {
             int w = Math.Max(800, this.ClientSize.Width);
             int h = Math.Max(600, this.ClientSize.Height);
-            int ship = 40;
+            int ship = 64;      // ship to hơn để avatar rõ hơn
 
             _player = new PictureBox { Width = ship, Height = ship, BackColor = Color.DeepSkyBlue };
             _opponent = new PictureBox { Width = ship, Height = ship, BackColor = Color.OrangeRed };
@@ -110,8 +109,20 @@ namespace plan_fighting_super_start
                 _opponent.Left = (w - ship) / 2; _opponent.Top = h - ship - 70;
             }
 
-            _playerBullet = new PictureBox { Width = 8, Height = 20, BackColor = Color.Yellow, Visible = false };
-            _opponentBullet = new PictureBox { Width = 8, Height = 20, BackColor = Color.Lime, Visible = false };
+            _playerBullet = new PictureBox
+            {
+                Width = 8,
+                Height = 20,
+                BackColor = Color.Yellow,
+                Visible = false
+            };
+            _opponentBullet = new PictureBox
+            {
+                Width = 8,
+                Height = 20,
+                BackColor = Color.Lime,
+                Visible = false
+            };
 
             Controls.Add(_player);
             Controls.Add(_opponent);
@@ -331,7 +342,7 @@ namespace plan_fighting_super_start
                             lblStatusGame.Text = "Đã kết nối với " + _opponentName;
                             UpdateHud();
 
-                            // ⭐ Khi biết tên đối thủ thì load avatar theo tên
+                            // khi biết tên đối thủ thì load avatar của họ
                             LoadOpponentAvatarAsync(_opponentName);
                         }
                         break;
@@ -520,11 +531,9 @@ namespace plan_fighting_super_start
         {
         }
 
-        // =====================================================================
-        // 🔹 HÀM LOAD AVATAR TỪ S3 THEO TÊN USER (KHÔNG ĐỤNG S3ImageService)
-        // =====================================================================
+        // ====================== AVATAR TỪ S3 ======================
 
-        // Avatar của chính mình: avatars/{AccountData.Username}.png
+        // Avatar của local user: avatars/{AccountData.Username}.png
         private async void LoadPlayerAvatarAsync()
         {
             try
@@ -544,7 +553,7 @@ namespace plan_fighting_super_start
             }
             catch
             {
-                // lỗi thì bỏ qua, giữ block màu mặc định
+                // lỗi thì giữ ô màu
             }
         }
 
@@ -568,7 +577,7 @@ namespace plan_fighting_super_start
             }
             catch
             {
-                // lỗi thì bỏ qua, không crash game
+                // lỗi thì giữ ô màu
             }
         }
     }
