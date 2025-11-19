@@ -307,5 +307,28 @@ namespace plan_fighting_super_start
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(AccountData.Username))
+            {
+                MessageBox.Show(
+                    "Vui lòng đăng nhập để xem lịch sử.",
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                var form = new MatchHistoryForm();
+                form.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể mở lịch sử đấu: " + ex.Message);
+            }
+        }
     }
 }

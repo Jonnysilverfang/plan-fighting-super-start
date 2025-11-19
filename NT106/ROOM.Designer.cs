@@ -42,6 +42,7 @@ namespace plan_fighting_super_start
             IdRoom = new DataGridView();
             Player1 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)IdRoom).BeginInit();
             SuspendLayout();
             // 
@@ -222,6 +223,19 @@ namespace plan_fighting_super_start
             dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             dataGridViewTextBoxColumn2.ReadOnly = true;
             // 
+            // button1
+            // 
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            button1.ForeColor = Color.FromArgb(0, 192, 192);
+            button1.Location = new Point(36, 348);
+            button1.Name = "button1";
+            button1.Size = new Size(290, 49);
+            button1.TabIndex = 10;
+            button1.Text = "Lịch sử đấu";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // Room
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -230,6 +244,7 @@ namespace plan_fighting_super_start
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1084, 593);
+            Controls.Add(button1);
             Controls.Add(IdRoom);
             Controls.Add(label1);
             Controls.Add(lblStatus);
@@ -252,5 +267,7 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         #endregion
+
+        private Button button1;
     }
 }
