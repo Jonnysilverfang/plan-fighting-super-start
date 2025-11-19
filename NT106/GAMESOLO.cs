@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace plan_fighting_super_start
@@ -36,6 +37,9 @@ namespace plan_fighting_super_start
         private Panel _pausePanel;
         private Button _btnResume, _btnQuit;
 
+        // ⭐ Dùng service có sẵn để lấy ảnh từ S3
+        private readonly S3ImageService _s3 = new S3ImageService();
+
         public GAMESOLO()
             : this(new NetworkManager(), true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
 
@@ -66,6 +70,9 @@ namespace plan_fighting_super_start
             SetupPauseOverlay();
             SetupTimer();
             WireNetworkEvents();
+
+            // ⭐ Sau khi tạo ship xong thì load avatar cho người chơi
+            LoadPlayerAvatarAsync();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -323,6 +330,9 @@ namespace plan_fighting_super_start
                             this.Text = (_isHost ? "[HOST] " : "[CLIENT] ") + "Room: " + _roomId + "  - vs " + _opponentName;
                             lblStatusGame.Text = "Đã kết nối với " + _opponentName;
                             UpdateHud();
+
+                            // ⭐ Khi biết tên đối thủ thì load avatar theo tên
+                            LoadOpponentAvatarAsync(_opponentName);
                         }
                         break;
 
@@ -508,6 +518,58 @@ namespace plan_fighting_super_start
 
         private void GAMESOLO_Load(object sender, EventArgs e)
         {
+        }
+
+        // =====================================================================
+        // 🔹 HÀM LOAD AVATAR TỪ S3 THEO TÊN USER (KHÔNG ĐỤNG S3ImageService)
+        // =====================================================================
+
+        // Avatar của chính mình: avatars/{AccountData.Username}.png
+        private async void LoadPlayerAvatarAsync()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(AccountData.Username) || _player == null)
+                    return;
+
+                string key = $"avatars/{AccountData.Username}.png";
+
+                var img = await _s3.GetImageAsync(key);
+                if (img == null) return;
+
+                _player.Image?.Dispose();
+                _player.Image = img;
+                _player.SizeMode = PictureBoxSizeMode.StretchImage;
+                _player.BackColor = Color.Transparent;
+            }
+            catch
+            {
+                // lỗi thì bỏ qua, giữ block màu mặc định
+            }
+        }
+
+        // Avatar đối thủ: avatars/{opponentName}.png
+        private async void LoadOpponentAvatarAsync(string opponentName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(opponentName) || _opponent == null)
+                    return;
+
+                string key = $"avatars/{opponentName}.png";
+
+                var img = await _s3.GetImageAsync(key);
+                if (img == null) return;
+
+                _opponent.Image?.Dispose();
+                _opponent.Image = img;
+                _opponent.SizeMode = PictureBoxSizeMode.StretchImage;
+                _opponent.BackColor = Color.Transparent;
+            }
+            catch
+            {
+                // lỗi thì bỏ qua, không crash game
+            }
         }
     }
 }
