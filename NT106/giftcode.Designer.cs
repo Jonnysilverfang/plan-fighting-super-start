@@ -36,10 +36,10 @@
         {
             panelMain = new Panel();
             labelTitle = new Label();
+            labelHint = new Label();
             panelTextBorder = new Panel();
             textBox1 = new TextBox();
             button1 = new Button();
-            labelHint = new Label();
             panelMain.SuspendLayout();
             panelTextBorder.SuspendLayout();
             SuspendLayout();
@@ -66,6 +66,17 @@
             labelTitle.Size = new Size(236, 32);
             labelTitle.TabIndex = 0;
             labelTitle.Text = "Enter your giftcode";
+            // 
+            // labelHint
+            // 
+            labelHint.AutoSize = true;
+            labelHint.Font = new Font("Segoe UI", 9F);
+            labelHint.ForeColor = Color.Silver;
+            labelHint.Location = new Point(22, 50);
+            labelHint.Name = "labelHint";
+            labelHint.Size = new Size(280, 20);
+            labelHint.TabIndex = 1;
+            labelHint.Text = "Paste the code you received into the box.";
             // 
             // panelTextBorder
             // 
@@ -105,17 +116,6 @@
             button1.Text = "Redeem";
             button1.UseVisualStyleBackColor = false;
             button1.Click += button1_Click;
-            // 
-            // labelHint
-            // 
-            labelHint.AutoSize = true;
-            labelHint.Font = new Font("Segoe UI", 9F);
-            labelHint.ForeColor = Color.Silver;
-            labelHint.Location = new Point(22, 50);
-            labelHint.Name = "labelHint";
-            labelHint.Size = new Size(280, 20);
-            labelHint.TabIndex = 1;
-            labelHint.Text = "Paste the code you received into the box.";
             // 
             // giftcode
             // 

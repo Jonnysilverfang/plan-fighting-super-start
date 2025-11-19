@@ -287,5 +287,10 @@ namespace plan_fighting_super_start
                 MessageBox.Show("Không thể mở lịch sử đấu: " + ex.Message);
             }
         }
+
+        private void IdRoom_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

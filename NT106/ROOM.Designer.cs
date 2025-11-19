@@ -13,7 +13,11 @@ namespace plan_fighting_super_start
         private Button btnJoinRoom;
         private Button btnStartGame;
         private Label lblStatus;
-        private Button btnHistory;
+
+        private Label label1;
+        private DataGridView IdRoom;
+        private DataGridViewTextBoxColumn Player1;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
 
         protected override void Dispose(bool disposing)
         {
@@ -24,6 +28,9 @@ namespace plan_fighting_super_start
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             labelTitle = new Label();
             labelRoom = new Label();
             txtRoomID = new TextBox();
@@ -31,7 +38,11 @@ namespace plan_fighting_super_start
             btnJoinRoom = new Button();
             btnStartGame = new Button();
             lblStatus = new Label();
-            btnHistory = new Button();
+            label1 = new Label();
+            IdRoom = new DataGridView();
+            Player1 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)IdRoom).BeginInit();
             SuspendLayout();
             // 
             // labelTitle
@@ -135,27 +146,81 @@ namespace plan_fighting_super_start
             lblStatus.ForeColor = Color.FromArgb(0, 192, 192);
             lblStatus.Location = new Point(36, 400);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(540, 70);
+            lblStatus.Size = new Size(424, 70);
             lblStatus.TabIndex = 6;
             lblStatus.Text = "Trạng thái: Chưa tạo/tham gia phòng.";
             // 
-            // btnHistory
+            // label1
             // 
-            btnHistory.BackColor = Color.FromArgb(10, 20, 40);
-            btnHistory.FlatAppearance.BorderColor = Color.FromArgb(0, 192, 192);
-            btnHistory.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 140);
-            btnHistory.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 80, 100);
-            btnHistory.FlatStyle = FlatStyle.Flat;
-            btnHistory.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            btnHistory.ForeColor = Color.FromArgb(0, 192, 192);
-            btnHistory.Location = new Point(36, 335);
-            btnHistory.Margin = new Padding(3, 4, 3, 4);
-            btnHistory.Name = "btnHistory";
-            btnHistory.Size = new Size(290, 45);
-            btnHistory.TabIndex = 7;
-            btnHistory.Text = "📜 Lịch sử đấu";
-            btnHistory.UseVisualStyleBackColor = false;
-            btnHistory.Click += btnHistory_Click;
+            label1.AutoSize = true;
+            label1.BackColor = Color.FromArgb(90, 0, 0, 0);
+            label1.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            label1.ForeColor = Color.FromArgb(0, 255, 255);
+            label1.Location = new Point(514, 86);
+            label1.Name = "label1";
+            label1.Size = new Size(289, 37);
+            label1.TabIndex = 8;
+            label1.Text = "DANH SÁCH PHÒNG ";
+            // 
+            // IdRoom
+            // 
+            IdRoom.AllowUserToAddRows = false;
+            IdRoom.AllowUserToDeleteRows = false;
+            IdRoom.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(14, 20, 40);
+            dataGridViewCellStyle1.ForeColor = Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
+            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            IdRoom.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            IdRoom.BackgroundColor = Color.FromArgb(10, 15, 35);
+            IdRoom.BorderStyle = BorderStyle.None;
+            IdRoom.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            IdRoom.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(0, 120, 140);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(0, 150, 160);
+            dataGridViewCellStyle2.SelectionForeColor = Color.White;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            IdRoom.ColumnHeadersHeight = 32;
+            IdRoom.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            IdRoom.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2 });
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(18, 24, 48);
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle3.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            IdRoom.DefaultCellStyle = dataGridViewCellStyle3;
+            IdRoom.GridColor = Color.FromArgb(0, 192, 192);
+            IdRoom.Location = new Point(514, 147);
+            IdRoom.Name = "IdRoom";
+            IdRoom.ReadOnly = true;
+            IdRoom.RowHeadersVisible = false;
+            IdRoom.RowHeadersWidth = 51;
+            IdRoom.RowTemplate.Height = 28;
+            IdRoom.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            IdRoom.Size = new Size(478, 323);
+            IdRoom.TabIndex = 9;
+            IdRoom.CellContentClick += IdRoom_CellContentClick;
+            // 
+            // Player1
+            // 
+            Player1.HeaderText = "ROOM ID";
+            Player1.MinimumWidth = 6;
+            Player1.Name = "Player1";
+            Player1.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            dataGridViewTextBoxColumn2.HeaderText = "Host";
+            dataGridViewTextBoxColumn2.MinimumWidth = 6;
+            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            dataGridViewTextBoxColumn2.ReadOnly = true;
             // 
             // Room
             // 
@@ -164,8 +229,9 @@ namespace plan_fighting_super_start
             BackColor = Color.FromArgb(10, 15, 30);
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(922, 500);
-            Controls.Add(btnHistory);
+            ClientSize = new Size(1084, 593);
+            Controls.Add(IdRoom);
+            Controls.Add(label1);
             Controls.Add(lblStatus);
             Controls.Add(btnStartGame);
             Controls.Add(btnJoinRoom);
@@ -181,6 +247,7 @@ namespace plan_fighting_super_start
             Text = "Lobby – Solo LAN";
             FormClosing += Form5_FormClosing;
             Load += Room_Load;
+            ((System.ComponentModel.ISupportInitialize)IdRoom).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
