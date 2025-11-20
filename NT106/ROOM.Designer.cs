@@ -47,6 +47,7 @@ namespace plan_fighting_super_start
             dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
             colPlayersStatus = new DataGridViewTextBoxColumn();
             button1 = new Button();
+            button2 = new Button();
             ((System.ComponentModel.ISupportInitialize)IdRoom).BeginInit();
             SuspendLayout();
             // 
@@ -248,6 +249,19 @@ namespace plan_fighting_super_start
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // button2
+            // 
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            button2.ForeColor = Color.FromArgb(0, 192, 192);
+            button2.Location = new Point(908, 527);
+            button2.Name = "button2";
+            button2.Size = new Size(149, 54);
+            button2.TabIndex = 11;
+            button2.Text = "Load Data Room";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // Room
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -256,6 +270,7 @@ namespace plan_fighting_super_start
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1084, 593);
+            Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(IdRoom);
             Controls.Add(label1);
@@ -279,5 +294,7 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         #endregion
+
+        private Button button2;
     }
 }

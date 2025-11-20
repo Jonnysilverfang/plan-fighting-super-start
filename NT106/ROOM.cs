@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,6 +19,7 @@ namespace plan_fighting_super_start
             InitializeComponent();
         }
 
+        // ========================= FORM LOAD =========================
         private async void Room_Load(object sender, EventArgs e)
         {
             SetStatus("Chưa tạo/tham gia phòng.");
@@ -47,6 +47,7 @@ namespace plan_fighting_super_start
             }
         }
 
+        // ========================= HELPER =========================
         private void SetStatus(string msg)
         {
             if (InvokeRequired)
@@ -138,9 +139,7 @@ namespace plan_fighting_super_start
             }
         }
 
-        // ============================
-        //         TẠO PHÒNG HOST
-        // ============================
+        // ========================= TẠO PHÒNG HOST =========================
         private async void btnCreateRoom_Click(object sender, EventArgs e)
         {
             try
@@ -197,9 +196,7 @@ namespace plan_fighting_super_start
             }
         }
 
-        // ============================
-        //         JOIN PHÒNG CLIENT
-        // ============================
+        // ========================= JOIN PHÒNG CLIENT =========================
         private void btnJoinRoom_Click(object sender, EventArgs e)
         {
             string roomId = txtRoomID.Text.Trim();
@@ -276,9 +273,7 @@ namespace plan_fighting_super_start
             lanBroadcast.StartListen(currentRoomId);
         }
 
-        // ============================
-        //         HOST BẤM START
-        // ============================
+        // ========================= HOST BẤM START =========================
         private async void btnStartGame_Click(object sender, EventArgs e)
         {
             if (networkManager == null || !networkManager.IsConnected)
@@ -301,9 +296,7 @@ namespace plan_fighting_super_start
             OpenGame();
         }
 
-        // ============================
-        //         MỞ GAME SOLO
-        // ============================
+        // ========================= MỞ GAME SOLO =========================
         private void OpenGame()
         {
             var game = new GAMESOLO(networkManager, isHost, currentRoomId);
@@ -320,9 +313,7 @@ namespace plan_fighting_super_start
             };
         }
 
-        // ============================
-        //         LỊCH SỬ ĐẤU
-        // ============================
+        // ========================= LỊCH SỬ ĐẤU =========================
         private void button1_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(AccountData.Username))
@@ -357,6 +348,8 @@ namespace plan_fighting_super_start
             if (e.RowIndex < 0) return;
 
             var row = IdRoom.Rows[e.RowIndex];
+
+            // Ở đây mình đang lấy theo tên cột "Player1" – nếu cột RoomID tên khác thì đổi lại cho đúng
             var roomIdObj = row.Cells["Player1"].Value;
             var roomId = roomIdObj?.ToString();
 
@@ -367,6 +360,19 @@ namespace plan_fighting_super_start
 
             // Gọi lại logic join phòng
             btnJoinRoom_Click(btnJoinRoom, EventArgs.Empty);
+        }
+
+        // ========================= NÚT REFRESH DANH SÁCH PHÒNG =========================
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await LoadRoomsAsync();
+            }
+            catch (Exception ex)
+            {
+                SetStatus("Không tải được danh sách phòng: " + ex.Message);
+            }
         }
     }
 }
