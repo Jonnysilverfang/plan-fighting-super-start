@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using NAudio.Wave;   // ⭐ dùng NAudio để phát nhạc
+using NAudio.Wave;   // dùng NAudio để phát nhạc
 
 namespace plan_fighting_super_start
 {
@@ -14,6 +14,10 @@ namespace plan_fighting_super_start
 
         // ⭐ dịch vụ ảnh S3
         private readonly S3ImageService _imageService = new S3ImageService();
+
+        // ⭐ dịch vụ đổi máy bay (S3)
+        private readonly DoiMayBayService _doiMayBayService = new DoiMayBayService();
+        private int _currentPlaneIndex = 0;
 
         // ===== Màu UI =====
         private readonly Color Teal = Color.FromArgb(0, 192, 192);
@@ -92,7 +96,6 @@ namespace plan_fighting_super_start
         }
 
         // ===== Hàm dùng chung để load dữ liệu và cập nhật UI =====
-
         private void RefreshAccountDataAndUI()
         {
             try
@@ -134,6 +137,31 @@ namespace plan_fighting_super_start
             }
         }
 
+        // Khởi tạo chỉ số máy bay từ DB
+        private void InitPlaneIndexFromAccount()
+        {
+            // Nếu chưa từng chọn skin → để _currentPlaneIndex = 0 (MayBay.png)
+            if (string.IsNullOrEmpty(AccountData.PlaneSkin))
+            {
+                _currentPlaneIndex = 0;
+                // pictureBoxPlane đang dùng MayBay.png thiết kế sẵn → khỏi làm gì
+                return;
+            }
+
+            // Nếu backend đã lưu key S3, dạng "planes/plane3.png"
+            string fileName = Path.GetFileNameWithoutExtension(AccountData.PlaneSkin); // plane3
+            string digits = string.Empty;
+            foreach (char c in fileName)
+            {
+                if (char.IsDigit(c)) digits += c;
+            }
+
+            if (int.TryParse(digits, out int idx) && idx >= 1 && idx <= 5)
+                _currentPlaneIndex = idx;
+            else
+                _currentPlaneIndex = 0; // fallback → máy bay mặc định
+        }
+
         // Sự kiện load form (Designer: Load += Form3_Load;)
         private void Form3_Load(object sender, EventArgs e)
         {
@@ -150,6 +178,7 @@ namespace plan_fighting_super_start
 
             RefreshAccountDataAndUI();
             LoadAvatarAsync();  // 🔹 load avatar khi vào Menu
+            InitPlaneIndexFromAccount();
 
             if (buttonPlay != null) SetGameButton(buttonPlay);
             if (buttonUpgradeHP != null) SetGameButton(buttonUpgradeHP);
@@ -174,7 +203,6 @@ namespace plan_fighting_super_start
         }
 
         // ===== Helpers: chỉ UI, không đụng logic =====
-
         private void SetGameButton(Button button)
         {
             button.FlatStyle = FlatStyle.Flat;
@@ -225,7 +253,6 @@ namespace plan_fighting_super_start
         }
 
         // ====== Handlers nút bấm (logic giữ nguyên) ======
-
         private void buttonPlay_Click(object sender, EventArgs e)
         {
             try
@@ -312,6 +339,54 @@ namespace plan_fighting_super_start
         {
             var form = new giftcode();
             form.Show();
+        }
+
+        // ⭐ NÚT ĐỔI MÁY BAY – CHÚ Ý: async void
+        private async void buttonDoiMayBay_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(AccountData.Username))
+            {
+                MessageBox.Show("Bạn cần đăng nhập trước khi đổi máy bay!");
+                return;
+            }
+
+            // Tăng index Skin S3: 0 (default) → 1 → 2 → ... → 5 → 1 → ...
+            if (_currentPlaneIndex == 0)
+                _currentPlaneIndex = 1;
+            else
+            {
+                _currentPlaneIndex++;
+                if (_currentPlaneIndex > 5)
+                    _currentPlaneIndex = 1;
+            }
+
+            try
+            {
+                var (img, key) = await _doiMayBayService.DoiMayBayAsync(_currentPlaneIndex);
+
+                if (img != null && pictureBoxPlane != null)
+                {
+                    pictureBoxPlane.Image = img;
+                    pictureBoxPlane.SizeMode = PictureBoxSizeMode.Zoom;
+                }
+
+                if (!string.IsNullOrEmpty(key))
+                {
+                    // Lưu key S3 máy bay
+                    AccountData.PlaneSkin = key;
+                    try { Database.UpdateAccountData(); } catch { }
+
+                    MessageBox.Show("Đã đổi máy bay!", "Thông báo");
+                }
+                else
+                {
+                    MessageBox.Show("Không nhận được key máy bay từ server!", "Lỗi");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Đổi máy bay thất bại: " + ex.Message, "Lỗi");
+            }
         }
     }
 }

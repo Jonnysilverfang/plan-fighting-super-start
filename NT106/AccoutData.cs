@@ -14,5 +14,6 @@ namespace plan_fighting_super_start
         public static bool RewardLv10Claimed;
         public static bool RewardLv50Claimed;
         public static bool RewardLv100Claimed;
+        public static string? PlaneSkin = null;
     }
 }
