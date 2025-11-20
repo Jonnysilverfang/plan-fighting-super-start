@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,9 +20,12 @@ namespace plan_fighting_super_start
             InitializeComponent();
         }
 
-        private void Room_Load(object sender, EventArgs e)
+        private async void Room_Load(object sender, EventArgs e)
         {
             SetStatus("Chưa tạo/tham gia phòng.");
+
+            // Load danh sách phòng từ API lên DataGridView
+            await LoadRoomsAsync();
         }
 
         // ===== FORM CLOSING: đánh dấu END nếu đã có phòng =====
@@ -30,18 +34,16 @@ namespace plan_fighting_super_start
             try { networkManager?.Dispose(); } catch { }
             try { lanBroadcast?.Dispose(); } catch { }
 
-            // Chỉ host mới báo END (tuỳ bạn, có thể bỏ isHost nếu muốn cả client cũng END)
+            // Chỉ host mới báo END
             try
             {
                 if (isHost && !string.IsNullOrEmpty(currentRoomId))
                 {
-                    // fire-and-forget, không cần await
                     _ = RoomApi.EndRoomAsync(currentRoomId);
                 }
             }
             catch
             {
-                // nuốt lỗi, không làm crash form
             }
         }
 
@@ -91,6 +93,7 @@ namespace plan_fighting_super_start
                     UI(OpenGame);
             };
 
+            // Bị ngắt kết nối
             networkManager.OnDisconnected += () =>
             {
                 UI(() =>
@@ -99,6 +102,40 @@ namespace plan_fighting_super_start
                     SetStatus("Kết nối bị ngắt. Quay lại lobby hoặc tạo phòng khác.");
                 });
             };
+        }
+
+        // ======================================================
+        //       LOAD DANH SÁCH PHÒNG TỪ API LÊN DATAGRIDVIEW
+        // ======================================================
+        private async Task LoadRoomsAsync()
+        {
+            try
+            {
+                var rooms = await RoomApi.GetRoomsAsync();
+
+                UI(() =>
+                {
+                    IdRoom.Rows.Clear();
+
+                    if (rooms == null || rooms.Count == 0)
+                        return;
+
+                    foreach (RoomApi.RoomInfo r in rooms)
+                    {
+                        string playersPart = $"{r.PlayerCount}/2";
+                        string statusText = string.IsNullOrWhiteSpace(r.Status)
+                            ? playersPart
+                            : $"{playersPart} - {r.Status}";
+
+                        // Cột 1: RoomID, cột 2: Host, cột 3: Players/Status
+                        IdRoom.Rows.Add(r.RoomId, r.Host, statusText);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                SetStatus("Không tải được danh sách phòng: " + ex.Message);
+            }
         }
 
         // ============================
@@ -142,7 +179,6 @@ namespace plan_fighting_super_start
                     ? "Host"
                     : AccountData.Username;
 
-                // Log cũ nếu bạn dùng
                 _ = RoomLogger.LogHost(currentRoomId, hostName);
 
                 // POST lên API Gateway: action = create
@@ -151,6 +187,9 @@ namespace plan_fighting_super_start
                 {
                     SetStatus($"[HOST] Đã tạo phòng {currentRoomId} (LAN OK) nhưng POST API thất bại.");
                 }
+
+                // Sau khi tạo xong, refresh lại danh sách phòng
+                await LoadRoomsAsync();
             }
             catch (Exception ex)
             {
@@ -211,7 +250,6 @@ namespace plan_fighting_super_start
                         ? "Client"
                         : AccountData.Username;
 
-                    // Log cũ nếu bạn dùng
                     _ = RoomLogger.LogGuest(currentRoomId, guestName);
 
                     // POST lên API Gateway: action = join
@@ -221,6 +259,9 @@ namespace plan_fighting_super_start
                         UI(() => SetStatus(
                             $"Đã join LAN nhưng POST API join thất bại (phòng {currentRoomId})."));
                     }
+
+                    // Sau khi join thành công có thể reload lại list (cho đẹp)
+                    await LoadRoomsAsync();
                 }
                 catch (Exception ex)
                 {
@@ -253,7 +294,6 @@ namespace plan_fighting_super_start
                     ? "Host"
                     : AccountData.Username;
 
-                // POST action = start (fire-and-forget, không cần chờ kết quả)
                 _ = RoomApi.StartRoomAsync(currentRoomId, hostName);
             }
 
@@ -270,17 +310,20 @@ namespace plan_fighting_super_start
             game.Show();
             this.Hide();
 
-            game.FormClosed += (_, __) =>
+            game.FormClosed += async (_, __) =>
             {
                 this.Show();
                 SetStatus("Đã quay lại lobby.");
+
+                // Sau khi game kết thúc, refresh danh sách phòng
+                await LoadRoomsAsync();
             };
         }
 
         // ============================
         //         LỊCH SỬ ĐẤU
         // ============================
-        private void btnHistory_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(AccountData.Username))
             {
@@ -305,30 +348,25 @@ namespace plan_fighting_super_start
 
         private void IdRoom_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            // hiện tại không cần làm gì
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        // Double–click dòng trong DataGridView để join phòng
+        private void IdRoom_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (string.IsNullOrEmpty(AccountData.Username))
-            {
-                MessageBox.Show(
-                    "Vui lòng đăng nhập để xem lịch sử.",
-                    "Lỗi",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
+            if (e.RowIndex < 0) return;
 
-            try
-            {
-                var form = new MatchHistoryForm();
-                form.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Không thể mở lịch sử đấu: " + ex.Message);
-            }
+            var row = IdRoom.Rows[e.RowIndex];
+            var roomIdObj = row.Cells["Player1"].Value;
+            var roomId = roomIdObj?.ToString();
+
+            if (string.IsNullOrWhiteSpace(roomId))
+                return;
+
+            txtRoomID.Text = roomId;
+
+            // Gọi lại logic join phòng
+            btnJoinRoom_Click(btnJoinRoom, EventArgs.Empty);
         }
     }
 }

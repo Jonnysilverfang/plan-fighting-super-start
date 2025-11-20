@@ -18,6 +18,9 @@ namespace plan_fighting_super_start
         private DataGridView IdRoom;
         private DataGridViewTextBoxColumn Player1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private DataGridViewTextBoxColumn colPlayersStatus;
+
+        private Button button1;
 
         protected override void Dispose(bool disposing)
         {
@@ -42,6 +45,7 @@ namespace plan_fighting_super_start
             IdRoom = new DataGridView();
             Player1 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            colPlayersStatus = new DataGridViewTextBoxColumn();
             button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)IdRoom).BeginInit();
             SuspendLayout();
@@ -188,7 +192,7 @@ namespace plan_fighting_super_start
             IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             IdRoom.ColumnHeadersHeight = 32;
             IdRoom.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            IdRoom.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2 });
+            IdRoom.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2, colPlayersStatus });
             dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.BackColor = Color.FromArgb(18, 24, 48);
             dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
@@ -208,6 +212,7 @@ namespace plan_fighting_super_start
             IdRoom.Size = new Size(478, 323);
             IdRoom.TabIndex = 9;
             IdRoom.CellContentClick += IdRoom_CellContentClick;
+            IdRoom.CellDoubleClick += IdRoom_CellDoubleClick;
             // 
             // Player1
             // 
@@ -222,6 +227,13 @@ namespace plan_fighting_super_start
             dataGridViewTextBoxColumn2.MinimumWidth = 6;
             dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             dataGridViewTextBoxColumn2.ReadOnly = true;
+            // 
+            // colPlayersStatus
+            // 
+            colPlayersStatus.HeaderText = "Players / Status";
+            colPlayersStatus.MinimumWidth = 6;
+            colPlayersStatus.Name = "colPlayersStatus";
+            colPlayersStatus.ReadOnly = true;
             // 
             // button1
             // 
@@ -267,7 +279,5 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         #endregion
-
-        private Button button1;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -8,11 +9,19 @@ namespace plan_fighting_super_start
 {
     public static class RoomApi
     {
-        // Base URL của HTTP API gamesolo
+        // POST /sololan  (API Gateway HTTP API -> Lambda sololan)
         private const string ROOM_API_URL =
             "https://r42i9q5tl1.execute-api.ap-southeast-1.amazonaws.com/sololan";
+        // ↑ sửa lại đúng Invoke URL / route của bạn nếu khác
 
         private static readonly HttpClient client = new HttpClient();
+
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        // ================== HÀM DÙNG CHUNG (POST JSON) ==================
 
         private static async Task<bool> PostAsync(object payload)
         {
@@ -29,6 +38,8 @@ namespace plan_fighting_super_start
                 return false;
             }
         }
+
+        // ================== CÁC ACTION PHÒNG ==================
 
         // Host tạo phòng
         public static Task<bool> CreateRoomAsync(string roomId, string hostName)
@@ -71,6 +82,45 @@ namespace plan_fighting_super_start
                 action = "end",
                 roomId = roomId
             });
+        }
+
+        // ================== LẤY DANH SÁCH PHÒNG (action = list) ==================
+
+        public class RoomInfo
+        {
+            public string RoomId { get; set; } = "";
+            public string Host { get; set; } = "";
+            public int PlayerCount { get; set; }         // 1 hoặc 2
+            public string Status { get; set; } = "";     // CREATED, READY, STARTED...
+        }
+
+        private class RoomListResponse
+        {
+            public bool Ok { get; set; }
+            public List<RoomInfo>? Rooms { get; set; }
+        }
+
+        public static async Task<List<RoomInfo>> GetRoomsAsync()
+        {
+            try
+            {
+                var payload = new { action = "list" };
+                var json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var resp = await client.PostAsync(ROOM_API_URL, content);
+                if (!resp.IsSuccessStatusCode)
+                    return new List<RoomInfo>();
+
+                var respString = await resp.Content.ReadAsStringAsync();
+
+                var result = JsonSerializer.Deserialize<RoomListResponse>(respString, JsonOptions);
+                return result?.Rooms ?? new List<RoomInfo>();
+            }
+            catch
+            {
+                return new List<RoomInfo>();
+            }
         }
     }
 }
