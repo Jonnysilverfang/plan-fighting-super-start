@@ -1,9 +1,10 @@
 using plan_fighting_super_start.Properties;
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
 using System.Media;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using WMPLib;
 
 namespace plan_fighting_super_start
@@ -31,42 +32,84 @@ namespace plan_fighting_super_start
         private bool isPaused = false;
         private bool gameEnded = false;
 
-        // (ĐÃ BỎ) Âm thanh – không dùng nữa
-        // private WindowsMediaPlayer bgmPlayer;
-        // private SoundPlayer hitSound;
-        // private SoundPlayer loseSound;
-        // private SoundPlayer winSound;
+        // Load ảnh máy bay từ S3 (dùng lại service cũ)
+        private readonly S3ImageService _imageService = new S3ImageService();
 
         public GAMEBOSS()
         {
             InitializeComponent();
         }
 
-        private void Form4_Load(object sender, EventArgs e)
+        // ===== LOAD SKIN MÁY BAY =====
+        private async Task LoadPlaneSkinAsync()
         {
-            string bgPath = Path.Combine(Application.StartupPath, "resources", "NenBOSS.jpg");
-            if (File.Exists(bgPath))
+            try
             {
-                this.BackgroundImage = Image.FromFile(bgPath);
-                this.BackgroundImageLayout = ImageLayout.Stretch;
-            }
+                // Đường dẫn máy bay mặc định (file nằm cạnh .exe)
+                string defaultPlanePath = Path.Combine(Application.StartupPath, "MayBay.png");
 
-            // Load lại dữ liệu account từ API, nếu đã có Username sau đăng nhập
+                // Nếu chưa chọn skin → dùng máy bay mặc định
+                if (string.IsNullOrEmpty(AccountData.PlaneSkin))
+                {
+                    if (File.Exists(defaultPlanePath))
+                    {
+                        player.Image = Image.FromFile(defaultPlanePath);
+                        player.SizeMode = PictureBoxSizeMode.StretchImage;
+                        player.BackColor = Color.Transparent;
+                    }
+                    return;
+                }
+
+                // Đã chọn skin trên S3
+                var img = await _imageService.GetImageAsync(AccountData.PlaneSkin);
+                if (img != null)
+                {
+                    player.Image = img;
+                    player.SizeMode = PictureBoxSizeMode.StretchImage;
+                    player.BackColor = Color.Transparent;
+                }
+                else
+                {
+                    // fallback → quay lại máy bay mặc định
+                    if (File.Exists(defaultPlanePath))
+                    {
+                        player.Image = Image.FromFile(defaultPlanePath);
+                        player.SizeMode = PictureBoxSizeMode.StretchImage;
+                        player.BackColor = Color.Transparent;
+                    }
+                }
+            }
+            catch
+            {
+                string defaultPlanePath = Path.Combine(Application.StartupPath, "MayBay.png");
+                if (File.Exists(defaultPlanePath))
+                {
+                    player.Image = Image.FromFile(defaultPlanePath);
+                    player.SizeMode = PictureBoxSizeMode.StretchImage;
+                    player.BackColor = Color.Transparent;
+                }
+            }
+        }
+
+        // ===== FORM LOAD =====
+        private async void Form4_Load(object sender, EventArgs e)
+        {
+            this.BackColor = Color.White;
+
             if (!string.IsNullOrEmpty(AccountData.Username))
             {
                 Database.LoadAccountData(AccountData.Username);
             }
 
-            // ===== (ĐÃ BỎ) Âm thanh: nhạc nền + hiệu ứng =====
-            // Không khởi tạo, không play gì hết để không có âm thanh
-
+            // Tính damage theo nâng cấp
             playerDamage = BASE_DAMAGE + AccountData.UpgradeDamage;
 
+            // Thanh máu player
             playerHealthBar.Maximum = AccountData.UpgradeHP;
             playerHealthBar.Value = playerHealthBar.Maximum;
             playerHealthBar.ForeColor = Color.Lime;
 
-            // Máu boss trâu theo level (tăng 30% mỗi level)
+            // Thanh máu boss theo level
             int currentBossMaxHealth = GetBossMaxHealth();
             bossHealthBar.Maximum = currentBossMaxHealth;
             bossHealthBar.Value = currentBossMaxHealth;
@@ -74,6 +117,9 @@ namespace plan_fighting_super_start
 
             survivalTime = 90;
             txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
+
+            // 🔹 Load skin máy bay trước khi start game
+            await LoadPlaneSkinAsync();
 
             gameTimer.Start();
             survivalTimer.Start();
@@ -149,7 +195,7 @@ namespace plan_fighting_super_start
                         bossHealthBar.Value = Math.Max(0, bossHealthBar.Value - playerDamage);
                         CreateExplosion(x.Left, x.Top, Color.Aqua);
 
-                        PlayHitSound(); // giờ là hàm rỗng, không phát gì
+                        PlayHitSound(); // hàm rỗng
 
                         this.Controls.Remove(x);
                         x.Dispose();
@@ -191,7 +237,7 @@ namespace plan_fighting_super_start
 
                         CreateExplosion(x.Left, x.Top, Color.OrangeRed);
 
-                        PlayHitSound(); // cũng là hàm rỗng
+                        PlayHitSound(); // hàm rỗng
 
                         this.Controls.Remove(x);
                         x.Dispose();
@@ -499,7 +545,7 @@ namespace plan_fighting_super_start
                 Database.UpdateAccountData();
                 txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - WIN!";
 
-                PlayWinSound();   // giờ cũng là hàm rỗng
+                PlayWinSound();
             }
             else
             {
@@ -507,7 +553,7 @@ namespace plan_fighting_super_start
                 Database.UpdateAccountData();
                 txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - GAME OVER!";
 
-                PlayLoseSound(); // hàm rỗng
+                PlayLoseSound();
             }
 
             buttonExit.Text = "Thoát về menu";
@@ -568,22 +614,13 @@ namespace plan_fighting_super_start
         }
 
         // Âm trúng đạn – tắt
-        private void PlayHitSound()
-        {
-            // Không làm gì hết => không có âm
-        }
+        private void PlayHitSound() { }
 
         // Âm thua – tắt
-        private void PlayLoseSound()
-        {
-            // Không làm gì hết
-        }
+        private void PlayLoseSound() { }
 
         // Âm thắng – tắt
-        private void PlayWinSound()
-        {
-            // Không làm gì hết
-        }
+        private void PlayWinSound() { }
 
         private void keyisdown(object sender, KeyEventArgs e)
         {
@@ -611,19 +648,13 @@ namespace plan_fighting_super_start
             if (e.KeyCode == Keys.Space) shooting = false;
         }
 
-        private void txtScore_Click(object sender, EventArgs e)
-        {
-        }
+        private void txtScore_Click(object sender, EventArgs e) { }
 
-        // Dọn nhạc khi đóng form – giờ không dùng nhạc nữa, để trống
         private void GAMEBOSS_FormClosed(object sender, FormClosedEventArgs e)
         {
-            // Không cần stop gì hết
+            // Không cần stop gì nữa
         }
 
-        private void boss_Click(object sender, EventArgs e)
-        {
-
-        }
+        private void boss_Click(object sender, EventArgs e) { }
     }
 }

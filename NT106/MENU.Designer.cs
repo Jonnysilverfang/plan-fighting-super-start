@@ -59,7 +59,10 @@ namespace plan_fighting_super_start
             button4 = new Button();
             button5 = new Button();
             pictureBoxAvatar = new PictureBox();
+            pictureBoxPlane = new PictureBox();
+            buttonDoiMayBay = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxPlane).BeginInit();
             SuspendLayout();
             // 
             // textBoxGold
@@ -311,6 +314,24 @@ namespace plan_fighting_super_start
             pictureBoxAvatar.TabIndex = 21;
             pictureBoxAvatar.TabStop = false;
             // 
+            // pictureBoxPlane
+            // 
+            pictureBoxPlane.Location = new Point(340, 57);
+            pictureBoxPlane.Name = "pictureBoxPlane";
+            pictureBoxPlane.Size = new Size(100, 89);
+            pictureBoxPlane.TabIndex = 22;
+            pictureBoxPlane.TabStop = false;
+            // 
+            // buttonDoiMayBay
+            // 
+            buttonDoiMayBay.Location = new Point(454, 176);
+            buttonDoiMayBay.Name = "buttonDoiMayBay";
+            buttonDoiMayBay.Size = new Size(153, 29);
+            buttonDoiMayBay.TabIndex = 23;
+            buttonDoiMayBay.Text = "ĐỔI ẢNH MÁY BAY";
+            buttonDoiMayBay.UseVisualStyleBackColor = true;
+            buttonDoiMayBay.Click += buttonDoiMayBay_Click;
+            // 
             // Menu
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -318,7 +339,9 @@ namespace plan_fighting_super_start
             BackColor = Color.FromArgb(10, 15, 30);
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_dy9x6hdy9x6hdy9x;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(560, 680);
+            ClientSize = new Size(684, 680);
+            Controls.Add(buttonDoiMayBay);
+            Controls.Add(pictureBoxPlane);
             Controls.Add(pictureBoxAvatar);
             Controls.Add(button5);
             Controls.Add(button4);
@@ -346,8 +369,11 @@ namespace plan_fighting_super_start
             Text = "Menu Game";
             Load += Form3_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxPlane).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
+        private PictureBox pictureBoxPlane;
+        private Button buttonDoiMayBay;
     }
 }
