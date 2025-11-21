@@ -17,6 +17,9 @@ namespace plan_fighting_super_start
         // Đánh dấu đã bắt đầu game hay chưa
         private bool gameStarted = false;
 
+        // Đánh dấu form đang shutdown (host tự đóng), để phân biệt với peer disconnect
+        private bool shuttingDown = false;
+
         public Room()
         {
             InitializeComponent();
@@ -31,18 +34,29 @@ namespace plan_fighting_super_start
             await LoadRoomsAsync();
         }
 
-        // ===== FORM CLOSING: đánh dấu END nếu đã có phòng =====
+        // ===== FORM CLOSING: host thoát khi đã / chưa start =====
         private void Form5_FormClosing(object sender, FormClosingEventArgs e)
         {
+            shuttingDown = true; // đánh dấu là mình tự đóng form
+
             try { networkManager?.Dispose(); } catch { }
             try { lanBroadcast?.Dispose(); } catch { }
 
-            // Chỉ host mới báo END
+            // Chỉ host mới báo về API
             try
             {
                 if (isHost && !string.IsNullOrEmpty(currentRoomId))
                 {
-                    _ = RoomApi.EndRoomAsync(currentRoomId);
+                    if (gameStarted)
+                    {
+                        // Đang đấu → kết thúc phòng (END)
+                        _ = RoomApi.EndRoomAsync(currentRoomId);
+                    }
+                    else
+                    {
+                        // CHƯA bắt đầu → hủy phòng (CANCELLED), KHÔNG đặt END
+                        _ = RoomApi.CancelRoomAsync(currentRoomId);
+                    }
                 }
             }
             catch
@@ -69,32 +83,27 @@ namespace plan_fighting_super_start
             if (InvokeRequired) BeginInvoke(a); else a();
         }
 
-        // ====== HÀM DÙNG CHUNG: START HOST TCP + BROADCAST ======
+        // ====== HÀM DÙNG CHUNG: START HOST TCP (không đụng broadcast) ======
         private void StartHostServer()
         {
             // Dọn cái cũ (nếu có)
             try { networkManager?.Dispose(); } catch { }
 
-            // Tạo mới NetworkManager và host
+            // Tạo mới NetworkManager và host TCP
             networkManager = new NetworkManager();
             WireNetworkEvents();
             networkManager.StartHost(GAME_PORT);
-
-            // Đảm bảo broadcast đang chạy
-            if (lanBroadcast == null)
-            {
-                lanBroadcast = new LANBroadcast();
-                lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
-            }
         }
 
         // Host xử lý khi người chơi còn lại rời phòng trước khi bắt đầu
         private async Task HandlePeerDisconnectedAsync()
         {
-            // Chỉ quan tâm trường hợp: mình là HOST, game chưa start, có roomId
+            // Chỉ quan tâm trường hợp: mình là HOST, game chưa start, có roomId,
+            // và KHÔNG phải do mình tự đóng form (shuttingDown = false)
             if (!isHost) return;
             if (gameStarted) return;
             if (string.IsNullOrEmpty(currentRoomId)) return;
+            if (shuttingDown) return;
 
             try
             {
@@ -166,7 +175,7 @@ namespace plan_fighting_super_start
                     });
             };
 
-            // Bị ngắt kết nối
+            // Bị ngắt kết nối (cả host lẫn client đều chạy vào đây)
             networkManager.OnDisconnected += () =>
             {
                 UI(() =>
@@ -175,8 +184,25 @@ namespace plan_fighting_super_start
                     SetStatus("Kết nối bị ngắt. Quay lại lobby hoặc tạo phòng khác.");
                 });
 
-                // Nếu mình là host và game chưa start, cập nhật trạng thái phòng về CREATED
-                _ = HandlePeerDisconnectedAsync();
+                // Nếu đang shutdown (host tự đóng form) thì không xử lý gì thêm
+                if (shuttingDown)
+                    return;
+
+                // 1) Nếu mình là HOST và game chưa start → B out → quay về CREATED
+                if (isHost && !gameStarted)
+                {
+                    _ = HandlePeerDisconnectedAsync();
+                }
+                // 2) Nếu mình là CLIENT (B) → host out
+                else if (!isHost)
+                {
+                    // Client CHỈ quay về lobby, KHÔNG gọi Cancel/End phòng
+                    UI(() =>
+                    {
+                        SetStatus("Host đã rời phòng. Bạn đã bị ngắt kết nối.");
+                        btnJoinRoom.Enabled = true;
+                    });
+                }
             };
         }
 
@@ -236,14 +262,17 @@ namespace plan_fighting_super_start
 
                 // Reset cờ
                 gameStarted = false;
+                shuttingDown = false;
+
+                // Host role
+                isHost = true;
+                btnStartGame.Enabled = false;
 
                 // Broadcast LAN
                 lanBroadcast = new LANBroadcast();
                 lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
 
                 // Start TCP Host
-                isHost = true;
-                btnStartGame.Enabled = false;
                 StartHostServer();
 
                 SetStatus($"[HOST] Đã tạo phòng {currentRoomId}. Đang chờ người chơi khác...");
@@ -291,6 +320,7 @@ namespace plan_fighting_super_start
             currentRoomId = roomId;
             isHost = false;
             gameStarted = false;          // reset
+            shuttingDown = false;
             btnJoinRoom.Enabled = false;
             btnStartGame.Enabled = false;
 
