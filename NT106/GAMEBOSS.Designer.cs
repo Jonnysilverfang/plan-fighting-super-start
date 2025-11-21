@@ -213,6 +213,7 @@ namespace plan_fighting_super_start
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
+            BackgroundImage = Properties.Resource.NenBOSS;
             ClientSize = new Size(800, 620);
             Controls.Add(pausePanel);
             Controls.Add(buttonExit);

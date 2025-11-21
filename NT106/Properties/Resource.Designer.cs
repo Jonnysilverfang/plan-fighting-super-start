@@ -123,6 +123,16 @@ namespace plan_fighting_super_start.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap NenBOSS {
+            get {
+                object obj = ResourceManager.GetObject("NenBOSS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap playerrr {
             get {
                 object obj = ResourceManager.GetObject("playerrr", resourceCulture);

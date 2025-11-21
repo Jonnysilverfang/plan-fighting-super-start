@@ -10,6 +10,7 @@ namespace plan_fighting_super_start
 {
     public class DoiMayBayService
     {
+        // ✅ Gọi đúng path /post/plane
         private const string API_PLANE =
             "https://ux7ir7zqt1.execute-api.ap-southeast-1.amazonaws.com/post/plane";
 
@@ -22,7 +23,7 @@ namespace plan_fighting_super_start
             public string downloadUrl { get; set; }
         }
 
-        // planeIndex: 1..5 (máy bay S3, không tính máy bay mặc định)
+        // planeIndex: 1..5 (máy bay S3)
         public async Task<(Image? Image, string? Key)> DoiMayBayAsync(int planeIndex)
         {
             var bodyObj = new { plane = planeIndex };
@@ -32,7 +33,13 @@ namespace plan_fighting_super_start
                 API_PLANE,
                 new StringContent(json, Encoding.UTF8, "application/json"));
 
-            resp.EnsureSuccessStatusCode();
+            // Nếu lỗi thì ném message rõ ràng hơn
+            if (!resp.IsSuccessStatusCode)
+            {
+                string errBody = await resp.Content.ReadAsStringAsync();
+                throw new Exception(
+                    $"API đổi máy bay lỗi {(int)resp.StatusCode} {resp.StatusCode}: {errBody}");
+            }
 
             string text = await resp.Content.ReadAsStringAsync();
 

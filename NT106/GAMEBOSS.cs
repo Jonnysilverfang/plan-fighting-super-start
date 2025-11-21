@@ -2,15 +2,20 @@ using plan_fighting_super_start.Properties;
 using System;
 using System.Drawing;
 using System.IO;
-using System.Media;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WMPLib;
 
 namespace plan_fighting_super_start
 {
     public partial class GAMEBOSS : Form
     {
+        // ====== THÔNG TIN ĐẠN BOSS (để không phải parse string mỗi frame) ======
+        private sealed class BossBulletInfo
+        {
+            public int DirectionX { get; set; }
+            public int Speed { get; set; }
+        }
+
         // Logic variables
         private bool goLeft, goRight, shooting;
         private int playerSpeed = 8;
@@ -25,19 +30,22 @@ namespace plan_fighting_super_start
         private const int BASE_DAMAGE = 10;
         private int playerDamage;
 
-        private int bossAttackFrequency = 50;
-        private int maxBossBullets = 50;
+        // bắn ít lại để giảm lag (có thể chỉnh lại tuỳ thích)
+        private int bossAttackFrequency = 80;
+        private int maxBossBullets = 40;
 
         // Trạng thái pause & end
         private bool isPaused = false;
         private bool gameEnded = false;
 
-        // Load ảnh máy bay từ S3 (dùng lại service cũ)
+        // Load ảnh máy bay từ S3
         private readonly S3ImageService _imageService = new S3ImageService();
 
         public GAMEBOSS()
         {
             InitializeComponent();
+            // cho form vẽ double-buffer để mượt hơn
+            this.DoubleBuffered = true;
         }
 
         // ===== LOAD SKIN MÁY BAY =====
@@ -94,22 +102,30 @@ namespace plan_fighting_super_start
         // ===== FORM LOAD =====
         private async void Form4_Load(object sender, EventArgs e)
         {
-            this.BackColor = Color.White;
+            // nền em đang set trong Designer rồi, không đụng vào nữa
+
+            // ⚠️ Giữ lại PlaneSkin đang có (do Menu vừa đổi)
+            string currentPlaneSkin = AccountData.PlaneSkin;
 
             if (!string.IsNullOrEmpty(AccountData.Username))
             {
+                // Load lại dữ liệu từ server (Gold, Level, HP, Damage,...)
                 Database.LoadAccountData(AccountData.Username);
             }
 
-            // Tính damage theo nâng cấp
+            // Sau khi load xong, backend chưa có PlaneSkin
+            // → nếu server không trả về thì gán lại giá trị cũ
+            if (!string.IsNullOrEmpty(currentPlaneSkin))
+            {
+                AccountData.PlaneSkin = currentPlaneSkin;
+            }
+
             playerDamage = BASE_DAMAGE + AccountData.UpgradeDamage;
 
-            // Thanh máu player
             playerHealthBar.Maximum = AccountData.UpgradeHP;
             playerHealthBar.Value = playerHealthBar.Maximum;
             playerHealthBar.ForeColor = Color.Lime;
 
-            // Thanh máu boss theo level
             int currentBossMaxHealth = GetBossMaxHealth();
             bossHealthBar.Maximum = currentBossMaxHealth;
             bossHealthBar.Value = currentBossMaxHealth;
@@ -118,7 +134,7 @@ namespace plan_fighting_super_start
             survivalTime = 90;
             txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
 
-            // 🔹 Load skin máy bay trước khi start game
+            // 🔹 load skin máy bay trước khi start game
             await LoadPlaneSkinAsync();
 
             gameTimer.Start();
@@ -144,6 +160,7 @@ namespace plan_fighting_super_start
             return (int)hp;
         }
 
+        // ====== VÒNG LẶP GAME CHÍNH – ĐÃ BỎ TRAIL ĐỂ GIẢM LAG ======
         private void mainGameTimerEvent(object sender, EventArgs e)
         {
             if (isPaused) return;
@@ -169,143 +186,105 @@ namespace plan_fighting_super_start
             }
 
             int currentBossBullets = 0;
+            var toRemove = new System.Collections.Generic.List<Control>();
 
-            foreach (Control x in this.Controls)
+            foreach (Control ctrl in this.Controls)
             {
+                if (ctrl is not PictureBox pb) continue;
+
                 // ===== Player bullet =====
-                if (x is PictureBox && (string)x.Tag == "playerBullet")
+                if (pb.Tag is string tag && tag == "playerBullet")
                 {
-                    CreateBulletTrail(
-                        x.Left + x.Width / 2,
-                        x.Bottom,
-                        Color.FromArgb(0, 200, 255)
-                    );
+                    pb.Top -= bulletSpeed;
 
-                    x.Top -= bulletSpeed;
-
-                    if (x.Top < -x.Height)
+                    if (pb.Top < -pb.Height)
                     {
-                        this.Controls.Remove(x);
-                        x.Dispose();
+                        toRemove.Add(pb);
                         continue;
                     }
 
-                    if (x.Bounds.IntersectsWith(boss.Bounds))
+                    if (pb.Bounds.IntersectsWith(boss.Bounds))
                     {
                         bossHealthBar.Value = Math.Max(0, bossHealthBar.Value - playerDamage);
-                        CreateExplosion(x.Left, x.Top, Color.Aqua);
+                        CreateExplosion(pb.Left, pb.Top, Color.Aqua);
 
-                        PlayHitSound(); // hàm rỗng
-
-                        this.Controls.Remove(x);
-                        x.Dispose();
+                        toRemove.Add(pb);
 
                         if (bossHealthBar.Value == 0)
                         {
+                            // xoá đạn còn lại rồi thoát
+                            foreach (var c in toRemove)
+                            {
+                                this.Controls.Remove(c);
+                                c.Dispose();
+                            }
                             EndGame(true);
-                            break;
+                            return;
                         }
                     }
                 }
-
                 // ===== Boss bullet =====
-                if (x is PictureBox && (string)x.Tag == "bossBullet")
+                else if (pb.Tag is BossBulletInfo info)
                 {
                     currentBossBullets++;
-                    string nameData = (string)x.Name;
-                    int directionX = 0, moveSpeed = 10;
 
-                    if (!string.IsNullOrEmpty(nameData) && nameData.Contains("angle:") && nameData.Contains("speed:"))
-                    {
-                        string[] parts = nameData.Split(',');
-                        directionX = int.Parse(parts[0].Split(':')[1]);
-                        moveSpeed = int.Parse(parts[1].Split(':')[1]);
-                    }
+                    pb.Top += info.Speed;
+                    pb.Left += info.DirectionX * (info.Speed / 2);
 
-                    CreateBulletTrail(x.Left + x.Width / 2, x.Top + x.Height / 2, Color.Yellow);
-                    x.Top += moveSpeed;
-                    x.Left += directionX * (moveSpeed / 2);
-
-                    int glow2 = (int)(Math.Abs(Math.Sin(frameCounter * 0.25)) * 150);
-                    x.BackColor = Color.FromArgb(40, 255, 230, 100 + glow2 / 3);
-
-                    if (x.Bounds.IntersectsWith(player.Bounds))
+                    if (pb.Bounds.IntersectsWith(player.Bounds))
                     {
                         playerHealthBar.Value = Math.Max(0, playerHealthBar.Value - 10);
                         if (playerHealthBar.Value < playerHealthBar.Maximum / 2) playerHealthBar.ForeColor = Color.Yellow;
                         if (playerHealthBar.Value < playerHealthBar.Maximum / 4) playerHealthBar.ForeColor = Color.Red;
 
-                        CreateExplosion(x.Left, x.Top, Color.OrangeRed);
+                        CreateExplosion(pb.Left, pb.Top, Color.OrangeRed);
 
-                        PlayHitSound(); // hàm rỗng
-
-                        this.Controls.Remove(x);
-                        x.Dispose();
+                        toRemove.Add(pb);
 
                         if (playerHealthBar.Value == 0)
                         {
+                            foreach (var c in toRemove)
+                            {
+                                this.Controls.Remove(c);
+                                c.Dispose();
+                            }
                             EndGame(false);
-                            break;
+                            return;
                         }
                     }
-
-                    if (x.Top > this.ClientSize.Height + x.Height ||
-                        x.Left < -x.Width ||
-                        x.Right > this.ClientSize.Width + x.Width)
+                    else if (pb.Top > this.ClientSize.Height + pb.Height ||
+                             pb.Left < -pb.Width ||
+                             pb.Right > this.ClientSize.Width + pb.Width)
                     {
-                        this.Controls.Remove(x);
-                        x.Dispose();
+                        toRemove.Add(pb);
                     }
                 }
-
-                // ===== Trail =====
-                if (x is PictureBox && (string)x.Tag == "trail")
-                {
-                    x.BackColor = Color.FromArgb(Math.Max(0, x.BackColor.A - 15),
-                        x.BackColor.R, x.BackColor.G, x.BackColor.B);
-
-                    if (x.BackColor.A <= 20)
-                    {
-                        this.Controls.Remove(x);
-                        x.Dispose();
-                    }
-                }
-
                 // ===== Explosion =====
-                if (x is PictureBox && (string)x.Tag == "explosion")
+                else if (pb.Tag is string tag2 && tag2 == "explosion")
                 {
-                    x.Width += 4;
-                    x.Height += 4;
-                    x.Left -= 2;
-                    x.Top -= 2;
-                    x.BackColor = Color.FromArgb(Math.Max(0, x.BackColor.A - 20),
-                        x.BackColor.R, x.BackColor.G, x.BackColor.B);
+                    pb.Width += 4;
+                    pb.Height += 4;
+                    pb.Left -= 2;
+                    pb.Top -= 2;
+                    pb.BackColor = Color.FromArgb(
+                        Math.Max(0, pb.BackColor.A - 20),
+                        pb.BackColor.R, pb.BackColor.G, pb.BackColor.B);
 
-                    if (x.BackColor.A <= 20)
+                    if (pb.BackColor.A <= 20)
                     {
-                        this.Controls.Remove(x);
-                        x.Dispose();
+                        toRemove.Add(pb);
                     }
                 }
             }
 
-            if (currentBossBullets > maxBossBullets)
-                bossAttackFrequency = 200;
-            else
-                bossAttackFrequency = 50;
-        }
+            foreach (var c in toRemove)
+            {
+                this.Controls.Remove(c);
+                c.Dispose();
+            }
 
-        // Tạo vệt sáng
-        private void CreateBulletTrail(int x, int y, Color baseColor)
-        {
-            PictureBox trail = new PictureBox();
-            trail.Size = new Size(6, 10);
-            trail.Tag = "trail";
-            trail.BackColor = Color.FromArgb(120, baseColor.R, baseColor.G, baseColor.B);
-            trail.Left = x - trail.Width / 2;
-            trail.Top = y;
-            this.Controls.Add(trail);
-            trail.SendToBack();
+            // nếu đạn boss trên màn hình quá nhiều thì giảm tần suất bắn
+            bossAttackFrequency = currentBossBullets > maxBossBullets ? 200 : 80;
         }
 
         // Hiệu ứng nổ
@@ -321,17 +300,16 @@ namespace plan_fighting_super_start
             this.Controls.Add(boom);
         }
 
-        // Đạn boss kiểu tia vàng dài, bắn tỏa quạt
+        // Đạn boss kiểu tia vàng dài, bắn tỏa quạt (đã giảm số đạn)
         private void ShootBossBulletFan()
         {
-            int[] spreadDirections = { -3, -2, -1, 0, 1, 2, 3 };
+            int[] spreadDirections = { -2, -1, 0, 1, 2 };   // 5 viên 1 lần
             int baseSpeed = 10;
 
             foreach (int directionX in spreadDirections)
             {
                 PictureBox bullet = new PictureBox();
                 bullet.Size = new Size(10, 40);
-                bullet.Tag = "bossBullet";
                 bullet.BackColor = Color.Transparent;
 
                 Bitmap bmp = new Bitmap(bullet.Width, bullet.Height);
@@ -382,15 +360,19 @@ namespace plan_fighting_super_start
                 bullet.Left = boss.Left + boss.Width / 2 - bullet.Width / 2;
                 bullet.Top = boss.Bottom - 5;
 
-                int moveSpeed = baseSpeed + rnd.Next(-2, 3);
-                bullet.Name = $"angle:{directionX},speed:{moveSpeed}";
+                int moveSpeed = baseSpeed + rnd.Next(-1, 2);
+                bullet.Tag = new BossBulletInfo
+                {
+                    DirectionX = directionX,
+                    Speed = moveSpeed
+                };
 
                 this.Controls.Add(bullet);
                 bullet.BringToFront();
             }
         }
 
-        // Đạn Player dạng tên lửa xanh
+        // Đạn Player dạng tên lửa xanh (giữ nguyên)
         private void ShootPlayerBullet()
         {
             PictureBox bullet = new PictureBox();
@@ -473,18 +455,6 @@ namespace plan_fighting_super_start
                 {
                     g.FillRectangle(flameBrush, flameRect);
                 }
-
-                // Glow elip
-                Rectangle glowRect = new Rectangle(
-                    flameRect.X - 8,
-                    flameRect.Bottom - 10,
-                    flameRect.Width + 16,
-                    20
-                );
-                using (var glowBrush = new SolidBrush(Color.FromArgb(90, 0, 200, 255)))
-                {
-                    g.FillEllipse(glowBrush, glowRect);
-                }
             }
 
             bullet.Image = bmp;
@@ -519,17 +489,16 @@ namespace plan_fighting_super_start
 
             pausePanel.Visible = false;
 
-            // Xoá bullet/trail/explosion
+            // Xoá bullet/explosion còn lại
             var toRemove = new System.Collections.Generic.List<Control>();
             foreach (Control x in this.Controls)
             {
-                if (x is PictureBox &&
-                    ((string)x.Tag == "playerBullet" ||
-                     (string)x.Tag == "bossBullet" ||
-                     (string)x.Tag == "trail" ||
-                     (string)x.Tag == "explosion"))
+                if (x is PictureBox pb &&
+                    (pb.Tag is string tag &&
+                        (tag == "playerBullet" || tag == "explosion") ||
+                     pb.Tag is BossBulletInfo))
                 {
-                    toRemove.Add(x);
+                    toRemove.Add(pb);
                 }
             }
             foreach (var x in toRemove)
@@ -544,16 +513,12 @@ namespace plan_fighting_super_start
                 AccountData.Level++;
                 Database.UpdateAccountData();
                 txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - WIN!";
-
-                PlayWinSound();
             }
             else
             {
                 AccountData.Gold += 50;
                 Database.UpdateAccountData();
                 txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level} - GAME OVER!";
-
-                PlayLoseSound();
             }
 
             buttonExit.Text = "Thoát về menu";
@@ -583,10 +548,7 @@ namespace plan_fighting_super_start
             pausePanel.Visible = false;
         }
 
-        private void btnResume_Click(object sender, EventArgs e)
-        {
-            ResumeGame();
-        }
+        private void btnResume_Click(object sender, EventArgs e) => ResumeGame();
 
         private void btnPauseExit_Click(object sender, EventArgs e)
         {
@@ -613,13 +575,8 @@ namespace plan_fighting_super_start
             this.Close();
         }
 
-        // Âm trúng đạn – tắt
         private void PlayHitSound() { }
-
-        // Âm thua – tắt
         private void PlayLoseSound() { }
-
-        // Âm thắng – tắt
         private void PlayWinSound() { }
 
         private void keyisdown(object sender, KeyEventArgs e)
