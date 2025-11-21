@@ -84,6 +84,16 @@ namespace plan_fighting_super_start
             });
         }
 
+        // 🔥 NEW: Khi người B out, host gọi để đưa phòng về trạng thái CREATED (1/2)
+        public static Task<bool> BackToCreatedAsync(string roomId)
+        {
+            return PostAsync(new
+            {
+                action = "back_to_created",
+                roomId = roomId
+            });
+        }
+
         // ================== LẤY DANH SÁCH PHÒNG (action = list) ==================
 
         public class RoomInfo
