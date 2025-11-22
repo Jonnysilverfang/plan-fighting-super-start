@@ -257,7 +257,10 @@ namespace plan_fighting_super_start
         {
             try
             {
-                using (var form = new GAMEBOSS())
+                // lấy hình đang hiển thị ở Menu
+                Image? planeImg = pictureBoxPlane?.Image;
+
+                using (var form = new GAMEBOSS(planeImg))
                 {
                     form.ShowDialog(this);
                 }

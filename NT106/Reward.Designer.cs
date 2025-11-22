@@ -38,15 +38,6 @@ namespace plan_fighting_super_start
             labelInfo.TabIndex = 0;
             labelInfo.Text = "Thông tin phần thưởng sẽ hiển thị ở đây.";
             // 
-            // checkedListRewards
-            // 
-            checkedListRewards.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            checkedListRewards.FormattingEnabled = true;
-            checkedListRewards.Location = new Point(14, 90);
-            checkedListRewards.Name = "checkedListRewards";
-            checkedListRewards.Size = new Size(411, 94);
-            checkedListRewards.TabIndex = 2;
-            // 
             // btnClaimReward
             // 
             btnClaimReward.Anchor = AnchorStyles.Bottom;
@@ -56,6 +47,15 @@ namespace plan_fighting_super_start
             btnClaimReward.TabIndex = 1;
             btnClaimReward.Text = "Nhận phần thưởng";
             btnClaimReward.UseVisualStyleBackColor = true;
+            // 
+            // checkedListRewards
+            // 
+            checkedListRewards.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            checkedListRewards.FormattingEnabled = true;
+            checkedListRewards.Location = new Point(14, 90);
+            checkedListRewards.Name = "checkedListRewards";
+            checkedListRewards.Size = new Size(411, 92);
+            checkedListRewards.TabIndex = 2;
             // 
             // Reward
             // 

@@ -58,5 +58,10 @@ namespace plan_fighting_super_start
 
             return (img, data.key);
         }
+
+        internal async Task<Image?> GetImageAsync(string planeSkin)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
