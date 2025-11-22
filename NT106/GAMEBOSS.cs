@@ -38,6 +38,10 @@ namespace plan_fighting_super_start
         private bool isPaused = false;
         private bool gameEnded = false;
 
+        // ⭐ Cooldown bắn đạn của player
+        private int playerShootCooldown = 0;         // giảm dần mỗi tick
+        private const int PLAYER_SHOOT_DELAY = 15;   // càng lớn bắn càng chậm
+
         // Dịch vụ lấy ảnh từ S3 (fallback nếu không có hình từ Menu)
         private readonly S3ImageService _imageService = new S3ImageService();
 
@@ -63,7 +67,7 @@ namespace plan_fighting_super_start
         {
             InitializeComponent();
 
-            // double buffer để vẽ mượt hơn
+            // vẽ mượt hơn
             this.DoubleBuffered = true;
 
             // clone image từ Menu để nếu Menu dispose vẫn an toàn
@@ -307,6 +311,10 @@ namespace plan_fighting_super_start
             frameCounter++;
             txtScore.Text = $"Gold: {AccountData.Gold}  Time: {survivalTime}  Level: {AccountData.Level}";
 
+            // ⭐ Giảm cooldown bắn mỗi tick
+            if (playerShootCooldown > 0)
+                playerShootCooldown--;
+
             // Player movement
             if (goLeft && player.Left > 0)
                 player.Left -= playerSpeed;
@@ -465,8 +473,8 @@ namespace plan_fighting_super_start
 
         private void ShootBossBulletFan()
         {
-            int[] spreadDirections = { -2, -1, 0, 1, 2 }; // 5 viên
-            int baseSpeed = 10;
+            int[] spreadDirections = {  -1, 0, 1 }; // 3 viên
+            int baseSpeed = 20;
 
             foreach (int directionX in spreadDirections)
             {
@@ -620,10 +628,14 @@ namespace plan_fighting_super_start
             if (e.KeyCode == Keys.Left) goLeft = true;
             if (e.KeyCode == Keys.Right) goRight = true;
 
-            if (e.KeyCode == Keys.Space && !shooting && !isPaused && !gameEnded)
+            // ⭐ Bắn đạn theo cooldown
+            if (e.KeyCode == Keys.Space && !isPaused && !gameEnded)
             {
-                shooting = true;
-                ShootPlayerBullet();
+                if (playerShootCooldown == 0)
+                {
+                    ShootPlayerBullet();
+                    playerShootCooldown = PLAYER_SHOOT_DELAY;
+                }
             }
 
             if (e.KeyCode == Keys.P)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -16,6 +17,9 @@ namespace plan_fighting_super_start
 
         private static readonly HttpClient http = new HttpClient();
 
+        // Kích thước tối đa cho skin máy bay (càng nhỏ game càng mượt)
+        private const int PLANE_MAX_SIZE = 96;
+
         private class PlaneResponse
         {
             public int planeIndex { get; set; }
@@ -23,7 +27,11 @@ namespace plan_fighting_super_start
             public string downloadUrl { get; set; }
         }
 
-        // planeIndex: 1..5 (máy bay S3)
+        /// <summary>
+        /// Gọi API đổi máy bay.
+        /// planeIndex: 1..5 (các skin trên S3)
+        /// Trả về: (Image đã resize nhỏ, key S3)
+        /// </summary>
         public async Task<(Image? Image, string? Key)> DoiMayBayAsync(int planeIndex)
         {
             var bodyObj = new { plane = planeIndex };
@@ -52,13 +60,49 @@ namespace plan_fighting_super_start
             if (data == null || string.IsNullOrEmpty(data.downloadUrl))
                 return (null, null);
 
+            // tải ảnh gốc từ presigned URL
             byte[] bytes = await http.GetByteArrayAsync(data.downloadUrl);
             using var ms = new MemoryStream(bytes);
-            var img = Image.FromStream(ms);
+            using var original = Image.FromStream(ms);
 
-            return (img, data.key);
+            // ⭐ Resize ảnh máy bay xuống nhỏ (vd: 96x96) để game bớt lag
+            Image resized = ResizePlaneImage(original, PLANE_MAX_SIZE);
+
+            return (resized, data.key);
         }
 
+        /// <summary>
+        /// Resize ảnh máy bay về kích thước tối đa PLANE_MAX_SIZE (vuông hoặc theo tỉ lệ).
+        /// </summary>
+        private static Image ResizePlaneImage(Image srcImage, int maxSize)
+        {
+            int w = srcImage.Width;
+            int h = srcImage.Height;
+
+            // Tính tỉ lệ scale để không chiều nào > maxSize
+            float scale = (float)maxSize / Math.Max(w, h);
+            if (scale > 1f) scale = 1f; // không phóng to ảnh nhỏ
+
+            int newW = (int)(w * scale);
+            int newH = (int)(h * scale);
+
+            var destImage = new Bitmap(newW, newH);
+
+            using (var g = Graphics.FromImage(destImage))
+            {
+                g.CompositingMode = CompositingMode.SourceCopy;
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+                g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+                g.SmoothingMode = SmoothingMode.HighSpeed;
+                g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+
+                g.DrawImage(srcImage, 0, 0, newW, newH);
+            }
+
+            return destImage;
+        }
+
+        // Nếu sau này bạn muốn dùng, có thể implement thêm giống S3ImageService.GetImageAsync
         internal async Task<Image?> GetImageAsync(string planeSkin)
         {
             throw new NotImplementedException();

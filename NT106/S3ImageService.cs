@@ -13,24 +13,28 @@ namespace plan_fighting_super_start
 {
     public class S3ImageService
     {
-        private const string API_IMAGE = "https://2cd28uutce.execute-api.ap-southeast-1.amazonaws.com/image";
+        private const string API_IMAGE =
+            "https://2cd28uutce.execute-api.ap-southeast-1.amazonaws.com/image";
 
         private static readonly HttpClient http = new HttpClient();
 
-        // 🔹 Cache avatar theo key (avatars/username.png)
-        private static readonly Dictionary<string, Image> _imageCache = new Dictionary<string, Image>();
+        // Cache ảnh đã tải
+        private static readonly Dictionary<string, Image> _imageCache =
+            new Dictionary<string, Image>();
+
+        // Kích thước avatar nhỏ hơn để giảm lag
+        private const int AVATAR_MAX_SIZE = 128;        // giảm từ 256 xuống
+        private const long AVATAR_JPEG_QUALITY = 60L;   // JPEG quality thấp => dung lượng nhẹ
 
         // =====================================================================
-        // 1) UPLOAD ẢNH THEO TÊN USER => avatars/{username}.png
-        //     - Tự động RESIZE + NÉN ảnh để nhanh hơn
+        // UPLOAD AVATAR: tự resize + nén JPEG rồi gửi lên AWS
         // =====================================================================
         public async Task<string> UploadImageAsync(string filePath, string username)
         {
-            // Tối ưu: resize + nén ảnh trước khi upload
             byte[] optimizedBytes = OptimizeImage(filePath);
 
-            string fileName = $"avatars/{username}.png";   // key trên S3
-            string contentType = "image/png";              // mình xuất PNG/JPEG đều ok
+            string fileName = $"avatars/{username}.png";    // key trên S3
+            string contentType = "image/jpeg";              // dữ liệu thực là JPEG
 
             string base64 = Convert.ToBase64String(optimizedBytes);
 
@@ -55,31 +59,31 @@ namespace plan_fighting_super_start
 
             string key = doc.RootElement.GetProperty("key").GetString();
 
-            // Xoá cache cũ (nếu user đổi avatar)
+            // Clear cache cũ nếu có
             if (!string.IsNullOrEmpty(key) && _imageCache.ContainsKey(key))
             {
                 _imageCache[key].Dispose();
                 _imageCache.Remove(key);
             }
 
-            return key;   // "avatars/username.png"
+            return key;
         }
 
         // =====================================================================
-        // 2) LẤY ẢNH TỪ S3 THEO KEY – CÓ CACHE
+        // GET IMAGE TỪ S3 (CÓ CACHE)
         // =====================================================================
         public async Task<Image> GetImageAsync(string key)
         {
             if (string.IsNullOrEmpty(key))
                 return null;
 
-            // 🔹 Nếu đã có trong cache thì trả luôn, khỏi gọi S3
+            // Nếu cache có thì trả luôn
             if (_imageCache.TryGetValue(key, out var cachedImg) && cachedImg != null)
             {
-                // Trả bản clone cho an toàn
                 return (Image)cachedImg.Clone();
             }
 
+            // Gửi request lấy presigned URL
             var body = new
             {
                 action = "getUrl",
@@ -99,65 +103,81 @@ namespace plan_fighting_super_start
 
             string url = doc.RootElement.GetProperty("downloadUrl").GetString();
 
-            // tải file từ presigned-url
             byte[] bytes = await http.GetByteArrayAsync(url);
             using var ms = new MemoryStream(bytes);
-
             var img = Image.FromStream(ms);
 
-            // Lưu vào cache để lần sau không phải tải lại
-            if (_imageCache.ContainsKey(key))
-            {
-                _imageCache[key].Dispose();
-                _imageCache[key] = (Image)img.Clone();
-            }
-            else
-            {
-                _imageCache.Add(key, (Image)img.Clone());
-            }
+            // Lưu cache (clone)
+            _imageCache[key] = (Image)img.Clone();
 
             return img;
         }
 
         // =====================================================================
-        // 3) HÀM TỐI ƯU ẢNH (resize + nén)
+        // TỐI ƯU ẢNH (RESIZE + NÉN JPEG)
         // =====================================================================
         private byte[] OptimizeImage(string filePath)
         {
             using var original = Image.FromFile(filePath);
 
-            // Giới hạn tối đa 256x256 cho avatar
-            const int maxSize = 256;
             int w = original.Width;
             int h = original.Height;
 
-            // Nếu ảnh đã nhỏ rồi thì vẫn convert sang PNG/JPEG cho gọn
-            if (w <= maxSize && h <= maxSize)
-            {
-                using var ms = new MemoryStream();
-                original.Save(ms, ImageFormat.Png);   // hoặc ImageFormat.Jpeg
-                return ms.ToArray();
-            }
+            // scale nhỏ lại theo max-size
+            float scale = (float)AVATAR_MAX_SIZE / Math.Max(w, h);
+            if (scale > 1f) scale = 1f;
 
-            // Tính tỉ lệ scale
-            float scale = (float)maxSize / Math.Max(w, h);
             int newW = (int)(w * scale);
             int newH = (int)(h * scale);
 
-            // Resize với chất lượng tốt
             using var bmp = new Bitmap(newW, newH);
             using (var g = Graphics.FromImage(bmp))
             {
-                g.CompositingQuality = CompositingQuality.HighQuality;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+                g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+                g.SmoothingMode = SmoothingMode.HighSpeed;
 
                 g.DrawImage(original, 0, 0, newW, newH);
             }
 
             using var msOut = new MemoryStream();
-            bmp.Save(msOut, ImageFormat.Png);   // PNG chất lượng cao, dung lượng vẫn nhỏ vì size 256x256
+
+            // JPEG Encoder
+            ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
+
+            if (jpgEncoder != null)
+            {
+                EncoderParameters encoderParams = new EncoderParameters(1);
+
+                EncoderParameter qualityParam =
+                    new EncoderParameter(System.Drawing.Imaging.Encoder.Quality,
+                                         AVATAR_JPEG_QUALITY);
+
+                encoderParams.Param[0] = qualityParam;
+
+                bmp.Save(msOut, jpgEncoder, encoderParams);
+            }
+            else
+            {
+                // fallback
+                bmp.Save(msOut, ImageFormat.Jpeg);
+            }
+
             return msOut.ToArray();
+        }
+
+        // Tìm encoder JPEG
+        private static ImageCodecInfo GetEncoder(ImageFormat format)    
+        {
+            var codecs = ImageCodecInfo.GetImageDecoders();
+
+            foreach (var codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                    return codec;
+            }
+
+            return null;
         }
     }
 }
