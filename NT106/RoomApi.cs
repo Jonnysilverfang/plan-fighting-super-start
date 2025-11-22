@@ -84,6 +84,26 @@ namespace plan_fighting_super_start
             });
         }
 
+        // Khi client B out, host đưa phòng về CREATED (1/2)
+        public static Task<bool> BackToCreatedAsync(string roomId)
+        {
+            return PostAsync(new
+            {
+                action = "back_to_created",
+                roomId = roomId
+            });
+        }
+
+        // Hủy phòng khi host thoát TRƯỚC khi bấm BẮT ĐẦU
+        public static Task<bool> CancelRoomAsync(string roomId)
+        {
+            return PostAsync(new
+            {
+                action = "cancel",
+                roomId = roomId
+            });
+        }
+
         // ================== LẤY DANH SÁCH PHÒNG (action = list) ==================
 
         public class RoomInfo
