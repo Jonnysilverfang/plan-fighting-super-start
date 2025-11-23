@@ -83,13 +83,32 @@ namespace plan_fighting_super_start
             if (InvokeRequired) BeginInvoke(a); else a();
         }
 
+        // Thêm tin chat vào RichTextBox
+        private void AppendChat(string from, string text)
+        {
+            if (chatBox == null) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => AppendChat(from, text)));
+                return;
+            }
+
+            if (chatBox.TextLength > 0)
+                chatBox.AppendText(Environment.NewLine);
+
+            chatBox.AppendText($"{from}: {text}");
+            chatBox.SelectionStart = chatBox.TextLength;
+            chatBox.ScrollToCaret();
+        }
+
         // ====== HÀM DÙNG CHUNG: START HOST TCP (không đụng broadcast) ======
         private void StartHostServer()
         {
             // Dọn cái cũ (nếu có)
             try { networkManager?.Dispose(); } catch { }
 
-            // Tạo mới NetworkManager và host TCP
+            // Tạo mới NetworkManager và host TCP / WebSocket
             networkManager = new NetworkManager();
             WireNetworkEvents();
             networkManager.StartHost(GAME_PORT);
@@ -98,7 +117,7 @@ namespace plan_fighting_super_start
         // Host xử lý khi người chơi còn lại rời phòng trước khi bắt đầu
         private async Task HandlePeerDisconnectedAsync()
         {
-            // Chỉ quan tâm trường hợp: mình là HOST, game chưa start, có roomId,
+            // Chỉ quan tâm: mình là HOST, game chưa start, có roomId,
             // và KHÔNG phải do mình tự đóng form (shuttingDown = false)
             if (!isHost) return;
             if (gameStarted) return;
@@ -164,15 +183,43 @@ namespace plan_fighting_super_start
                 });
             };
 
-            // Nhận tín hiệu bắt đầu từ host
+            // Nhận message game / chat
             networkManager.OnMessageReceived += (msg) =>
             {
+                // Host gửi START_GAME → client nhận được
                 if (msg == "START_GAME")
+                {
                     UI(() =>
                     {
-                        gameStarted = true;   // client cũng đánh dấu đã start
+                        gameStarted = true;
                         OpenGame();
                     });
+                    return;
+                }
+
+                // Chat nội bộ: định dạng "CHAT|from|text"
+                if (msg.StartsWith("CHAT|"))
+                {
+                    var parts = msg.Split('|', 3);
+                    if (parts.Length == 3)
+                    {
+                        string from = parts[1];
+                        string text = parts[2];
+                        AppendChat(from, text);
+                    }
+                    return;
+                }
+
+                // Phòng không tồn tại (nếu Lambda có gửi)
+                if (msg == "ROOM_NOT_FOUND")
+                {
+                    UI(() =>
+                    {
+                        SetStatus("Không tìm thấy phòng trên server.");
+                        btnJoinRoom.Enabled = true;
+                    });
+                    return;
+                }
             };
 
             // Bị ngắt kết nối (cả host lẫn client đều chạy vào đây)
@@ -272,7 +319,7 @@ namespace plan_fighting_super_start
                 lanBroadcast = new LANBroadcast();
                 lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
 
-                // Start TCP Host
+                // Start TCP Host / WebSocket
                 StartHostServer();
 
                 SetStatus($"[HOST] Đã tạo phòng {currentRoomId}. Đang chờ người chơi khác...");
@@ -400,6 +447,7 @@ namespace plan_fighting_super_start
                 _ = RoomApi.StartRoomAsync(currentRoomId, hostName);
             }
 
+            // Gửi lệnh START_GAME cho client trong phòng
             networkManager.Send("START_GAME");
             OpenGame();
         }
@@ -480,6 +528,39 @@ namespace plan_fighting_super_start
             catch (Exception ex)
             {
                 SetStatus("Không tải được danh sách phòng: " + ex.Message);
+            }
+        }
+
+        // ========================= GỬI CHAT =========================
+        // ========================= GỬI CHAT =========================
+        private void btnSendChat_Click(object sender, EventArgs e)
+        {
+            string text = txtChat.Text.Trim();
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            // Tên hiển thị
+            string from = string.IsNullOrWhiteSpace(AccountData.Username)
+                ? (isHost ? "Host" : "Client")
+                : AccountData.Username;
+
+            // 1) Luôn append ở local trước
+            AppendChat(from, text);
+            txtChat.Clear();
+
+            // 2) Nếu chưa có kết nối / chưa join phòng thì không gửi qua mạng
+            if (networkManager == null || !networkManager.IsConnected || string.IsNullOrEmpty(currentRoomId))
+                return;
+
+            // 3) Gửi qua NetworkManager cho người còn lại trong phòng
+            string payload = $"CHAT|{from}|{text}";
+            try
+            {
+                networkManager.Send(payload);
+            }
+            catch
+            {
+                // nếu lỗi thì thôi, không crash
             }
         }
     }

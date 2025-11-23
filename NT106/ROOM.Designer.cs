@@ -21,6 +21,12 @@ namespace plan_fighting_super_start
         private DataGridViewTextBoxColumn colPlayersStatus;
 
         private Button button1;
+        private Button button2;
+
+        // 🔹 Chat controls
+        private RichTextBox chatBox;
+        private TextBox txtChat;
+        private Button btnSendChat;
 
         protected override void Dispose(bool disposing)
         {
@@ -48,6 +54,9 @@ namespace plan_fighting_super_start
             colPlayersStatus = new DataGridViewTextBoxColumn();
             button1 = new Button();
             button2 = new Button();
+            chatBox = new RichTextBox();
+            txtChat = new TextBox();
+            btnSendChat = new Button();
             ((System.ComponentModel.ISupportInitialize)IdRoom).BeginInit();
             SuspendLayout();
             // 
@@ -262,6 +271,44 @@ namespace plan_fighting_super_start
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
+            // chatBox
+            // 
+            chatBox.BackColor = Color.FromArgb(10, 15, 35);
+            chatBox.BorderStyle = BorderStyle.FixedSingle;
+            chatBox.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 163);
+            chatBox.ForeColor = Color.FromArgb(0, 255, 255);
+            chatBox.Location = new Point(36, 470);
+            chatBox.Name = "chatBox";
+            chatBox.ReadOnly = true;
+            chatBox.Size = new Size(424, 70);
+            chatBox.TabIndex = 12;
+            chatBox.Text = "";
+            // 
+            // txtChat
+            // 
+            txtChat.BackColor = Color.FromArgb(15, 22, 45);
+            txtChat.BorderStyle = BorderStyle.FixedSingle;
+            txtChat.Font = new Font("Segoe UI", 9F);
+            txtChat.ForeColor = Color.White;
+            txtChat.Location = new Point(36, 545);
+            txtChat.Name = "txtChat";
+            txtChat.Size = new Size(340, 27);
+            txtChat.TabIndex = 13;
+            // 
+            // btnSendChat
+            // 
+            btnSendChat.FlatStyle = FlatStyle.Flat;
+            btnSendChat.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnSendChat.ForeColor = Color.FromArgb(0, 192, 192);
+            btnSendChat.Location = new Point(385, 543);
+            btnSendChat.Name = "btnSendChat";
+            btnSendChat.Size = new Size(75, 30);
+            btnSendChat.TabIndex = 14;
+            btnSendChat.Text = "Gửi";
+            btnSendChat.UseVisualStyleBackColor = true;
+            btnSendChat.Click += btnSendChat_Click;
+
+            // 
             // Room
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -270,6 +317,9 @@ namespace plan_fighting_super_start
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1084, 593);
+            Controls.Add(btnSendChat);
+            Controls.Add(txtChat);
+            Controls.Add(chatBox);
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(IdRoom);
@@ -294,7 +344,5 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         #endregion
-
-        private Button button2;
     }
 }
