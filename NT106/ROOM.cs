@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -83,21 +84,44 @@ namespace plan_fighting_super_start
             if (InvokeRequired) BeginInvoke(a); else a();
         }
 
-        // Thêm tin chat vào RichTextBox
-        private void AppendChat(string from, string text)
+        // ========================= CHAT UI =========================
+        // Thêm tin chat vào RichTextBox với màu HOST / CLIENT
+        private void AppendChat(string from, string text, bool isHostSender)
         {
             if (chatBox == null) return;
 
-            if (InvokeRequired)
+            if (chatBox.InvokeRequired)
             {
-                BeginInvoke(new Action(() => AppendChat(from, text)));
+                chatBox.Invoke(new Action(() => AppendChat(from, text, isHostSender)));
                 return;
             }
+
+            string prefix = isHostSender ? "[HOST] " : "[CLIENT] ";
+
+            Color prefixColor = isHostSender ? Color.Red : Color.LightGray; // CLIENT màu xám
+            Color nameColor = Color.Gold;
+            Color textColor = Color.White;
 
             if (chatBox.TextLength > 0)
                 chatBox.AppendText(Environment.NewLine);
 
-            chatBox.AppendText($"{from}: {text}");
+            int start = chatBox.TextLength;
+
+            // Prefix
+            chatBox.AppendText(prefix);
+            chatBox.Select(start, prefix.Length);
+            chatBox.SelectionColor = prefixColor;
+
+            // Tên người
+            string namePart = from + ": ";
+            chatBox.AppendText(namePart);
+            chatBox.Select(start + prefix.Length, namePart.Length);
+            chatBox.SelectionColor = nameColor;
+
+            // Nội dung
+            chatBox.AppendText(text);
+            chatBox.SelectionColor = textColor;
+
             chatBox.SelectionStart = chatBox.TextLength;
             chatBox.ScrollToCaret();
         }
@@ -108,7 +132,7 @@ namespace plan_fighting_super_start
             // Dọn cái cũ (nếu có)
             try { networkManager?.Dispose(); } catch { }
 
-            // Tạo mới NetworkManager và host TCP / WebSocket
+            // Tạo mới NetworkManager và host TCP
             networkManager = new NetworkManager();
             WireNetworkEvents();
             networkManager.StartHost(GAME_PORT);
@@ -197,15 +221,25 @@ namespace plan_fighting_super_start
                     return;
                 }
 
-                // Chat nội bộ: định dạng "CHAT|from|text"
+                // Chat nội bộ: định dạng "CHAT|HOST|from|text" hoặc "CHAT|CLIENT|from|text"
                 if (msg.StartsWith("CHAT|"))
                 {
-                    var parts = msg.Split('|', 3);
-                    if (parts.Length == 3)
+                    try
                     {
-                        string from = parts[1];
-                        string text = parts[2];
-                        AppendChat(from, text);
+                        var parts = msg.Split(new[] { '|' }, 4);
+                        if (parts.Length >= 4)
+                        {
+                            string role = parts[1];      // "HOST" hoặc "CLIENT"
+                            string from = parts[2];
+                            string text = parts[3];
+
+                            bool isHostSender = role.Equals("HOST", StringComparison.OrdinalIgnoreCase);
+                            AppendChat(from, text, isHostSender);
+                        }
+                    }
+                    catch
+                    {
+                        // bỏ qua nếu message lỗi
                     }
                     return;
                 }
@@ -319,7 +353,7 @@ namespace plan_fighting_super_start
                 lanBroadcast = new LANBroadcast();
                 lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
 
-                // Start TCP Host / WebSocket
+                // Start TCP Host
                 StartHostServer();
 
                 SetStatus($"[HOST] Đã tạo phòng {currentRoomId}. Đang chờ người chơi khác...");
@@ -532,35 +566,34 @@ namespace plan_fighting_super_start
         }
 
         // ========================= GỬI CHAT =========================
-        // ========================= GỬI CHAT =========================
         private void btnSendChat_Click(object sender, EventArgs e)
         {
             string text = txtChat.Text.Trim();
             if (string.IsNullOrEmpty(text))
                 return;
 
-            // Tên hiển thị
             string from = string.IsNullOrWhiteSpace(AccountData.Username)
                 ? (isHost ? "Host" : "Client")
                 : AccountData.Username;
 
-            // 1) Luôn append ở local trước
-            AppendChat(from, text);
+            // Hiện local trước
+            AppendChat(from, text, isHost);
             txtChat.Clear();
 
-            // 2) Nếu chưa có kết nối / chưa join phòng thì không gửi qua mạng
+            // Nếu chưa có kết nối / chưa join phòng thì không gửi qua mạng
             if (networkManager == null || !networkManager.IsConnected || string.IsNullOrEmpty(currentRoomId))
                 return;
 
-            // 3) Gửi qua NetworkManager cho người còn lại trong phòng
-            string payload = $"CHAT|{from}|{text}";
+            string role = isHost ? "HOST" : "CLIENT";
+            string payload = $"CHAT|{role}|{from}|{text}";
+
             try
             {
                 networkManager.Send(payload);
             }
             catch
             {
-                // nếu lỗi thì thôi, không crash
+                // lỗi gửi thì bỏ qua, không crash
             }
         }
     }
