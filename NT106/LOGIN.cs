@@ -14,7 +14,6 @@ namespace plan_fighting_super_start
 
         private void Login_Load(object sender, EventArgs e)
         {
-
             // ⚠️ Bỏ qua khi đang ở chế độ Design để tránh lỗi Designer
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
@@ -98,11 +97,7 @@ namespace plan_fighting_super_start
                 form3.Show();
                 this.Hide();
             }
-            else
-            {
-                MessageBox.Show("Tên đăng nhập hoặc mật khẩu sai!", "Lỗi",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            // ❌ Không cần else — Database.CheckLogin đã hiện message lỗi cụ thể
         }
 
         private void buttonRegister_Click(object sender, EventArgs e)
@@ -128,3 +123,4 @@ namespace plan_fighting_super_start
         }
     }
 }
+    

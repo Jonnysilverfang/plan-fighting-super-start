@@ -1,9 +1,10 @@
 using System;
+using System.Net;                     // 🔹 dùng HttpStatusCode
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Threading.Tasks;         // 🔹 dùng async/await
 using System.Text;
 using System.Text.Json;
 
@@ -14,7 +15,7 @@ namespace plan_fighting_super_start
     {
         public string? Username { get; set; }
         public string? Password { get; set; }
-        public string? Email { get; set; }      // Email đã đăng ký
+        public string? Email { get; set; }
 
         public int Gold { get; set; }
         public int UpgradeHP { get; set; }
@@ -24,6 +25,9 @@ namespace plan_fighting_super_start
         public bool RewardLv10Claimed { get; set; }
         public bool RewardLv50Claimed { get; set; }
         public bool RewardLv100Claimed { get; set; }
+
+        // nếu backend trả Online thì deserialize luôn cũng được
+        public bool Online { get; set; }
     }
 
     // Model lịch sử đấu
@@ -43,7 +47,6 @@ namespace plan_fighting_super_start
         // Base dành riêng cho MatchHistory
         private static readonly string MatchApiBaseUrl =
             "https://840blg9a68.execute-api.ap-southeast-1.amazonaws.com/";
-
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -68,13 +71,42 @@ namespace plan_fighting_super_start
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var msg = response.Content.ReadAsStringAsync().Result;
-                    MessageBox.Show(
-                        $"Đăng nhập thất bại! {msg}",
-                        "Lỗi Đăng nhập",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
+                    var raw = response.Content.ReadAsStringAsync().Result;
+
+                    // Thử parse JSON để lấy field "message"
+                    string userMsg = raw;
+                    try
+                    {
+                        using var doc = JsonDocument.Parse(raw);
+                        if (doc.RootElement.TryGetProperty("message", out var msgProp))
+                        {
+                            userMsg = msgProp.GetString() ?? raw;
+                        }
+                    }
+                    catch
+                    {
+                        // Nếu body không phải JSON, dùng raw luôn
+                    }
+
+                    if (response.StatusCode == HttpStatusCode.Conflict) // 409 - đang online nơi khác
+                    {
+                        MessageBox.Show(
+                            userMsg,
+                            "Tài khoản đang đăng nhập",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning
+                        );
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "Đăng nhập thất bại! " + userMsg,
+                            "Lỗi Đăng nhập",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+                    }
+
                     return false;
                 }
 
@@ -92,6 +124,7 @@ namespace plan_fighting_super_start
                     AccountData.RewardLv10Claimed = account.RewardLv10Claimed;
                     AccountData.RewardLv50Claimed = account.RewardLv50Claimed;
                     AccountData.RewardLv100Claimed = account.RewardLv100Claimed;
+
                     return true;
                 }
 
@@ -217,7 +250,7 @@ namespace plan_fighting_super_start
                     UpgradeDamage = AccountData.UpgradeDamage,
                     Level = AccountData.Level,
 
-                     RewardLv10Claimed = AccountData.RewardLv10Claimed,
+                    RewardLv10Claimed = AccountData.RewardLv10Claimed,
                     RewardLv50Claimed = AccountData.RewardLv50Claimed,
                     RewardLv100Claimed = AccountData.RewardLv100Claimed
                 };
@@ -381,8 +414,6 @@ namespace plan_fighting_super_start
         // ==============================
         // 8️⃣ LƯU LỊCH SỬ ĐẤU
         // ==============================
-        // 8️⃣ LƯU LỊCH SỬ ĐẤU
-        // 8️⃣ LƯU LỊCH SỬ ĐẤU (POST /matchhistory/add)
         public static void RecordMatchHistory(string winnerUsername, string loserUsername)
         {
             try
@@ -415,7 +446,9 @@ namespace plan_fighting_super_start
             }
         }
 
-        // 9️⃣ LẤY LỊCH SỬ ĐẤU (GET /matchhistory/{username})
+        // ==============================
+        // 9️⃣ LẤY LỊCH SỬ ĐẤU
+        // ==============================
         public static List<ClientMatchHistoryModel> GetMatchHistory(string? username)
         {
             if (string.IsNullOrEmpty(username))
@@ -444,7 +477,10 @@ namespace plan_fighting_super_start
                     return new List<ClientMatchHistoryModel>();
                 }
 
-                var list = response.Content.ReadFromJsonAsync<List<ClientMatchHistoryModel>>(JsonOptions).Result;
+                var list = response.Content
+                    .ReadFromJsonAsync<List<ClientMatchHistoryModel>>(JsonOptions)
+                    .Result;
+
                 return list ?? new List<ClientMatchHistoryModel>();
             }
             catch (Exception ex)
@@ -454,6 +490,34 @@ namespace plan_fighting_super_start
             }
         }
 
+        // ==============================
+        // 🔟 SET ONLINE / OFFLINE
+        // ==============================
+        public static async Task<bool> SetOnlineStatusAsync(string username, bool online)
+        {
+            if (string.IsNullOrEmpty(username))
+                return false;
 
+            try
+            {
+                var body = new
+                {
+                    Username = username,
+                    Online = online
+                };
+
+                string jsonBody = JsonSerializer.Serialize(body, JsonOptions);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(ApiBaseUrl + "account/set-status", content);
+
+                // Không show MessageBox khi thoát game cho đỡ phiền
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

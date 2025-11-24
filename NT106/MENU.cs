@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio.Wave;   // dùng NAudio để phát nhạc
 
@@ -9,8 +10,8 @@ namespace plan_fighting_super_start
     public partial class Menu : Form
     {
         // ⭐ player nhạc nền với NAudio
-        private IWavePlayer waveOut;
-        private AudioFileReader audioFile;
+        private IWavePlayer? waveOut;
+        private AudioFileReader? audioFile;
 
         // ⭐ dịch vụ ảnh S3
         private readonly S3ImageService _imageService = new S3ImageService();
@@ -28,7 +29,7 @@ namespace plan_fighting_super_start
         {
             InitializeComponent();
 
-            // đăng ký sự kiện để dọn nhạc khi đóng form
+            // đăng ký sự kiện để dọn nhạc & set offline khi đóng form
             this.FormClosing += Menu_FormClosing;
 
             // khởi tạo nhạc nền
@@ -44,18 +45,17 @@ namespace plan_fighting_super_start
 
                 if (!File.Exists(mp3Path))
                 {
-                    // Không có file thì thôi, khỏi báo lỗi ầm ĩ
+                    // Không có file thì thôi
                     return;
                 }
 
-                // WaveOutEvent là player nhẹ, phù hợp game
                 waveOut = new WaveOutEvent();
                 audioFile = new AudioFileReader(mp3Path);
 
                 waveOut.Init(audioFile);
                 waveOut.Play();
 
-                // Loop nhạc: khi dừng thì quay lại đầu và play tiếp
+                // Loop nhạc
                 waveOut.PlaybackStopped += (s, e) =>
                 {
                     if (audioFile != null && waveOut != null)
@@ -72,9 +72,10 @@ namespace plan_fighting_super_start
             }
         }
 
-        // Dừng nhạc, giải phóng khi đóng form
+        // Dừng nhạc, giải phóng + set Offline khi đóng form
         private void Menu_FormClosing(object? sender, FormClosingEventArgs e)
         {
+            // dọn nhạc
             try
             {
                 if (waveOut != null)
@@ -93,6 +94,18 @@ namespace plan_fighting_super_start
             catch
             {
             }
+
+            // 🔹 set Online = false khi thoát Menu (fire-and-forget)
+            try
+            {
+                if (!string.IsNullOrEmpty(AccountData.Username))
+                {
+                    _ = Database.SetOnlineStatusAsync(AccountData.Username, false);
+                }
+            }
+            catch
+            {
+            }
         }
 
         // ===== Hàm dùng chung để load dữ liệu và cập nhật UI =====
@@ -105,9 +118,7 @@ namespace plan_fighting_super_start
                     Database.LoadAccountData(AccountData.Username);
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             if (textBoxGold != null) textBoxGold.Text = AccountData.Gold.ToString();
             if (textBox1 != null) textBox1.Text = AccountData.UpgradeHP.ToString();
@@ -133,22 +144,19 @@ namespace plan_fighting_super_start
             }
             catch
             {
-                // Nếu không có avatar hoặc lỗi S3 thì thôi, không báo ầm ĩ
+                // ignore lỗi avatar
             }
         }
 
         // Khởi tạo chỉ số máy bay từ DB
         private void InitPlaneIndexFromAccount()
         {
-            // Nếu chưa từng chọn skin → để _currentPlaneIndex = 0 (MayBay.png)
             if (string.IsNullOrEmpty(AccountData.PlaneSkin))
             {
                 _currentPlaneIndex = 0;
-                // pictureBoxPlane đang dùng MayBay.png thiết kế sẵn → khỏi làm gì
                 return;
             }
 
-            // Nếu backend đã lưu key S3, dạng "planes/plane3.png"
             string fileName = Path.GetFileNameWithoutExtension(AccountData.PlaneSkin); // plane3
             string digits = string.Empty;
             foreach (char c in fileName)
@@ -159,13 +167,12 @@ namespace plan_fighting_super_start
             if (int.TryParse(digits, out int idx) && idx >= 1 && idx <= 5)
                 _currentPlaneIndex = idx;
             else
-                _currentPlaneIndex = 0; // fallback → máy bay mặc định
+                _currentPlaneIndex = 0;
         }
 
-        // Sự kiện load form (Designer: Load += Form3_Load;)
+        // Sự kiện load form
         private void Form3_Load(object sender, EventArgs e)
         {
-            // nền form nếu muốn tối màu
             this.BackColor = BgDark;
 
             if (labelWelcome != null)
@@ -177,7 +184,7 @@ namespace plan_fighting_super_start
             }
 
             RefreshAccountDataAndUI();
-            LoadAvatarAsync();  // 🔹 load avatar khi vào Menu
+            LoadAvatarAsync();
             InitPlaneIndexFromAccount();
 
             if (buttonPlay != null) SetGameButton(buttonPlay);
@@ -202,7 +209,7 @@ namespace plan_fighting_super_start
             if (label4 != null) SetInfoLabel(label4);
         }
 
-        // ===== Helpers: chỉ UI, không đụng logic =====
+        // ===== Helpers: chỉ UI =====
         private void SetGameButton(Button button)
         {
             button.FlatStyle = FlatStyle.Flat;
@@ -252,12 +259,11 @@ namespace plan_fighting_super_start
             textBox.TextAlign = HorizontalAlignment.Center;
         }
 
-        // ====== Handlers nút bấm (logic giữ nguyên) ======
+        // ====== Handlers nút bấm ======
         private void buttonPlay_Click(object sender, EventArgs e)
         {
             try
             {
-                // lấy hình đang hiển thị ở Menu
                 Image? planeImg = pictureBoxPlane?.Image;
 
                 using (var form = new GAMEBOSS(planeImg))
@@ -309,10 +315,24 @@ namespace plan_fighting_super_start
             }
         }
 
-        private void buttonExit_Click(object sender, EventArgs e)
+        private async void buttonExit_Click(object sender, EventArgs e)
         {
+            try
+            {
+                if (!string.IsNullOrEmpty(AccountData.Username))
+                {
+                    // Chờ set Online = false xong
+                    await Database.SetOnlineStatusAsync(AccountData.Username, false);
+                }
+            }
+            catch
+            {
+                // bỏ qua lỗi, vẫn thoát game
+            }
+
             Application.Exit();
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -344,7 +364,7 @@ namespace plan_fighting_super_start
             form.Show();
         }
 
-        // ⭐ NÚT ĐỔI MÁY BAY – CHÚ Ý: async void
+        // ⭐ NÚT ĐỔI MÁY BAY
         private async void buttonDoiMayBay_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(AccountData.Username))
@@ -353,7 +373,6 @@ namespace plan_fighting_super_start
                 return;
             }
 
-            // Tăng index Skin S3: 0 (default) → 1 → 2 → ... → 5 → 1 → ...
             if (_currentPlaneIndex == 0)
                 _currentPlaneIndex = 1;
             else
@@ -375,7 +394,6 @@ namespace plan_fighting_super_start
 
                 if (!string.IsNullOrEmpty(key))
                 {
-                    // Lưu key S3 máy bay
                     AccountData.PlaneSkin = key;
                     try { Database.UpdateAccountData(); } catch { }
 

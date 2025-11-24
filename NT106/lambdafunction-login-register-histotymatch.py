@@ -17,7 +17,7 @@ MATCH_TABLE = dynamodb.Table('MatchHistory')
 sns = boto3.client('sns')
 SNS_TOPIC_ARN = "arn:aws:sns:ap-southeast-1:123456789012:YOUR_TOPIC_NAME"
 
-# --- JSON helper (Decimal -> int/float) ---
+# --- JSON helper ---
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
@@ -72,10 +72,11 @@ def handle_register(body):
                 "UpgradeHP": 100,
                 "UpgradeDamage": 0,
 
-                # ✅ Khởi tạo flag nhận quà
                 "RewardLv10Claimed": False,
                 "RewardLv50Claimed": False,
-                "RewardLv100Claimed": False
+                "RewardLv100Claimed": False,
+
+                "Online": False   # <-- trạng thái mặc định
             },
             ConditionExpression="attribute_not_exists(Username)"
         )
@@ -102,13 +103,33 @@ def handle_login(body):
     if str(acc.get("Password", "")) != password:
         return create_response(401, {"message": "Password không đúng"})
 
-    # Không trả password về client
-    acc.pop("Password", None)
+    # kiểm tra online hiện tại
+    current_online = acc.get("Online", False)
 
-    # ✅ đảm bảo luôn có 3 flag nếu chưa từng được set
+    if isinstance(current_online, bool) and current_online:
+        return create_response(
+            409,
+            {"message": "Tài khoản đang được đăng nhập ở nơi khác. Vui lòng thử lại sau."}
+        )
+
+    # cập nhật online = true
+    try:
+        ACCOUNT_TABLE.update_item(
+            Key={"Username": username},
+            UpdateExpression="SET #O = :true",
+            ExpressionAttributeValues={":true": True},
+            ExpressionAttributeNames={"#O": "Online"}
+        )
+    except ClientError as e:
+        print("Lỗi update Online khi login:", e)
+        return create_response(500, {"message": "Lỗi hệ thống khi đăng nhập"})
+
+    # trả về account (ẩn password)
+    acc.pop("Password", None)
     acc.setdefault("RewardLv10Claimed", False)
     acc.setdefault("RewardLv50Claimed", False)
     acc.setdefault("RewardLv100Claimed", False)
+    acc["Online"] = True
 
     return create_response(200, acc)
 
@@ -120,13 +141,11 @@ def handle_update_account(body):
     if not username:
         return create_response(400, {"message": "Thiếu Username"})
 
-    # Lấy các giá trị từ body
     gold = int(body.get("Gold", 0))
     upgrade_hp = int(body.get("UpgradeHP", 100))
     upgrade_damage = int(body.get("UpgradeDamage", 0))
     level = int(body.get("Level", 1))
 
-    # ✅ Flag nhận thưởng
     reward10 = bool(body.get("RewardLv10Claimed", False))
     reward50 = bool(body.get("RewardLv50Claimed", False))
     reward100 = bool(body.get("RewardLv100Claimed", False))
@@ -156,14 +175,12 @@ def handle_update_account(body):
             ConditionExpression="attribute_exists(Username)"
         )
         return create_response(200, {"message": "Cập nhật thành công"})
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            return create_response(404, {"message": "Không tìm thấy tài khoản để cập nhật."})
-        print("Lỗi cập nhật:", e)
+    except Exception as e:
+        print("Lỗi update account:", e)
         return create_response(500, {"message": "Lỗi hệ thống khi cập nhật"})
 
 # ============================
-# 4) Ghi lịch sử đấu
+# 4) Lịch sử đấu (ghi)
 # ============================
 def handle_record_match(body):
     winner = body.get("WinnerUsername", "").strip()
@@ -171,25 +188,25 @@ def handle_record_match(body):
     if not winner or not loser:
         return create_response(400, {"message": "Thiếu Winner/Loser"})
 
-    match_id   = body.get("Id") or f"match-{uuid.uuid4().hex}"
+    match_id = body.get("Id") or f"match-{uuid.uuid4().hex}"
     match_date = body.get("MatchDate") or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     item = {
         "Id": match_id,
         "WinnerUsername": winner,
-        "LoserUsername":  loser,
+        "LoserUsername": loser,
         "MatchDate": match_date
     }
 
     try:
         MATCH_TABLE.put_item(Item=item)
         return create_response(200, {"message": "Lưu lịch sử thành công", "item": item})
-    except ClientError as e:
-        print("Lỗi ghi DynamoDB:", e)
+    except Exception as e:
+        print("Lỗi ghi MatchHistory:", e)
         return create_response(500, {"message": "Lỗi hệ thống khi ghi lịch sử"})
 
 # ============================
-# 5) Lấy lịch sử đấu
+# 5) Lịch sử đấu (lấy)
 # ============================
 def handle_get_match_history(username):
     username = (username or "").strip()
@@ -199,29 +216,24 @@ def handle_get_match_history(username):
     try:
         collected = []
 
-        # Query theo GSI WinnerUsername (nếu có)
         try:
             resp_w = MATCH_TABLE.query(
                 IndexName="WinnerUsername-index",
                 KeyConditionExpression=Key("WinnerUsername").eq(username)
             )
             collected.extend(resp_w.get("Items", []))
-        except ClientError as e:
-            print("GSI WinnerUsername-index query failed:",
-                  e.response.get("Error", {}).get("Code"))
+        except:
+            pass
 
-        # Query theo GSI LoserUsername (nếu có)
         try:
             resp_l = MATCH_TABLE.query(
                 IndexName="LoserUsername-index",
                 KeyConditionExpression=Key("LoserUsername").eq(username)
             )
             collected.extend(resp_l.get("Items", []))
-        except ClientError as e:
-            print("GSI LoserUsername-index query failed:",
-                  e.response.get("Error", {}).get("Code"))
+        except:
+            pass
 
-        # Fallback scan nếu chưa có GSI hoặc không có kết quả
         if not collected:
             resp_scan = MATCH_TABLE.scan(
                 FilterExpression=Attr("WinnerUsername").eq(username) |
@@ -229,13 +241,8 @@ def handle_get_match_history(username):
             )
             collected.extend(resp_scan.get("Items", []))
 
-        # Loại trùng theo Id
-        uniq = {}
-        for it in collected:
-            uniq[it.get("Id")] = it
+        uniq = {item["Id"]: item for item in collected}
         items = list(uniq.values())
-
-        # Sort theo MatchDate giảm dần
         items.sort(key=lambda x: x.get("MatchDate", ""), reverse=True)
 
         return create_response(200, items)
@@ -244,7 +251,7 @@ def handle_get_match_history(username):
         return create_response(500, {"message": "Lỗi hệ thống khi lấy lịch sử"})
 
 # ============================
-# 6) Quên mật khẩu: Gửi mã
+# 6) Quên mật khẩu – gửi mã
 # ============================
 def handle_request_reset(body):
     username = body.get("Username", "").strip()
@@ -257,8 +264,7 @@ def handle_request_reset(body):
     if not acc:
         return create_response(404, {"message": "Tài khoản không tồn tại"})
 
-    acc_email = str(acc.get("Email", "")).strip().lower()
-    if acc_email != email.lower():
+    if acc.get("Email", "").lower() != email.lower():
         return create_response(400, {"message": "Email không khớp với tài khoản"})
 
     code = f"{random.randint(100000, 999999)}"
@@ -272,12 +278,11 @@ def handle_request_reset(body):
         )
         send_reset_code_email(email, username, code)
         return create_response(200, {"message": "Đã gửi mã đặt lại mật khẩu"})
-    except Exception as e:
-        print("Lỗi khi tạo/gửi mã reset:", e)
-        return create_response(500, {"message": "Lỗi hệ thống khi gửi mã đặt lại mật khẩu"})
+    except:
+        return create_response(500, {"message": "Lỗi hệ thống khi gửi mã"})
 
 # ============================
-# 7) Quên mật khẩu: Xác nhận + đổi
+# 7) Quên mật khẩu – xác nhận
 # ============================
 def handle_confirm_reset(body):
     username = body.get("Username", "").strip()
@@ -286,24 +291,20 @@ def handle_confirm_reset(body):
     new_password = body.get("NewPassword", "").strip()
 
     if not username or not email or not code or not new_password:
-        return create_response(400, {"message": "Thiếu thông tin (Username/Email/Code/NewPassword)"})
+        return create_response(400, {"message": "Thiếu thông tin"})
 
     resp = ACCOUNT_TABLE.get_item(Key={"Username": username})
     acc = resp.get("Item")
     if not acc:
         return create_response(404, {"message": "Tài khoản không tồn tại"})
 
-    acc_email = str(acc.get("Email", "")).strip().lower()
-    if acc_email != email.lower():
+    if acc.get("Email", "").lower() != email.lower():
         return create_response(400, {"message": "Email không khớp với tài khoản"})
 
-    stored_code = str(acc.get("ResetCode", ""))
-    expiry = acc.get("ResetCodeExpiry", None)
-    now = int(time.time())
-
-    if not stored_code or stored_code != code:
+    if str(acc.get("ResetCode", "")) != code:
         return create_response(400, {"message": "Mã xác minh không đúng"})
-    if expiry is None or now > int(expiry):
+
+    if int(time.time()) > int(acc.get("ResetCodeExpiry", 0)):
         return create_response(400, {"message": "Mã xác minh đã hết hạn"})
 
     try:
@@ -313,9 +314,8 @@ def handle_confirm_reset(body):
             ExpressionAttributeValues={":p": new_password}
         )
         return create_response(200, {"message": "Đổi mật khẩu thành công"})
-    except Exception as e:
-        print("Lỗi khi đổi mật khẩu (confirm-reset):", e)
-        return create_response(500, {"message": "Lỗi hệ thống khi đổi mật khẩu"})
+    except:
+        return create_response(500, {"message": "Lỗi khi đổi mật khẩu"})
 
 # ============================
 # 8) Đổi mật khẩu trực tiếp
@@ -327,8 +327,7 @@ def handle_change_password(body):
         return create_response(400, {"message": "Thiếu Username hoặc NewPassword"})
 
     resp = ACCOUNT_TABLE.get_item(Key={"Username": username})
-    acc = resp.get("Item")
-    if not acc:
+    if "Item" not in resp:
         return create_response(404, {"message": "Tài khoản không tồn tại"})
 
     try:
@@ -338,71 +337,80 @@ def handle_change_password(body):
             ExpressionAttributeValues={":p": new_password}
         )
         return create_response(200, {"message": "Đổi mật khẩu thành công"})
-    except Exception as e:
-        print("Lỗi khi đổi mật khẩu (change-password):", e)
-        return create_response(500, {"message": "Lỗi hệ thống khi đổi mật khẩu"})
+    except:
+        return create_response(500, {"message": "Lỗi khi đổi mật khẩu"})
 
 # ============================
-# Entry point (routing)
+# 9) Cập nhật trạng thái Online / Offline
+# ============================
+def handle_set_online_status(body):
+    username = body.get("Username", "").strip()
+    online = bool(body.get("Online", False))
+
+    if not username:
+        return create_response(400, {"message": "Thiếu Username"})
+
+    try:
+        ACCOUNT_TABLE.update_item(
+            Key={"Username": username},
+            UpdateExpression="SET #O = :o",
+            ExpressionAttributeValues={":o": online},
+            ExpressionAttributeNames={"#O": "Online"},
+            ConditionExpression="attribute_exists(Username)"
+        )
+        return create_response(200, {"message": "Đã cập nhật trạng thái", "Online": online})
+    except Exception as e:
+        print("Lỗi update Online:", e)
+        return create_response(500, {"message": "Lỗi hệ thống khi cập nhật Online"})
+
+# ============================
+# Entry point
 # ============================
 def lambda_handler(event, context):
     http = (event.get("requestContext") or {}).get("http", {}) or {}
-    http_method = http.get("method", "")
-    raw_path = http.get("path", "") or ""
-
-    print("METHOD:", http_method)
-    print("PATH:", raw_path)
+    method = http.get("method", "")
+    raw_path = http.get("path", "")
 
     body = {}
-    if http_method in ["POST", "PUT"] and event.get("body"):
+    if method in ["POST", "PUT"] and event.get("body"):
         try:
             body = json.loads(event["body"])
-        except json.JSONDecodeError:
+        except:
             return create_response(400, {"message": "Invalid JSON body"})
 
-    # --- POST ---
-    if http_method == "POST":
+    if method == "POST":
         if "/account/register" in raw_path:
             return handle_register(body)
         if "/account/login" in raw_path:
             return handle_login(body)
-        if "/matchhistory/add" in raw_path:
-            return handle_record_match(body)
+        if "/account/change-password" in raw_path:
+            return handle_change_password(body)
         if "/account/request-reset" in raw_path:
             return handle_request_reset(body)
         if "/account/confirm-reset" in raw_path:
             return handle_confirm_reset(body)
-        if "/account/change-password" in raw_path:
-            return handle_change_password(body)
+        if "/account/set-status" in raw_path:
+            return handle_set_online_status(body)
+        if "/matchhistory/add" in raw_path:
+            return handle_record_match(body)
 
-    # --- PUT ---
-    if http_method == "PUT":
+    if method == "PUT":
         if "/account/update" in raw_path:
             return handle_update_account(body)
 
-    # --- GET ---
-    if http_method == "GET":
+    if method == "GET":
         params = event.get("pathParameters") or {}
         raw_username = params.get("username")
 
-        # Phòng trường hợp HTTP API không map pathParameters
-        if "/matchhistory/" in raw_path and not raw_username:
-            raw_username = raw_path.split("/matchhistory/", 1)[-1].strip("/")
-
-        # Lấy account
         if "/account/" in raw_path and raw_username:
             resp = ACCOUNT_TABLE.get_item(Key={'Username': raw_username})
-            acc = resp.get('Item')
-            if acc:
-                acc.pop("Password", None)
-                # ✅ default flag nếu chưa có
-                acc.setdefault("RewardLv10Claimed", False)
-                acc.setdefault("RewardLv50Claimed", False)
-                acc.setdefault("RewardLv100Claimed", False)
-                return create_response(200, acc)
-            return create_response(404, {"message": "Tài khoản không tồn tại"})
+            acc = resp.get("Item")
+            if not acc:
+                return create_response(404, {"message": "Tài khoản không tồn tại"})
+            acc.pop("Password", None)
+            acc.setdefault("Online", False)
+            return create_response(200, acc)
 
-        # Lịch sử đấu
         if "/matchhistory/" in raw_path and raw_username:
             return handle_get_match_history(raw_username)
 
