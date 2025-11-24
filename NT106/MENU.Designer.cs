@@ -324,12 +324,16 @@ namespace plan_fighting_super_start
             // 
             // buttonDoiMayBay
             // 
-            buttonDoiMayBay.Location = new Point(454, 176);
+            buttonDoiMayBay.BackColor = Color.Black;
+            buttonDoiMayBay.FlatStyle = FlatStyle.Popup;
+            buttonDoiMayBay.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            buttonDoiMayBay.ForeColor = Color.Cyan;
+            buttonDoiMayBay.Location = new Point(495, 419);
             buttonDoiMayBay.Name = "buttonDoiMayBay";
             buttonDoiMayBay.Size = new Size(153, 29);
             buttonDoiMayBay.TabIndex = 23;
             buttonDoiMayBay.Text = "ĐỔI ẢNH MÁY BAY";
-            buttonDoiMayBay.UseVisualStyleBackColor = true;
+            buttonDoiMayBay.UseVisualStyleBackColor = false;
             buttonDoiMayBay.Click += buttonDoiMayBay_Click;
             // 
             // Menu
