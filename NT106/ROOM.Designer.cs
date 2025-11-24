@@ -37,9 +37,9 @@ namespace plan_fighting_super_start
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
             labelTitle = new Label();
             labelRoom = new Label();
             txtRoomID = new TextBox();
@@ -182,35 +182,35 @@ namespace plan_fighting_super_start
             IdRoom.AllowUserToAddRows = false;
             IdRoom.AllowUserToDeleteRows = false;
             IdRoom.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(14, 20, 40);
-            dataGridViewCellStyle1.ForeColor = Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(0, 192, 192);
-            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
-            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.BackColor = Color.FromArgb(14, 20, 40);
+            dataGridViewCellStyle4.ForeColor = Color.White;
+            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle4.SelectionForeColor = Color.Black;
+            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
             IdRoom.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             IdRoom.BackgroundColor = Color.FromArgb(10, 15, 35);
             IdRoom.BorderStyle = BorderStyle.None;
             IdRoom.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             IdRoom.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(0, 120, 140);
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(0, 150, 160);
-            dataGridViewCellStyle2.SelectionForeColor = Color.White;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = Color.FromArgb(0, 120, 140);
+            dataGridViewCellStyle5.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            dataGridViewCellStyle5.ForeColor = Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(0, 150, 160);
+            dataGridViewCellStyle5.SelectionForeColor = Color.White;
+            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
+            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             IdRoom.ColumnHeadersHeight = 32;
             IdRoom.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             IdRoom.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2, colPlayersStatus });
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = Color.FromArgb(18, 24, 48);
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle3.ForeColor = Color.WhiteSmoke;
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(0, 192, 192);
-            dataGridViewCellStyle3.SelectionForeColor = Color.Black;
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
-            IdRoom.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = Color.FromArgb(18, 24, 48);
+            dataGridViewCellStyle6.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle6.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle6.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle6.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
+            IdRoom.DefaultCellStyle = dataGridViewCellStyle6;
             IdRoom.GridColor = Color.FromArgb(0, 192, 192);
             IdRoom.Location = new Point(514, 147);
             IdRoom.Name = "IdRoom";
@@ -283,6 +283,7 @@ namespace plan_fighting_super_start
             chatBox.Size = new Size(424, 70);
             chatBox.TabIndex = 12;
             chatBox.Text = "";
+            chatBox.TextChanged += chatBox_TextChanged;
             // 
             // txtChat
             // 
@@ -294,6 +295,7 @@ namespace plan_fighting_super_start
             txtChat.Name = "txtChat";
             txtChat.Size = new Size(340, 27);
             txtChat.TabIndex = 13;
+            txtChat.TextChanged += txtChat_TextChanged;
             // 
             // btnSendChat
             // 
@@ -307,7 +309,6 @@ namespace plan_fighting_super_start
             btnSendChat.Text = "Gửi";
             btnSendChat.UseVisualStyleBackColor = true;
             btnSendChat.Click += btnSendChat_Click;
-
             // 
             // Room
             // 

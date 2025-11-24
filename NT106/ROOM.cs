@@ -7,8 +7,12 @@ namespace plan_fighting_super_start
 {
     public partial class Room : Form
     {
+        // LAN hiện tại dùng NetworkManager (TCP) + LANBroadcast (UDP)
         private NetworkManager networkManager;
         private LANBroadcast lanBroadcast;
+
+        // Bộ chat sảnh LAN (UDP 9877)
+        private ChatSanhLAN chatSanh;
 
         private bool isHost;
         private string currentRoomId;
@@ -31,6 +35,15 @@ namespace plan_fighting_super_start
         {
             SetStatus("Chưa tạo/tham gia phòng.");
 
+            // Bật chat sảnh LAN
+            chatSanh = new ChatSanhLAN();
+            chatSanh.BatDauNghe();
+            chatSanh.NhanTinSanh += (ten, noiDung) =>
+            {
+                // Hiển thị tin lobby từ máy khác
+                UI(() => AppendChat($"[LOBBY]{ten}", noiDung, false));
+            };
+
             // Load danh sách phòng từ API lên DataGridView
             await LoadRoomsAsync();
         }
@@ -42,6 +55,7 @@ namespace plan_fighting_super_start
 
             try { networkManager?.Dispose(); } catch { }
             try { lanBroadcast?.Dispose(); } catch { }
+            try { chatSanh?.Dispose(); } catch { }
 
             // Chỉ host mới báo về API
             try
@@ -62,6 +76,7 @@ namespace plan_fighting_super_start
             }
             catch
             {
+                // nuốt lỗi để không crash khi đóng form
             }
         }
 
@@ -85,7 +100,7 @@ namespace plan_fighting_super_start
         }
 
         // ========================= CHAT UI =========================
-        // Thêm tin chat vào RichTextBox với màu HOST / CLIENT
+        // Thêm tin chat vào RichTextBox với màu HOST / CLIENT / LOBBY
         private void AppendChat(string from, string text, bool isHostSender)
         {
             if (chatBox == null) return;
@@ -96,9 +111,16 @@ namespace plan_fighting_super_start
                 return;
             }
 
-            string prefix = isHostSender ? "[HOST] " : "[CLIENT] ";
+            bool laLobby = from.StartsWith("[LOBBY]");
+            if (laLobby) from = from.Substring("[LOBBY]".Length);
 
-            Color prefixColor = isHostSender ? Color.Red : Color.LightGray; // CLIENT màu xám
+            string prefix = laLobby
+                ? "[LOBBY] "
+                : (isHostSender ? "[HOST] " : "[CLIENT] ");
+
+            Color prefixColor = laLobby
+                ? Color.Cyan
+                : (isHostSender ? Color.Red : Color.LightGray); // CLIENT màu xám
             Color nameColor = Color.Gold;
             Color textColor = Color.White;
 
@@ -126,7 +148,7 @@ namespace plan_fighting_super_start
             chatBox.ScrollToCaret();
         }
 
-        // ====== HÀM DÙNG CHUNG: START HOST TCP (không đụng broadcast) ======
+        // ====== START HOST TCP (không đụng broadcast) ======
         private void StartHostServer()
         {
             // Dọn cái cũ (nếu có)
@@ -244,7 +266,7 @@ namespace plan_fighting_super_start
                     return;
                 }
 
-                // Phòng không tồn tại (nếu Lambda có gửi)
+                // Phòng không tồn tại (giữ tương thích, nhưng LAN không dùng)
                 if (msg == "ROOM_NOT_FOUND")
                 {
                     UI(() =>
@@ -365,15 +387,14 @@ namespace plan_fighting_super_start
 
                 _ = RoomLogger.LogHost(currentRoomId, hostName);
 
-                // POST lên API Gateway: action = create
+                // POST lên API: action = create (chỉ để cập nhật list/ghi log server)
                 var ok = await RoomApi.CreateRoomAsync(currentRoomId, hostName);
                 if (!ok)
                 {
                     SetStatus($"[HOST] Đã tạo phòng {currentRoomId} (LAN OK) nhưng POST API thất bại.");
                 }
 
-                // Sau khi tạo xong, refresh lại danh sách phòng
-                await LoadRoomsAsync();
+                await LoadRoomsAsync(); // refresh lại danh sách phòng
             }
             catch (Exception ex)
             {
@@ -436,16 +457,14 @@ namespace plan_fighting_super_start
 
                     _ = RoomLogger.LogGuest(currentRoomId, guestName);
 
-                    // POST lên API Gateway: action = join
+                    // POST lên API: action = join (để cập nhật list/ghi log)
                     var ok = await RoomApi.JoinRoomAsync(currentRoomId, guestName);
                     if (!ok)
                     {
-                        UI(() => SetStatus(
-                            $"Đã join LAN nhưng POST API join thất bại (phòng {currentRoomId})."));
+                        UI(() => SetStatus($"Đã join LAN nhưng POST API join thất bại (phòng {currentRoomId})."));
                     }
 
-                    // Sau khi join thành công có thể reload lại list (cho đẹp)
-                    await LoadRoomsAsync();
+                    await LoadRoomsAsync(); // refresh list
                 }
                 catch (Exception ex)
                 {
@@ -471,7 +490,7 @@ namespace plan_fighting_super_start
 
             gameStarted = true;   // đánh dấu đã bắt đầu
 
-            // Chỉ host mới POST start
+            // Chỉ host mới POST start (ghi log)
             if (isHost)
             {
                 var hostName = string.IsNullOrWhiteSpace(AccountData.Username)
@@ -489,6 +508,7 @@ namespace plan_fighting_super_start
         // ========================= MỞ GAME SOLO =========================
         private void OpenGame()
         {
+            // GAMESOLO hiện nhận NetworkManager → giữ nguyên để không phải sửa file khác
             var game = new GAMESOLO(networkManager, isHost, currentRoomId);
             game.Show();
             this.Hide();
@@ -497,8 +517,6 @@ namespace plan_fighting_super_start
             {
                 this.Show();
                 SetStatus("Đã quay lại lobby.");
-
-                // Sau khi game kết thúc, refresh danh sách phòng
                 await LoadRoomsAsync();
             };
         }
@@ -539,8 +557,9 @@ namespace plan_fighting_super_start
 
             var row = IdRoom.Rows[e.RowIndex];
 
-            // Nếu cột chứa RoomID tên khác, đổi "Player1" thành đúng tên cột RoomId của bạn
-            var roomIdObj = row.Cells["Player1"].Value;
+            // Lưu ý: tên cột phải đúng – ở đây giả sử cột đầu là RoomId
+            // Nếu cột bạn đặt tên khác, đổi "Player1" bên dưới cho khớp Designer
+            var roomIdObj = row.Cells["Player1"]?.Value;
             var roomId = roomIdObj?.ToString();
 
             if (string.IsNullOrWhiteSpace(roomId))
@@ -566,7 +585,7 @@ namespace plan_fighting_super_start
         }
 
         // ========================= GỬI CHAT =========================
-        private void btnSendChat_Click(object sender, EventArgs e)
+        private async void btnSendChat_Click(object sender, EventArgs e)
         {
             string text = txtChat.Text.Trim();
             if (string.IsNullOrEmpty(text))
@@ -576,16 +595,40 @@ namespace plan_fighting_super_start
                 ? (isHost ? "Host" : "Client")
                 : AccountData.Username;
 
-            // Hiện local trước
-            AppendChat(from, text, isHost);
-            txtChat.Clear();
+            bool daTrongPhong = networkManager != null
+                                && networkManager.IsConnected
+                                && !string.IsNullOrEmpty(currentRoomId);
 
-            // Nếu chưa có kết nối / chưa join phòng thì không gửi qua mạng
-            if (networkManager == null || !networkManager.IsConnected || string.IsNullOrEmpty(currentRoomId))
+            if (!daTrongPhong)
+            {
+                // === LOBBY CHAT: broadcast tới mọi người trong LAN ===
+                if (chatSanh == null)
+                {
+                    chatSanh = new ChatSanhLAN();
+                    chatSanh.BatDauNghe();
+                    chatSanh.NhanTinSanh += (ten, noiDung) =>
+                        UI(() => AppendChat($"[LOBBY]{ten}", noiDung, false));
+                }
+
+                try
+                {
+                    await chatSanh.GuiTinSanhAsync(from, text);
+                }
+                catch { /* bỏ qua lỗi */ }
+
+                // Hiển thị local với tag [LOBBY]
+                AppendChat($"[LOBBY]{from}", text, false);
+                txtChat.Clear();
                 return;
+            }
 
+            // === ROOM CHAT: chỉ 2 người trong phòng ===
             string role = isHost ? "HOST" : "CLIENT";
             string payload = $"CHAT|{role}|{from}|{text}";
+
+            // Hiện local trước (host/client)
+            AppendChat(from, text, isHost);
+            txtChat.Clear();
 
             try
             {
@@ -595,6 +638,16 @@ namespace plan_fighting_super_start
             {
                 // lỗi gửi thì bỏ qua, không crash
             }
+        }
+
+        private void chatBox_TextChanged(object sender, EventArgs e)
+        {
+            // tùy UI – không cần xử lý
+        }
+
+        private void txtChat_TextChanged(object sender, EventArgs e)
+        {
+            // tùy UI – không cần xử lý
         }
     }
 }
