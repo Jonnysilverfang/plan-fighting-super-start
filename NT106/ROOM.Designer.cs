@@ -23,10 +23,14 @@ namespace plan_fighting_super_start
         private Button button1;
         private Button button2;
 
-        // 🔹 Chat controls
+        // Chat controls
         private RichTextBox chatBox;
         private TextBox txtChat;
         private Button btnSendChat;
+
+        // Channel controls
+        private Label lblKenh;
+        private ComboBox cmbKenh;
 
         protected override void Dispose(bool disposing)
         {
@@ -37,9 +41,9 @@ namespace plan_fighting_super_start
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             labelTitle = new Label();
             labelRoom = new Label();
             txtRoomID = new TextBox();
@@ -55,6 +59,8 @@ namespace plan_fighting_super_start
             button1 = new Button();
             button2 = new Button();
             chatBox = new RichTextBox();
+            lblKenh = new Label();
+            cmbKenh = new ComboBox();
             txtChat = new TextBox();
             btnSendChat = new Button();
             ((System.ComponentModel.ISupportInitialize)IdRoom).BeginInit();
@@ -273,36 +279,64 @@ namespace plan_fighting_super_start
             // 
             // chatBox
             // 
+            chatBox.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             chatBox.BackColor = Color.FromArgb(10, 15, 35);
             chatBox.BorderStyle = BorderStyle.FixedSingle;
-            chatBox.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 163);
-            chatBox.ForeColor = Color.FromArgb(0, 255, 255);
+            chatBox.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 163);
+            chatBox.ForeColor = Color.White;
             chatBox.Location = new Point(36, 470);
             chatBox.Name = "chatBox";
             chatBox.ReadOnly = true;
-            chatBox.Size = new Size(424, 70);
+            chatBox.Size = new Size(470, 70);
             chatBox.TabIndex = 12;
             chatBox.Text = "";
             chatBox.TextChanged += chatBox_TextChanged;
             // 
+            // lblKenh
+            // 
+            lblKenh.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblKenh.AutoSize = true;
+            lblKenh.BackColor = Color.FromArgb(90, 0, 0, 0);
+            lblKenh.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            lblKenh.ForeColor = Color.FromArgb(0, 255, 255);
+            lblKenh.Location = new Point(36, 546);
+            lblKenh.Name = "lblKenh";
+            lblKenh.Size = new Size(45, 21);
+            lblKenh.TabIndex = 15;
+            lblKenh.Text = "Kênh";
+            // 
+            // cmbKenh
+            // 
+            cmbKenh.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            cmbKenh.BackColor = Color.FromArgb(15, 22, 45);
+            cmbKenh.FlatStyle = FlatStyle.Flat;
+            cmbKenh.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            cmbKenh.ForeColor = Color.FromArgb(210, 235, 255);
+            cmbKenh.Location = new Point(90, 542);
+            cmbKenh.Name = "cmbKenh";
+            cmbKenh.Size = new Size(180, 28);
+            cmbKenh.TabIndex = 16;
+            // 
             // txtChat
             // 
-            txtChat.BackColor = Color.FromArgb(15, 22, 45);
+            txtChat.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            txtChat.BackColor = Color.FromArgb(18, 24, 48);
             txtChat.BorderStyle = BorderStyle.FixedSingle;
-            txtChat.Font = new Font("Segoe UI", 9F);
-            txtChat.ForeColor = Color.White;
-            txtChat.Location = new Point(36, 545);
+            txtChat.Font = new Font("Segoe UI", 9.5F);
+            txtChat.ForeColor = Color.FromArgb(225, 235, 255);
+            txtChat.Location = new Point(280, 543);
             txtChat.Name = "txtChat";
-            txtChat.Size = new Size(340, 27);
+            txtChat.Size = new Size(300, 27);
             txtChat.TabIndex = 13;
             txtChat.TextChanged += txtChat_TextChanged;
             // 
             // btnSendChat
             // 
+            btnSendChat.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             btnSendChat.FlatStyle = FlatStyle.Flat;
             btnSendChat.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
             btnSendChat.ForeColor = Color.FromArgb(0, 192, 192);
-            btnSendChat.Location = new Point(385, 543);
+            btnSendChat.Location = new Point(590, 540);
             btnSendChat.Name = "btnSendChat";
             btnSendChat.Size = new Size(75, 30);
             btnSendChat.TabIndex = 14;
@@ -315,12 +349,17 @@ namespace plan_fighting_super_start
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(10, 15, 30);
-            BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
+            BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7; // giữ nguyên hình nền của bạn
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1084, 593);
-            Controls.Add(btnSendChat);
-            Controls.Add(txtChat);
+
+            // THỨ TỰ ADD: chatBox trước (ở “dưới”), các input ở “trên” để không bị che
             Controls.Add(chatBox);
+            Controls.Add(lblKenh);
+            Controls.Add(cmbKenh);
+            Controls.Add(txtChat);
+            Controls.Add(btnSendChat);
+
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(IdRoom);
@@ -332,6 +371,7 @@ namespace plan_fighting_super_start
             Controls.Add(txtRoomID);
             Controls.Add(labelRoom);
             Controls.Add(labelTitle);
+
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
