@@ -41,9 +41,9 @@ namespace plan_fighting_super_start
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             labelTitle = new Label();
             labelRoom = new Label();
             txtRoomID = new TextBox();
@@ -188,35 +188,35 @@ namespace plan_fighting_super_start
             IdRoom.AllowUserToAddRows = false;
             IdRoom.AllowUserToDeleteRows = false;
             IdRoom.AllowUserToResizeRows = false;
-            dataGridViewCellStyle4.BackColor = Color.FromArgb(14, 20, 40);
-            dataGridViewCellStyle4.ForeColor = Color.White;
-            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(0, 192, 192);
-            dataGridViewCellStyle4.SelectionForeColor = Color.Black;
-            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(14, 20, 40);
+            dataGridViewCellStyle1.ForeColor = Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
+            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             IdRoom.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             IdRoom.BackgroundColor = Color.FromArgb(10, 15, 35);
             IdRoom.BorderStyle = BorderStyle.None;
             IdRoom.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             IdRoom.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = Color.FromArgb(0, 120, 140);
-            dataGridViewCellStyle5.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(0, 150, 160);
-            dataGridViewCellStyle5.SelectionForeColor = Color.White;
-            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
-            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(0, 120, 140);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(0, 150, 160);
+            dataGridViewCellStyle2.SelectionForeColor = Color.White;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             IdRoom.ColumnHeadersHeight = 32;
             IdRoom.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             IdRoom.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2, colPlayersStatus });
-            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = Color.FromArgb(18, 24, 48);
-            dataGridViewCellStyle6.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle6.ForeColor = Color.WhiteSmoke;
-            dataGridViewCellStyle6.SelectionBackColor = Color.FromArgb(0, 192, 192);
-            dataGridViewCellStyle6.SelectionForeColor = Color.Black;
-            dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
-            IdRoom.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(18, 24, 48);
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle3.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            IdRoom.DefaultCellStyle = dataGridViewCellStyle3;
             IdRoom.GridColor = Color.FromArgb(0, 192, 192);
             IdRoom.Location = new Point(514, 147);
             IdRoom.Name = "IdRoom";
@@ -279,7 +279,7 @@ namespace plan_fighting_super_start
             // 
             // chatBox
             // 
-            chatBox.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            chatBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             chatBox.BackColor = Color.FromArgb(10, 15, 35);
             chatBox.BorderStyle = BorderStyle.FixedSingle;
             chatBox.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 163);
@@ -294,20 +294,20 @@ namespace plan_fighting_super_start
             // 
             // lblKenh
             // 
-            lblKenh.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            lblKenh.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             lblKenh.AutoSize = true;
             lblKenh.BackColor = Color.FromArgb(90, 0, 0, 0);
             lblKenh.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             lblKenh.ForeColor = Color.FromArgb(0, 255, 255);
             lblKenh.Location = new Point(36, 546);
             lblKenh.Name = "lblKenh";
-            lblKenh.Size = new Size(45, 21);
+            lblKenh.Size = new Size(49, 21);
             lblKenh.TabIndex = 15;
             lblKenh.Text = "Kênh";
             // 
             // cmbKenh
             // 
-            cmbKenh.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            cmbKenh.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             cmbKenh.BackColor = Color.FromArgb(15, 22, 45);
             cmbKenh.FlatStyle = FlatStyle.Flat;
             cmbKenh.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
@@ -319,20 +319,20 @@ namespace plan_fighting_super_start
             // 
             // txtChat
             // 
-            txtChat.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            txtChat.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             txtChat.BackColor = Color.FromArgb(18, 24, 48);
             txtChat.BorderStyle = BorderStyle.FixedSingle;
             txtChat.Font = new Font("Segoe UI", 9.5F);
             txtChat.ForeColor = Color.FromArgb(225, 235, 255);
             txtChat.Location = new Point(280, 543);
             txtChat.Name = "txtChat";
-            txtChat.Size = new Size(300, 27);
+            txtChat.Size = new Size(226, 29);
             txtChat.TabIndex = 13;
             txtChat.TextChanged += txtChat_TextChanged;
             // 
             // btnSendChat
             // 
-            btnSendChat.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            btnSendChat.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnSendChat.FlatStyle = FlatStyle.Flat;
             btnSendChat.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
             btnSendChat.ForeColor = Color.FromArgb(0, 192, 192);
@@ -349,17 +349,14 @@ namespace plan_fighting_super_start
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(10, 15, 30);
-            BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7; // giữ nguyên hình nền của bạn
+            BackgroundImage = Properties.Resource.Gemini_Generated_Image_5ka7of5ka7of5ka7;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1084, 593);
-
-            // THỨ TỰ ADD: chatBox trước (ở “dưới”), các input ở “trên” để không bị che
             Controls.Add(chatBox);
             Controls.Add(lblKenh);
             Controls.Add(cmbKenh);
             Controls.Add(txtChat);
             Controls.Add(btnSendChat);
-
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(IdRoom);
@@ -371,7 +368,6 @@ namespace plan_fighting_super_start
             Controls.Add(txtRoomID);
             Controls.Add(labelRoom);
             Controls.Add(labelTitle);
-
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
