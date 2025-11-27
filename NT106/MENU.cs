@@ -179,8 +179,7 @@ namespace plan_fighting_super_start
             // style
             StyleHeader(labelWelcome);
 
-            foreach (var b in new[] { buttonPlay, button1, buttonUpgradeDamage, buttonUpgradeHP, button2, buttonExit, button3 })
-                StylePrimaryButton(b);
+            
 
             foreach (var l in new[] { label1, label2, label3, label4 })
                 StyleSmallLabel(l);
@@ -256,7 +255,7 @@ namespace plan_fighting_super_start
         private void button2_Click(object sender, EventArgs e) => new Rank().Show();
         private void button3_Click(object sender, EventArgs e) => new ChangePass().Show();
         private void button4_Click(object sender, EventArgs e) => new Reward().Show();
-        private void button5_Click(object sender, EventArgs e) => new giftcode().Show();
+        private void button5_Click(object sender, EventArgs e) => new Accountuser().Show();
 
         private async void buttonDoiMayBay_Click(object sender, EventArgs e)
         {
@@ -289,6 +288,11 @@ namespace plan_fighting_super_start
             {
                 MessageBox.Show("Đổi máy bay thất bại: " + ex.Message, "Lỗi");
             }
+        }
+
+        private void labelWelcome_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
