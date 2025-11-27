@@ -225,6 +225,15 @@ namespace plan_fighting_super_start
 
             networkManager.OnMessageReceived += (msg) =>
             {
+                // THÔNG BÁO CLIENT RỜI PHÒNG
+                if (msg.StartsWith("LEFT_ROOM|"))
+                {
+                    string who = msg.Substring("LEFT_ROOM|".Length);
+                    // hiện trong chat như một thông báo hệ thống phía host
+                    AppendChat("Hệ thống", $"{who} đã rời phòng.", true);
+                    return;
+                }
+
                 if (msg == "START_GAME")
                 {
                     UI(() => { gameStarted = true; OpenGame(); });
@@ -491,6 +500,23 @@ namespace plan_fighting_super_start
                 SetStatus("Hiện không ở trong phòng nào để thoát.");
                 btnLeaveRoom.Enabled = false;
                 return;
+            }
+
+            // Nếu là CLIENT: gửi thông báo cho host trước khi đóng kết nối
+            if (!isHost && networkManager != null && networkManager.IsConnected)
+            {
+                string who = string.IsNullOrWhiteSpace(AccountData.Username)
+                    ? "Client"
+                    : AccountData.Username;
+
+                try
+                {
+                    networkManager.Send("LEFT_ROOM|" + who);
+                }
+                catch
+                {
+                    // bỏ qua, vẫn đóng kết nối bình thường
+                }
             }
 
             shuttingDown = true;
