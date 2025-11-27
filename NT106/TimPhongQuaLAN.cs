@@ -26,7 +26,7 @@ namespace plan_fighting_super_start
         private CancellationTokenSource _ctsNghePhong;
         private Task _tacVuNghePhong;
 
-         HOST: PHÁT PHÒNG 
+        // HOST: PHÁT PHÒNG 
        
         /// Host bắt đầu phát thông tin phòng ra LAN.
         
