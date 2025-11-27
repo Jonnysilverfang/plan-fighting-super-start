@@ -30,7 +30,7 @@ namespace plan_fighting_super_start
             this.btnExit.Size = new System.Drawing.Size(91, 40);
             this.btnExit.TabIndex = 0;
             this.btnExit.TabStop = false;
-            this.btnExit.Text = "Thoát";
+            this.btnExit.Text = "Thoát trận";
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Visible = false;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
