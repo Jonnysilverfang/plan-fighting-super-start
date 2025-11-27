@@ -12,6 +12,7 @@ namespace plan_fighting_super_start
         private Button btnCreateRoom;
         private Button btnJoinRoom;
         private Button btnStartGame;
+        private Button btnLeaveRoom;
         private Label lblStatus;
 
         private Label label1;
@@ -41,15 +42,16 @@ namespace plan_fighting_super_start
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
             labelTitle = new Label();
             labelRoom = new Label();
             txtRoomID = new TextBox();
             btnCreateRoom = new Button();
             btnJoinRoom = new Button();
             btnStartGame = new Button();
+            btnLeaveRoom = new Button();
             lblStatus = new Label();
             label1 = new Label();
             IdRoom = new DataGridView();
@@ -131,7 +133,7 @@ namespace plan_fighting_super_start
             btnJoinRoom.FlatStyle = FlatStyle.Flat;
             btnJoinRoom.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             btnJoinRoom.ForeColor = Color.FromArgb(0, 192, 192);
-            btnJoinRoom.Location = new Point(36, 215);
+            btnJoinRoom.Location = new Point(36, 208);
             btnJoinRoom.Margin = new Padding(3, 4, 3, 4);
             btnJoinRoom.Name = "btnJoinRoom";
             btnJoinRoom.Size = new Size(290, 45);
@@ -150,7 +152,7 @@ namespace plan_fighting_super_start
             btnStartGame.FlatStyle = FlatStyle.Flat;
             btnStartGame.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnStartGame.ForeColor = Color.FromArgb(0, 255, 255);
-            btnStartGame.Location = new Point(36, 275);
+            btnStartGame.Location = new Point(36, 261);
             btnStartGame.Margin = new Padding(3, 4, 3, 4);
             btnStartGame.Name = "btnStartGame";
             btnStartGame.Size = new Size(290, 50);
@@ -158,6 +160,25 @@ namespace plan_fighting_super_start
             btnStartGame.Text = "BẮT ĐẦU";
             btnStartGame.UseVisualStyleBackColor = false;
             btnStartGame.Click += btnStartGame_Click;
+            // 
+            // btnLeaveRoom
+            // 
+            btnLeaveRoom.BackColor = Color.FromArgb(10, 20, 40);
+            btnLeaveRoom.Enabled = false;
+            btnLeaveRoom.FlatAppearance.BorderColor = Color.FromArgb(192, 64, 64);
+            btnLeaveRoom.FlatAppearance.MouseDownBackColor = Color.FromArgb(160, 40, 40);
+            btnLeaveRoom.FlatAppearance.MouseOverBackColor = Color.FromArgb(120, 30, 30);
+            btnLeaveRoom.FlatStyle = FlatStyle.Flat;
+            btnLeaveRoom.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            btnLeaveRoom.ForeColor = Color.FromArgb(255, 128, 128);
+            btnLeaveRoom.Location = new Point(772, 532);
+            btnLeaveRoom.Margin = new Padding(3, 4, 3, 4);
+            btnLeaveRoom.Name = "btnLeaveRoom";
+            btnLeaveRoom.Size = new Size(290, 45);
+            btnLeaveRoom.TabIndex = 5;
+            btnLeaveRoom.Text = "Thoát phòng";
+            btnLeaveRoom.UseVisualStyleBackColor = false;
+            btnLeaveRoom.Click += btnLeaveRoom_Click;
             // 
             // lblStatus
             // 
@@ -188,35 +209,35 @@ namespace plan_fighting_super_start
             IdRoom.AllowUserToAddRows = false;
             IdRoom.AllowUserToDeleteRows = false;
             IdRoom.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(14, 20, 40);
-            dataGridViewCellStyle1.ForeColor = Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(0, 192, 192);
-            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
-            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.BackColor = Color.FromArgb(14, 20, 40);
+            dataGridViewCellStyle4.ForeColor = Color.White;
+            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle4.SelectionForeColor = Color.Black;
+            IdRoom.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
             IdRoom.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             IdRoom.BackgroundColor = Color.FromArgb(10, 15, 35);
             IdRoom.BorderStyle = BorderStyle.None;
             IdRoom.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             IdRoom.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(0, 120, 140);
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(0, 150, 160);
-            dataGridViewCellStyle2.SelectionForeColor = Color.White;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = Color.FromArgb(0, 120, 140);
+            dataGridViewCellStyle5.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            dataGridViewCellStyle5.ForeColor = Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(0, 150, 160);
+            dataGridViewCellStyle5.SelectionForeColor = Color.White;
+            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
+            IdRoom.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             IdRoom.ColumnHeadersHeight = 32;
             IdRoom.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             IdRoom.Columns.AddRange(new DataGridViewColumn[] { Player1, dataGridViewTextBoxColumn2, colPlayersStatus });
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = Color.FromArgb(18, 24, 48);
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle3.ForeColor = Color.WhiteSmoke;
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(0, 192, 192);
-            dataGridViewCellStyle3.SelectionForeColor = Color.Black;
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
-            IdRoom.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = Color.FromArgb(18, 24, 48);
+            dataGridViewCellStyle6.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle6.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle6.SelectionBackColor = Color.FromArgb(0, 192, 192);
+            dataGridViewCellStyle6.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
+            IdRoom.DefaultCellStyle = dataGridViewCellStyle6;
             IdRoom.GridColor = Color.FromArgb(0, 192, 192);
             IdRoom.Location = new Point(514, 147);
             IdRoom.Name = "IdRoom";
@@ -256,7 +277,7 @@ namespace plan_fighting_super_start
             button1.FlatStyle = FlatStyle.Flat;
             button1.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 163);
             button1.ForeColor = Color.FromArgb(0, 192, 192);
-            button1.Location = new Point(36, 348);
+            button1.Location = new Point(36, 318);
             button1.Name = "button1";
             button1.Size = new Size(290, 49);
             button1.TabIndex = 10;
@@ -269,9 +290,9 @@ namespace plan_fighting_super_start
             button2.FlatStyle = FlatStyle.Flat;
             button2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
             button2.ForeColor = Color.FromArgb(0, 192, 192);
-            button2.Location = new Point(908, 527);
+            button2.Location = new Point(834, 86);
             button2.Name = "button2";
-            button2.Size = new Size(149, 54);
+            button2.Size = new Size(158, 40);
             button2.TabIndex = 11;
             button2.Text = "Load Data Room";
             button2.UseVisualStyleBackColor = true;
@@ -336,7 +357,7 @@ namespace plan_fighting_super_start
             btnSendChat.FlatStyle = FlatStyle.Flat;
             btnSendChat.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
             btnSendChat.ForeColor = Color.FromArgb(0, 192, 192);
-            btnSendChat.Location = new Point(590, 540);
+            btnSendChat.Location = new Point(514, 540);
             btnSendChat.Name = "btnSendChat";
             btnSendChat.Size = new Size(75, 30);
             btnSendChat.TabIndex = 14;
@@ -362,6 +383,7 @@ namespace plan_fighting_super_start
             Controls.Add(IdRoom);
             Controls.Add(label1);
             Controls.Add(lblStatus);
+            Controls.Add(btnLeaveRoom);
             Controls.Add(btnStartGame);
             Controls.Add(btnJoinRoom);
             Controls.Add(btnCreateRoom);

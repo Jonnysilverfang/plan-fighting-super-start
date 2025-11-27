@@ -80,8 +80,9 @@ namespace plan_fighting_super_start
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Menu Game";
             Load += Form3_Load;
-
-            // ===== Header / icon =====
+            // 
+            // button4 (🎁)
+            // 
             button4.BackColor = Color.Transparent;
             button4.FlatStyle = FlatStyle.Flat;
             button4.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
@@ -89,8 +90,11 @@ namespace plan_fighting_super_start
             button4.Location = new Point(610, 10);
             button4.Size = new Size(60, 28);
             button4.Text = "🎁";
+            button4.UseVisualStyleBackColor = false;
             button4.Click += button4_Click;
-
+            // 
+            // button5 (code)
+            // 
             button5.BackColor = Color.Transparent;
             button5.FlatStyle = FlatStyle.Flat;
             button5.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
@@ -98,98 +102,141 @@ namespace plan_fighting_super_start
             button5.Location = new Point(12, 10);
             button5.Size = new Size(60, 28);
             button5.Text = "code";
+            button5.UseVisualStyleBackColor = false;
             button5.Click += button5_Click;
-
+            // 
+            // labelWelcome
+            // 
             labelWelcome.Location = new Point(80, 8);
             labelWelcome.Size = new Size(520, 46);
             labelWelcome.Text = "Xin chào";
-
-            // ===== Avatar & Plane =====
+            // 
+            // pictureBoxAvatar
+            // 
             pictureBoxAvatar.BackColor = Color.FromArgb(15, 22, 45);
             pictureBoxAvatar.BorderStyle = BorderStyle.FixedSingle;
             pictureBoxAvatar.Location = new Point(80, 70);
             pictureBoxAvatar.Size = new Size(110, 100);
             pictureBoxAvatar.SizeMode = PictureBoxSizeMode.Zoom;
-
+            // 
+            // pictureBoxPlane
+            // 
             pictureBoxPlane.BackColor = Color.FromArgb(15, 22, 45);
             pictureBoxPlane.BorderStyle = BorderStyle.FixedSingle;
             pictureBoxPlane.Location = new Point(360, 70);
             pictureBoxPlane.Size = new Size(170, 100);
             pictureBoxPlane.SizeMode = PictureBoxSizeMode.Zoom;
-
-            // ===== Nút đổi máy bay (đặt CỐ ĐỊNH, không đè ô bên dưới) =====
+            // 
+            // buttonDoiMayBay
+            // 
             buttonDoiMayBay.Location = new Point(300, 175);
             buttonDoiMayBay.Size = new Size(240, 40);
             buttonDoiMayBay.Text = "ĐỔI ẢNH MÁY BAY";
+            buttonDoiMayBay.UseVisualStyleBackColor = true;
             buttonDoiMayBay.Click += buttonDoiMayBay_Click;
-
-            // ===== Stats line (bắt đầu dưới y = 235 để tránh chồng lấp) =====
-            int leftLabel = 120, leftBox = 255, widthBox = 160, y = 235, step = 45;
-
-            label4.Location = new Point(leftLabel, y);
+            // 
+            // label4 (Level)
+            // 
+            label4.Location = new Point(120, 235);
             label4.Size = new Size(100, 28);
             label4.Text = "Level";
-            textBox3.Location = new Point(leftBox, y);
-            textBox3.Size = new Size(widthBox, 30);
-
-            y += step;
-            label1.Location = new Point(leftLabel, y);
+            // 
+            // textBox3 (Level)
+            // 
+            textBox3.Location = new Point(255, 235);
+            textBox3.Size = new Size(160, 30);
+            // 
+            // label1 (Vàng)
+            // 
+            label1.Location = new Point(120, 280);
             label1.Size = new Size(100, 28);
             label1.Text = "Vàng";
-            textBoxGold.Location = new Point(leftBox, y);
-            textBoxGold.Size = new Size(widthBox, 30);
-
-            y += step;
-            label2.Location = new Point(leftLabel, y);
+            // 
+            // textBoxGold
+            // 
+            textBoxGold.Location = new Point(255, 280);
+            textBoxGold.Size = new Size(160, 30);
+            // 
+            // label2 (HP)
+            // 
+            label2.Location = new Point(120, 325);
             label2.Size = new Size(100, 28);
             label2.Text = "HP";
-            textBox1.Location = new Point(leftBox, y);
-            textBox1.Size = new Size(widthBox, 30);
-
-            y += step;
-            label3.Location = new Point(leftLabel, y);
+            // 
+            // textBox1 (HP)
+            // 
+            textBox1.Location = new Point(255, 325);
+            textBox1.Size = new Size(160, 30);
+            // 
+            // label3 (Damage)
+            // 
+            label3.Location = new Point(120, 370);
             label3.Size = new Size(100, 28);
             label3.Text = "DAMAGE";
-            textBox2.Location = new Point(leftBox, y);
-            textBox2.Size = new Size(widthBox, 30);
-
-            // ===== Buttons action =====
+            // 
+            // textBox2 (Damage)
+            // 
+            textBox2.Location = new Point(255, 370);
+            textBox2.Size = new Size(160, 30);
+            // 
+            // buttonPlay
+            // 
             buttonPlay.Location = new Point(110, 420);
             buttonPlay.Size = new Size(160, 46);
             buttonPlay.Text = "Chơi BOSS";
+            buttonPlay.UseVisualStyleBackColor = true;
             buttonPlay.Click += buttonPlay_Click;
-
+            // 
+            // button1 (Chơi với người)
+            // 
             button1.Location = new Point(320, 420);
             button1.Size = new Size(180, 46);
             button1.Text = "Chơi với người";
+            button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
-
+            // 
+            // buttonUpgradeDamage
+            // 
             buttonUpgradeDamage.Location = new Point(110, 480);
             buttonUpgradeDamage.Size = new Size(160, 46);
             buttonUpgradeDamage.Text = "Nâng Damage";
+            buttonUpgradeDamage.UseVisualStyleBackColor = true;
             buttonUpgradeDamage.Click += buttonUpgradeDamage_Click;
-
+            // 
+            // buttonUpgradeHP
+            // 
             buttonUpgradeHP.Location = new Point(320, 480);
             buttonUpgradeHP.Size = new Size(180, 46);
             buttonUpgradeHP.Text = "Nâng HP";
+            buttonUpgradeHP.UseVisualStyleBackColor = true;
             buttonUpgradeHP.Click += buttonUpgradeHP_Click;
-
+            // 
+            // button2 (Rank)
+            // 
             button2.Location = new Point(110, 540);
             button2.Size = new Size(160, 46);
             button2.Text = "Rank";
+            button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
-
+            // 
+            // buttonExit
+            // 
             buttonExit.Location = new Point(320, 540);
             buttonExit.Size = new Size(180, 46);
             buttonExit.Text = "Thoát";
+            buttonExit.UseVisualStyleBackColor = true;
             buttonExit.Click += buttonExit_Click;
-
+            // 
+            // button3 (Đổi pass)
+            // 
             button3.Location = new Point(260, 600);
             button3.Size = new Size(120, 38);
             button3.Text = "Đổi Pass";
+            button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
-
-            // ===== Add controls =====
+            // 
+            // Menu (add controls)
+            // 
             Controls.Add(buttonDoiMayBay);
             Controls.Add(pictureBoxPlane);
             Controls.Add(pictureBoxAvatar);

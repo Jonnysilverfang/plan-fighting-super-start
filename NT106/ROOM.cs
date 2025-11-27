@@ -62,6 +62,12 @@ namespace plan_fighting_super_start
             SetStatus("Chưa tạo/tham gia phòng.");
             UpdateKenhItems(false);
 
+            // Trạng thái nút ban đầu
+            btnCreateRoom.Enabled = true;
+            btnJoinRoom.Enabled = true;
+            btnStartGame.Enabled = false;
+            btnLeaveRoom.Enabled = false;
+
             // Bật chat sảnh LAN
             chatSanh = new ChatSanhLAN();
             chatSanh.BatDauNghe();
@@ -169,6 +175,7 @@ namespace plan_fighting_super_start
                     {
                         btnStartGame.Enabled = false;
                         SetStatus($"Người chơi rời phòng. Phòng {currentRoomId} trở lại trạng thái chờ (1/2).");
+                        btnLeaveRoom.Enabled = true;
                     });
                     UpdateKenhItems(true);
                     await LoadRoomsAsync();
@@ -179,6 +186,7 @@ namespace plan_fighting_super_start
                     {
                         btnStartGame.Enabled = false;
                         SetStatus($"Người chơi rời phòng, nhưng API BackToCreatedAsync thất bại (room {currentRoomId}).");
+                        btnLeaveRoom.Enabled = true;
                     });
                 }
             }
@@ -188,6 +196,7 @@ namespace plan_fighting_super_start
                 {
                     btnStartGame.Enabled = false;
                     SetStatus("Lỗi khi cập nhật phòng về CREATED: " + ex.Message);
+                    btnLeaveRoom.Enabled = true;
                 });
             }
         }
@@ -203,10 +212,12 @@ namespace plan_fighting_super_start
                     if (isHost)
                     {
                         btnStartGame.Enabled = true;
+                        btnLeaveRoom.Enabled = true;
                         SetStatus($"Phòng {currentRoomId}: ĐÃ ĐỦ 2 NGƯỜI. Host có thể bấm BẮT ĐẦU.");
                     }
                     else
                     {
+                        btnLeaveRoom.Enabled = true;
                         SetStatus($"Đã kết nối tới phòng {currentRoomId}. Chờ host bấm BẮT ĐẦU.");
                     }
                 });
@@ -244,6 +255,8 @@ namespace plan_fighting_super_start
                     {
                         SetStatus("Không tìm thấy phòng trên server.");
                         btnJoinRoom.Enabled = true;
+                        btnCreateRoom.Enabled = true;
+                        btnLeaveRoom.Enabled = false;
                     });
                     return;
                 }
@@ -254,7 +267,6 @@ namespace plan_fighting_super_start
                 UI(() =>
                 {
                     btnStartGame.Enabled = false;
-                    SetStatus("Kết nối bị ngắt. Quay lại lobby hoặc tạo phòng khác.");
                 });
 
                 if (shuttingDown) return;
@@ -269,7 +281,11 @@ namespace plan_fighting_super_start
                     {
                         SetStatus("Host đã rời phòng. Bạn đã bị ngắt kết nối.");
                         btnJoinRoom.Enabled = true;
+                        btnCreateRoom.Enabled = true;
+                        btnLeaveRoom.Enabled = false;
                         UpdateKenhItems(false);
+                        currentRoomId = null;
+                        gameStarted = false;
                     });
                 }
             };
@@ -327,6 +343,11 @@ namespace plan_fighting_super_start
                 isHost = true;
                 btnStartGame.Enabled = false;
 
+                // Sau khi tạo phòng: khóa luôn Join + Create, chỉ cho Thoát
+                btnJoinRoom.Enabled = false;    // không cho tự join phòng nữa
+                btnCreateRoom.Enabled = false;  // tránh spam tạo phòng
+                btnLeaveRoom.Enabled = true;
+
                 // Broadcast LAN
                 lanBroadcast = new LANBroadcast();
                 lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
@@ -352,6 +373,9 @@ namespace plan_fighting_super_start
             catch (Exception ex)
             {
                 SetStatus("Lỗi tạo phòng (LAN): " + ex.Message);
+                btnCreateRoom.Enabled = true;
+                btnJoinRoom.Enabled = true;
+                btnLeaveRoom.Enabled = false;
             }
         }
 
@@ -379,6 +403,10 @@ namespace plan_fighting_super_start
             btnJoinRoom.Enabled = false;
             btnStartGame.Enabled = false;
 
+            // client đang join: tạm thời không cho tạo phòng khác
+            btnCreateRoom.Enabled = false;
+            btnLeaveRoom.Enabled = true;
+
             try { networkManager?.Dispose(); } catch { }
             try { lanBroadcast?.Dispose(); } catch { }
 
@@ -404,6 +432,7 @@ namespace plan_fighting_super_start
                     {
                         SetStatus($"Đã kết nối tới host {hostIp}. Chờ host bấm BẮT ĐẦU.");
                         UpdateKenhItems(true);
+                        btnLeaveRoom.Enabled = true;
                     });
 
                     var guestName = string.IsNullOrWhiteSpace(AccountData.Username) ? "Client" : AccountData.Username;
@@ -423,6 +452,8 @@ namespace plan_fighting_super_start
                     {
                         SetStatus("Lỗi kết nối host: " + ex.Message);
                         btnJoinRoom.Enabled = true;
+                        btnCreateRoom.Enabled = true;
+                        btnLeaveRoom.Enabled = false;
                         UpdateKenhItems(false);
                     });
                 }
@@ -431,7 +462,7 @@ namespace plan_fighting_super_start
             lanBroadcast.StartListen(currentRoomId);
         }
 
-        // ========================= HOST BẮM START =========================
+        // ========================= HOST BẤM START =========================
         private async void btnStartGame_Click(object sender, EventArgs e)
         {
             if (networkManager == null || !networkManager.IsConnected)
@@ -452,6 +483,60 @@ namespace plan_fighting_super_start
             OpenGame();
         }
 
+        // ========================= NÚT THOÁT PHÒNG =========================
+        private async void btnLeaveRoom_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(currentRoomId))
+            {
+                SetStatus("Hiện không ở trong phòng nào để thoát.");
+                btnLeaveRoom.Enabled = false;
+                return;
+            }
+
+            shuttingDown = true;
+
+            try { networkManager?.Dispose(); } catch { }
+            try { lanBroadcast?.Dispose(); } catch { }
+
+            if (isHost)
+            {
+                try
+                {
+                    if (gameStarted)
+                        _ = RoomApi.EndRoomAsync(currentRoomId);
+                    else
+                        _ = RoomApi.CancelRoomAsync(currentRoomId);
+
+                    SetStatus($"Bạn đã thoát và đóng phòng {currentRoomId}.");
+                }
+                catch (Exception ex)
+                {
+                    SetStatus("Lỗi khi hủy/đóng phòng: " + ex.Message);
+                }
+            }
+            else
+            {
+                // Client rời phòng
+                SetStatus($"Bạn đã rời phòng {currentRoomId}.");
+                // Nếu có API LeaveRoom thì gọi ở đây
+                // _ = RoomApi.LeaveRoomAsync(currentRoomId, AccountData.Username);
+            }
+
+            isHost = false;
+            gameStarted = false;
+            currentRoomId = null;
+            shuttingDown = false;
+
+            UpdateKenhItems(false);
+
+            btnCreateRoom.Enabled = true;
+            btnJoinRoom.Enabled = true;
+            btnStartGame.Enabled = false;
+            btnLeaveRoom.Enabled = false;
+
+            try { await LoadRoomsAsync(); } catch { }
+        }
+
         // ========================= MỞ GAME =========================
         private void OpenGame()
         {
@@ -464,6 +549,17 @@ namespace plan_fighting_super_start
                 this.Show();
                 SetStatus("Đã quay lại lobby.");
                 UpdateKenhItems(false);
+
+                // Khi quay lại lobby, reset nút về trạng thái bình thường
+                btnCreateRoom.Enabled = true;
+                btnJoinRoom.Enabled = true;
+                btnStartGame.Enabled = false;
+                btnLeaveRoom.Enabled = false;
+
+                currentRoomId = null;
+                isHost = false;
+                gameStarted = false;
+
                 await LoadRoomsAsync();
             };
         }

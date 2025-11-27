@@ -79,7 +79,6 @@ namespace plan_fighting_super_start
 
         private void StyleAccent(Button b)
         {
-            // chỉ đổi màu/hover – KHÔNG đổi size/location tránh lệch bố cục
             b.FlatStyle = FlatStyle.Flat;
             b.FlatAppearance.BorderSize = 1;
             b.FlatAppearance.BorderColor = Teal;
@@ -116,7 +115,22 @@ namespace plan_fighting_super_start
         }
 
         // ==== Data/UI ====
-        private void RefreshAccountDataAndUI()
+
+        /// <summary>
+        /// Chỉ cập nhật UI theo AccountData hiện tại (KHÔNG gọi API).
+        /// </summary>
+        private void UpdateStatsUI()
+        {
+            textBoxGold.Text = AccountData.Gold.ToString();
+            textBox1.Text = AccountData.UpgradeHP.ToString();
+            textBox2.Text = AccountData.UpgradeDamage.ToString();
+            textBox3.Text = AccountData.Level.ToString();
+        }
+
+        /// <summary>
+        /// Load dữ liệu từ backend rồi đổ lên UI (dùng khi mới vào form / refresh).
+        /// </summary>
+        private void ReloadAccountFromServer()
         {
             try
             {
@@ -125,10 +139,7 @@ namespace plan_fighting_super_start
             }
             catch { }
 
-            textBoxGold.Text = AccountData.Gold.ToString();
-            textBox1.Text = AccountData.UpgradeHP.ToString();
-            textBox2.Text = AccountData.UpgradeDamage.ToString();
-            textBox3.Text = AccountData.Level.ToString();
+            UpdateStatsUI();
         }
 
         private async void LoadAvatarAsync()
@@ -179,8 +190,8 @@ namespace plan_fighting_super_start
 
             StyleAccent(buttonDoiMayBay);
 
-            // load dữ liệu
-            RefreshAccountDataAndUI();
+            // 🔹 Lúc vào form: load từ server rồi vẽ UI
+            ReloadAccountFromServer();
             LoadAvatarAsync();
             InitPlaneIndexFromAccount();
         }
@@ -192,7 +203,8 @@ namespace plan_fighting_super_start
             {
                 using var form = new GAMEBOSS(pictureBoxPlane.Image);
                 form.ShowDialog(this);
-                RefreshAccountDataAndUI();
+                // Sau khi chơi xong có thể reload lại từ server nếu logic game có cập nhật vàng/lv
+                ReloadAccountFromServer();
             }
             catch (Exception ex) { MessageBox.Show("Không mở được chế độ chơi: " + ex.Message); }
         }
@@ -203,7 +215,11 @@ namespace plan_fighting_super_start
             {
                 AccountData.Gold -= 10;
                 AccountData.UpgradeHP += 20;
-                RefreshAccountDataAndUI();
+
+                // 🔹 Chỉ update UI theo dữ liệu mới
+                UpdateStatsUI();
+
+                // 🔹 Rồi mới cập nhật lên backend
                 try { Database.UpdateAccountData(); } catch { }
             }
             else MessageBox.Show("Không đủ vàng để nâng HP!");
@@ -215,7 +231,11 @@ namespace plan_fighting_super_start
             {
                 AccountData.Gold -= 15;
                 AccountData.UpgradeDamage += 5;
-                RefreshAccountDataAndUI();
+
+                // 🔹 Chỉ update UI theo dữ liệu mới
+                UpdateStatsUI();
+
+                // 🔹 Rồi mới cập nhật lên backend
                 try { Database.UpdateAccountData(); } catch { }
             }
             else MessageBox.Show("Không đủ vàng để nâng Damage!");
