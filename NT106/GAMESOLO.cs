@@ -137,9 +137,9 @@ namespace plan_fighting_super_start
             _player = new PictureBox { Width = ship, Height = ship, BackColor = Color.Transparent };
             _opponent = new PictureBox { Width = ship, Height = ship, BackColor = Color.Transparent };
 
-            Image hostPlane = null, clientPlane = null;
 
-            Image host = null, client = null;
+
+            Image hostPlane = null, clientPlane = null;
 
             try
             {
@@ -149,14 +149,31 @@ namespace plan_fighting_super_start
                 if (File.Exists(hostPlanePath))
                     hostPlane = Image.FromFile(hostPlanePath);
                 else
-                    hostPlane = (Image)Properties.Resources.ResourceManager.GetObject("host");
+                    hostPlane = Properties.Resource.host;
 
                 if (File.Exists(clientPlanePath))
                     clientPlane = Image.FromFile(clientPlanePath);
                 else
-                    clientPlane = (Image)Properties.Resources.ResourceManager.GetObject("client");
+                    clientPlane = Properties.Resource.client;
             }
             catch { }
+
+            // ✓ ÉP trong suốt cho nền ảnh
+            if (hostPlane != null)
+            {
+                Bitmap b = new Bitmap(hostPlane);
+                b.MakeTransparent(Color.White);   // đổi White thành màu nền bạn muốn xóa
+                hostPlane = b;
+            }
+
+            if (clientPlane != null)
+            {
+                Bitmap b = new Bitmap(clientPlane);
+                b.MakeTransparent(Color.White);
+                clientPlane = b;
+            }
+
+
 
 
 
@@ -209,9 +226,11 @@ namespace plan_fighting_super_start
                 _opponent.Top = h - ship - 70;
                 _opponent.Image = hostUp;
             }
-
+            _player.BackColor = Color.Transparent;
+            _opponent.BackColor = Color.Transparent;
             _player.SizeMode = PictureBoxSizeMode.StretchImage;
             _opponent.SizeMode = PictureBoxSizeMode.StretchImage;
+
 
             Controls.Add(_player);
             Controls.Add(_opponent);

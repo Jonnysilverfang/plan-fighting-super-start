@@ -55,6 +55,7 @@ namespace plan_fighting_super_start
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Black;
             BackgroundImage = Properties.Resource.nensolo;
+
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1029, 800);
             Controls.Add(lblStatusGame);
