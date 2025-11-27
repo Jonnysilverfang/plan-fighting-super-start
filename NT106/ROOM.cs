@@ -25,7 +25,7 @@ namespace plan_fighting_super_start
 
         public Room()
         {
-            InitializeComponent(); // TUYỆT ĐỐI: constructor chỉ gọi dòng này
+            InitializeComponent(); 
         }
 
         // === Helper: xác định đang ở WinForms Designer ===
@@ -300,9 +300,7 @@ namespace plan_fighting_super_start
             };
         }
 
-        // ======================================================
         //       LOAD DANH SÁCH PHÒNG
-        // ======================================================
         private async Task LoadRoomsAsync()
         {
             try
