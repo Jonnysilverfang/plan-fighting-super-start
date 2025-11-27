@@ -139,17 +139,26 @@ namespace plan_fighting_super_start
 
             Image hostPlane = null, clientPlane = null;
 
+            Image host = null, client = null;
+
             try
             {
-                string hostPlanePath = Path.Combine(Application.StartupPath, "plane_host.png");
-                string clientPlanePath = Path.Combine(Application.StartupPath, "plane_client.png");
+                string hostPlanePath = Path.Combine(Application.StartupPath, "host.png");
+                string clientPlanePath = Path.Combine(Application.StartupPath, "client.png");
 
                 if (File.Exists(hostPlanePath))
                     hostPlane = Image.FromFile(hostPlanePath);
+                else
+                    hostPlane = (Image)Properties.Resources.ResourceManager.GetObject("host");
+
                 if (File.Exists(clientPlanePath))
                     clientPlane = Image.FromFile(clientPlanePath);
+                else
+                    clientPlane = (Image)Properties.Resources.ResourceManager.GetObject("client");
             }
             catch { }
+
+
 
             // Nếu không tìm thấy file, fallback plain màu
             if (hostPlane == null)
