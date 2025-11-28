@@ -25,7 +25,7 @@ namespace plan_fighting_super_start
 
         public Room()
         {
-            InitializeComponent(); 
+            InitializeComponent();
         }
 
         // === Helper: xác định đang ở WinForms Designer ===
@@ -36,9 +36,17 @@ namespace plan_fighting_super_start
             catch { return false; }
         }
 
+        private bool CanAccessUi()
+        {
+            return !IsDisposed && IsHandleCreated;
+        }
+
         // === Helper: cập nhật danh sách kênh chat ===
         private void UpdateKenhItems(bool inRoom)
         {
+            if (!CanAccessUi()) return;
+            if (cmbKenh == null || cmbKenh.IsDisposed) return;
+
             cmbKenh.Items.Clear();
             cmbKenh.Items.Add("Kênh chung (Sảnh)");
             if (inRoom && !string.IsNullOrEmpty(currentRoomId))
@@ -82,9 +90,18 @@ namespace plan_fighting_super_start
         {
             shuttingDown = true;
 
-            try { networkManager?.Dispose(); } catch { }
-            try { lanBroadcast?.Dispose(); } catch { }
-            try { chatSanh?.Dispose(); } catch { }
+            try
+            {
+                if (networkManager != null)
+                {
+                    networkManager.Dispose();   // sẽ clear event luôn
+                    networkManager = null;
+                }
+            }
+            catch { }
+
+            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
+            try { chatSanh?.Dispose(); chatSanh = null; } catch { }
 
             try
             {
@@ -102,22 +119,57 @@ namespace plan_fighting_super_start
         // ========================= HELPER =========================
         private void SetStatus(string msg)
         {
-            if (InvokeRequired) Invoke(new Action(() => lblStatus.Text = msg));
-            else lblStatus.Text = msg;
+            if (!CanAccessUi()) return;
+            if (lblStatus == null || lblStatus.IsDisposed || !lblStatus.IsHandleCreated) return;
+
+            try
+            {
+                if (InvokeRequired)
+                    Invoke(new Action(() => lblStatus.Text = msg));
+                else
+                    lblStatus.Text = msg;
+            }
+            catch
+            {
+                // form đã close trong lúc invoke, bỏ qua
+            }
         }
 
         private static string MakeRoomId() => new Random().Next(100000, 999999).ToString();
 
-        private void UI(Action a) { if (InvokeRequired) BeginInvoke(a); else a(); }
+        private void UI(Action a)
+        {
+            if (!CanAccessUi()) return;
+
+            try
+            {
+                if (InvokeRequired)
+                    BeginInvoke(a);
+                else
+                    a();
+            }
+            catch
+            {
+                // form có thể đã dispose, bỏ qua
+            }
+        }
 
         // ========================= CHAT RICH TEXT =========================
         private void AppendChat(string from, string text, bool isHostSender)
         {
-            if (chatBox == null) return;
+            if (!CanAccessUi()) return;
+            if (chatBox == null || chatBox.IsDisposed || !chatBox.IsHandleCreated) return;
 
             if (chatBox.InvokeRequired)
             {
-                chatBox.Invoke(new Action(() => AppendChat(from, text, isHostSender)));
+                try
+                {
+                    chatBox.Invoke(new Action(() => AppendChat(from, text, isHostSender)));
+                }
+                catch
+                {
+                    // form đã dispose, bỏ qua
+                }
                 return;
             }
 
@@ -229,7 +281,6 @@ namespace plan_fighting_super_start
                 if (msg.StartsWith("LEFT_ROOM|"))
                 {
                     string who = msg.Substring("LEFT_ROOM|".Length);
-                    // hiện trong chat như một thông báo hệ thống phía host
                     AppendChat("Hệ thống", $"{who} đã rời phòng.", true);
                     return;
                 }
@@ -273,12 +324,13 @@ namespace plan_fighting_super_start
 
             networkManager.OnDisconnected += () =>
             {
+                if (shuttingDown || IsDisposed) return;
+
                 UI(() =>
                 {
-                    btnStartGame.Enabled = false;
+                    if (btnStartGame != null && !btnStartGame.IsDisposed)
+                        btnStartGame.Enabled = false;
                 });
-
-                if (shuttingDown) return;
 
                 if (isHost && !gameStarted)
                 {
@@ -341,8 +393,8 @@ namespace plan_fighting_super_start
                 currentRoomId = string.IsNullOrWhiteSpace(txtRoomID.Text) ? MakeRoomId() : txtRoomID.Text.Trim();
                 txtRoomID.Text = currentRoomId;
 
-                try { networkManager?.Dispose(); } catch { }
-                try { lanBroadcast?.Dispose(); } catch { }
+                try { networkManager?.Dispose(); networkManager = null; } catch { }
+                try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
 
                 gameStarted = false;
                 shuttingDown = false;
@@ -351,8 +403,8 @@ namespace plan_fighting_super_start
                 btnStartGame.Enabled = false;
 
                 // Sau khi tạo phòng: khóa luôn Join + Create, chỉ cho Thoát
-                btnJoinRoom.Enabled = false;    // không cho tự join phòng nữa
-                btnCreateRoom.Enabled = false;  // tránh spam tạo phòng
+                btnJoinRoom.Enabled = false;
+                btnCreateRoom.Enabled = false;
                 btnLeaveRoom.Enabled = true;
 
                 // Broadcast LAN
@@ -414,8 +466,8 @@ namespace plan_fighting_super_start
             btnCreateRoom.Enabled = false;
             btnLeaveRoom.Enabled = true;
 
-            try { networkManager?.Dispose(); } catch { }
-            try { lanBroadcast?.Dispose(); } catch { }
+            try { networkManager?.Dispose(); networkManager = null; } catch { }
+            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
 
             lanBroadcast = new LANBroadcast();
             SetStatus($"[CLIENT] Đang tìm phòng {roomId} trong LAN...");
@@ -519,8 +571,8 @@ namespace plan_fighting_super_start
 
             shuttingDown = true;
 
-            try { networkManager?.Dispose(); } catch { }
-            try { lanBroadcast?.Dispose(); } catch { }
+            try { networkManager?.Dispose(); networkManager = null; } catch { }
+            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
 
             if (isHost)
             {
@@ -570,6 +622,8 @@ namespace plan_fighting_super_start
 
             game.FormClosed += async (_, __) =>
             {
+                if (IsDisposed) return;
+
                 this.Show();
                 SetStatus("Đã quay lại lobby.");
                 UpdateKenhItems(false);
