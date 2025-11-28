@@ -175,10 +175,6 @@ namespace plan_fighting_super_start
         public void Dispose()
         {
             StopInternal();
-            // clear event handlers để GC dọn được form Room
-            OnPeerConnected = null;
-            OnMessageReceived = null;
-            OnDisconnected = null;
         }
     }
 }

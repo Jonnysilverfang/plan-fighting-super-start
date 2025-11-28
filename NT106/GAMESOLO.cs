@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Text.Json;
 using System.Windows.Forms;
 
@@ -32,15 +31,9 @@ namespace plan_fighting_super_start
         private string _localName;
         private string _opponentName = "Đối thủ";
 
-        // HP
-        private const int MAX_HP = 5;
-        private int _playerHp = MAX_HP;
-        private int _opponentHp = MAX_HP;
-
+        private int _playerHp = 3;
+        private int _opponentHp = 3;
         private Label _hudYou, _hudEnemy;
-
-        private Panel _hpYouBg, _hpYouFill;
-        private Panel _hpEnemyBg, _hpEnemyFill;
 
         private Panel _pausePanel;
         private Button _btnResume, _btnQuit;
@@ -49,12 +42,8 @@ namespace plan_fighting_super_start
         private Bitmap _playerBulletBaseImg;
         private Bitmap _opponentBulletBaseImg;
 
-        // Service lấy ảnh từ S3 (giữ lại nếu sau này dùng avatar ở góc)
+        // Service lấy ảnh từ S3
         private readonly S3ImageService _s3 = new S3ImageService();
-
-        // Trạng thái kết nối / trận
-        private bool _opponentConnected = false;
-        private bool _gameStarted = false;
 
         public GAMESOLO()
             : this(new NetworkManager(), true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
@@ -87,8 +76,7 @@ namespace plan_fighting_super_start
             SetupTimer();
             WireNetworkEvents();
 
-            // Nếu sau này muốn dùng avatar để ở góc, có thể bật lại:
-            // LoadPlayerAvatarAsync();
+            LoadPlayerAvatarAsync();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -112,130 +100,31 @@ namespace plan_fighting_super_start
         {
             int w = Math.Max(800, this.ClientSize.Width);
             int h = Math.Max(600, this.ClientSize.Height);
-            int ship = 96;   // máy bay to hơn
+            int ship = 64;
 
-            // --- NỀN MAP PVP ---
-            try
-            {
-                string bgPath = Path.Combine(Application.StartupPath, "bg_pvp.png");
-                if (File.Exists(bgPath))
-                {
-                    this.BackgroundImage = Image.FromFile(bgPath);
-                    this.BackgroundImageLayout = ImageLayout.Stretch;
-                }
-                else
-                {
-                    this.BackColor = Color.Black;
-                }
-            }
-            catch
-            {
-                this.BackColor = Color.Black;
-            }
+            _player = new PictureBox { Width = ship, Height = ship, BackColor = Color.DeepSkyBlue };
+            _opponent = new PictureBox { Width = ship, Height = ship, BackColor = Color.OrangeRed };
 
-            // --- MÁY BAY ---
-            _player = new PictureBox { Width = ship, Height = ship, BackColor = Color.Transparent };
-            _opponent = new PictureBox { Width = ship, Height = ship, BackColor = Color.Transparent };
-
-
-
-            Image hostPlane = null, clientPlane = null;
-
-            try
-            {
-                string hostPlanePath = Path.Combine(Application.StartupPath, "host.png");
-                string clientPlanePath = Path.Combine(Application.StartupPath, "client.png");
-
-                if (File.Exists(hostPlanePath))
-                    hostPlane = Image.FromFile(hostPlanePath);
-                else
-                    hostPlane = Properties.Resource.host;
-
-                if (File.Exists(clientPlanePath))
-                    clientPlane = Image.FromFile(clientPlanePath);
-                else
-                    clientPlane = Properties.Resource.client;
-            }
-            catch { }
-
-            // ✓ ÉP trong suốt cho nền ảnh
-            if (hostPlane != null)
-            {
-                Bitmap b = new Bitmap(hostPlane);
-                b.MakeTransparent(Color.White);   // đổi White thành màu nền bạn muốn xóa
-                hostPlane = b;
-            }
-
-            if (clientPlane != null)
-            {
-                Bitmap b = new Bitmap(clientPlane);
-                b.MakeTransparent(Color.White);
-                clientPlane = b;
-            }
-
-
-
-
-
-            // Nếu không tìm thấy file, fallback plain màu
-            if (hostPlane == null)
-            {
-                hostPlane = new Bitmap(ship, ship);
-                using (var g = Graphics.FromImage(hostPlane))
-                    g.Clear(Color.DeepSkyBlue);
-            }
-            if (clientPlane == null)
-            {
-                clientPlane = new Bitmap(ship, ship);
-                using (var g = Graphics.FromImage(clientPlane))
-                    g.Clear(Color.OrangeRed);
-            }
-
-            // Tạo 2 phiên bản quay lên / quay xuống
-            Image hostUp = hostPlane;
-            Image hostDown = (Image)hostPlane.Clone();
-            hostDown.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
-            Image clientUp = clientPlane;
-            Image clientDown = (Image)clientPlane.Clone();
-            clientDown.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
-            // Host ở dưới, client ở trên.
-            // Quy ước: máy bay dưới quay lên, máy bay trên quay xuống.
+            // Host ở dưới, client ở trên (như logic cũ)
             if (_isHost)
             {
-                // YOU (host) ở dưới -> quay lên
                 _player.Left = (w - ship) / 2;
                 _player.Top = h - ship - 70;
-                _player.Image = hostUp;
-
-                // ENEMY (client) ở trên -> quay xuống
                 _opponent.Left = (w - ship) / 2;
                 _opponent.Top = 70;
-                _opponent.Image = clientDown;
             }
             else
             {
-                // YOU (client) ở trên -> quay xuống
                 _player.Left = (w - ship) / 2;
                 _player.Top = 70;
-                _player.Image = clientDown;
-
-                // ENEMY (host) ở dưới -> quay lên
                 _opponent.Left = (w - ship) / 2;
                 _opponent.Top = h - ship - 70;
-                _opponent.Image = hostUp;
             }
-            _player.BackColor = Color.Transparent;
-            _opponent.BackColor = Color.Transparent;
-            _player.SizeMode = PictureBoxSizeMode.StretchImage;
-            _opponent.SizeMode = PictureBoxSizeMode.StretchImage;
-
 
             Controls.Add(_player);
             Controls.Add(_opponent);
 
-            // Đạn
+            // Tạo sprite đạn tên lửa
             InitPlayerBulletSprite();
             InitOpponentBulletSprite();
 
@@ -257,7 +146,7 @@ namespace plan_fighting_super_start
 
         private void SetupDirections()
         {
-            // Host bắn lên, client bắn xuống
+            // Host bắn lên, client bắn xuống (phần còn lại auto)
             if (_isHost)
             {
                 _playerBulletDir = -1; // host ở dưới -> bắn lên
@@ -270,13 +159,13 @@ namespace plan_fighting_super_start
             }
         }
 
-        // ================== VẼ ĐẠN ==================
+        // ================== VẼ ĐẠN BẰNG CODE ==================
 
         private void InitPlayerBulletSprite()
         {
             _playerBullet = new PictureBox
             {
-                Size = new Size(22, 72),   // to hơn
+                Size = new Size(20, 60),
                 BackColor = Color.Transparent,
                 Visible = false
             };
@@ -289,15 +178,15 @@ namespace plan_fighting_super_start
 
                 float centerX = _playerBullet.Width / 2f;
 
-                int bodyWidth = 10;
-                int bodyHeight = 32;
+                int bodyWidth = 8;
+                int bodyHeight = 26;
                 int bodyX = (int)(centerX - bodyWidth / 2f);
                 int bodyY = 8;
                 Rectangle bodyRect = new Rectangle(bodyX, bodyY, bodyWidth, bodyHeight);
 
                 using (var bodyBrush = new SolidBrush(Color.White))
                     g.FillRectangle(bodyBrush, bodyRect);
-                using (var bodyPen = new Pen(Color.FromArgb(220, 180, 180, 180), 1f))
+                using (var bodyPen = new Pen(Color.FromArgb(200, 180, 180, 180), 1f))
                     g.DrawRectangle(bodyPen, bodyRect);
 
                 PointF tip = new PointF(centerX, 0);
@@ -307,7 +196,7 @@ namespace plan_fighting_super_start
                 using (var noseBrush = new SolidBrush(Color.OrangeRed))
                     g.FillPolygon(noseBrush, nose);
 
-                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 6);
+                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 4);
                 using (var windowBrush = new SolidBrush(Color.FromArgb(220, 80, 160, 255)))
                     g.FillEllipse(windowBrush, windowRect);
 
@@ -316,27 +205,27 @@ namespace plan_fighting_super_start
                     PointF[] leftFin =
                     {
                         new PointF(bodyX, bodyY + bodyHeight - 4),
-                        new PointF(bodyX - 6, bodyY + bodyHeight + 6),
-                        new PointF(bodyX, bodyY + bodyHeight + 3),
+                        new PointF(bodyX - 5, bodyY + bodyHeight + 4),
+                        new PointF(bodyX, bodyY + bodyHeight + 2),
                     };
                     g.FillPolygon(finBrush, leftFin);
 
                     PointF[] rightFin =
                     {
                         new PointF(bodyX + bodyWidth, bodyY + bodyHeight - 4),
-                        new PointF(bodyX + bodyWidth + 6, bodyY + bodyHeight + 6),
-                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 3),
+                        new PointF(bodyX + bodyWidth + 5, bodyY + bodyHeight + 4),
+                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 2),
                     };
                     g.FillPolygon(finBrush, rightFin);
                 }
 
-                int flameHeight = 24;
+                int flameHeight = 22;
                 Rectangle flameRect = new Rectangle(bodyX + 1, bodyY + bodyHeight, bodyWidth - 2, flameHeight);
 
                 using (var flameBrush = new LinearGradientBrush(
                     new Point(flameRect.X, flameRect.Y),
                     new Point(flameRect.X, flameRect.Bottom),
-                    Color.FromArgb(240, 0, 255, 255),
+                    Color.FromArgb(230, 0, 255, 255),
                     Color.FromArgb(0, 0, 255, 255)))
                 {
                     g.FillRectangle(flameBrush, flameRect);
@@ -348,7 +237,7 @@ namespace plan_fighting_super_start
                     flameRect.Width + 16,
                     20
                 );
-                using (var glowBrush = new SolidBrush(Color.FromArgb(120, 0, 200, 255)))
+                using (var glowBrush = new SolidBrush(Color.FromArgb(90, 0, 200, 255)))
                     g.FillEllipse(glowBrush, glowRect);
             }
 
@@ -364,7 +253,7 @@ namespace plan_fighting_super_start
         {
             _opponentBullet = new PictureBox
             {
-                Size = new Size(22, 72),
+                Size = new Size(20, 60),
                 BackColor = Color.Transparent,
                 Visible = false
             };
@@ -377,15 +266,15 @@ namespace plan_fighting_super_start
 
                 float centerX = _opponentBullet.Width / 2f;
 
-                int bodyWidth = 10;
-                int bodyHeight = 32;
+                int bodyWidth = 8;
+                int bodyHeight = 26;
                 int bodyX = (int)(centerX - bodyWidth / 2f);
                 int bodyY = 8;
                 Rectangle bodyRect = new Rectangle(bodyX, bodyY, bodyWidth, bodyHeight);
 
                 using (var bodyBrush = new SolidBrush(Color.LightYellow))
                     g.FillRectangle(bodyBrush, bodyRect);
-                using (var bodyPen = new Pen(Color.FromArgb(220, 200, 120, 120), 1f))
+                using (var bodyPen = new Pen(Color.FromArgb(200, 200, 120, 120), 1f))
                     g.DrawRectangle(bodyPen, bodyRect);
 
                 PointF tip = new PointF(centerX, 0);
@@ -395,7 +284,7 @@ namespace plan_fighting_super_start
                 using (var noseBrush = new SolidBrush(Color.Red))
                     g.FillPolygon(noseBrush, nose);
 
-                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 6);
+                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 4);
                 using (var windowBrush = new SolidBrush(Color.FromArgb(220, 255, 140, 80)))
                     g.FillEllipse(windowBrush, windowRect);
 
@@ -404,27 +293,27 @@ namespace plan_fighting_super_start
                     PointF[] leftFin =
                     {
                         new PointF(bodyX, bodyY + bodyHeight - 4),
-                        new PointF(bodyX - 6, bodyY + bodyHeight + 6),
-                        new PointF(bodyX, bodyY + bodyHeight + 3),
+                        new PointF(bodyX - 5, bodyY + bodyHeight + 4),
+                        new PointF(bodyX, bodyY + bodyHeight + 2),
                     };
                     g.FillPolygon(finBrush, leftFin);
 
                     PointF[] rightFin =
                     {
                         new PointF(bodyX + bodyWidth, bodyY + bodyHeight - 4),
-                        new PointF(bodyX + bodyWidth + 6, bodyY + bodyHeight + 6),
-                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 3),
+                        new PointF(bodyX + bodyWidth + 5, bodyY + bodyHeight + 4),
+                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 2),
                     };
                     g.FillPolygon(finBrush, rightFin);
                 }
 
-                int flameHeight = 24;
+                int flameHeight = 22;
                 Rectangle flameRect = new Rectangle(bodyX + 1, bodyY + bodyHeight, bodyWidth - 2, flameHeight);
 
                 using (var flameBrush = new LinearGradientBrush(
                     new Point(flameRect.X, flameRect.Y),
                     new Point(flameRect.X, flameRect.Bottom),
-                    Color.FromArgb(240, 255, 160, 0),
+                    Color.FromArgb(230, 255, 160, 0),
                     Color.FromArgb(0, 255, 0, 0)))
                 {
                     g.FillRectangle(flameBrush, flameRect);
@@ -436,7 +325,7 @@ namespace plan_fighting_super_start
                     flameRect.Width + 16,
                     20
                 );
-                using (var glowBrush = new SolidBrush(Color.FromArgb(120, 255, 80, 0)))
+                using (var glowBrush = new SolidBrush(Color.FromArgb(90, 255, 80, 0)))
                     g.FillEllipse(glowBrush, glowRect);
             }
 
@@ -452,118 +341,35 @@ namespace plan_fighting_super_start
 
         private void SetupHud()
         {
-            // Label tên
             _hudYou = new Label
             {
                 AutoSize = true,
-                ForeColor = Color.Lime,
+                ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
+                Left = 10,
+                Top = (_isHost ? ClientSize.Height - 35 : 10)
             };
-
             _hudEnemy = new Label
             {
                 AutoSize = true,
-                ForeColor = Color.Orange,
+                ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
+                Left = 10,
+                Top = (_isHost ? 10 : ClientSize.Height - 35)
             };
-
-            int barWidth = 200;
-            int barHeight = 16;
-
-            _hpYouBg = new Panel
-            {
-                Width = barWidth,
-                Height = barHeight,
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            _hpYouFill = new Panel
-            {
-                Height = barHeight - 2,
-                Left = 1,
-                Top = 1,
-                BackColor = Color.Lime
-            };
-            _hpYouBg.Controls.Add(_hpYouFill);
-
-            _hpEnemyBg = new Panel
-            {
-                Width = barWidth,
-                Height = barHeight,
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            _hpEnemyFill = new Panel
-            {
-                Height = barHeight - 2,
-                Left = 1,
-                Top = 1,
-                BackColor = Color.Lime
-            };
-            _hpEnemyBg.Controls.Add(_hpEnemyFill);
-
-            // Vị trí HUD: phụ thuộc bạn là host hay client
-            int gap = 6; // khoảng cách giữa tên và thanh máu
-
-            if (_isHost)
-            {
-                // YOU: góc dưới trái
-                _hudYou.Left = 10;
-                _hudYou.Top = ClientSize.Height - 60;
-                _hpYouBg.Left = 10;
-                _hpYouBg.Top = _hudYou.Bottom + gap;
-
-                // ENEMY: góc trên trái
-                _hudEnemy.Left = 10;
-                _hudEnemy.Top = 10;
-                _hpEnemyBg.Left = 10;
-                _hpEnemyBg.Top = _hudEnemy.Bottom + gap;
-            }
-            else
-            {
-                // Client (YOU) ở trên
-                _hudYou.Left = 10;
-                _hudYou.Top = 10;
-                _hpYouBg.Left = 10;
-                _hpYouBg.Top = _hudYou.Bottom + gap;
-
-                // Host (ENEMY) ở dưới
-                _hudEnemy.Left = 10;
-                _hudEnemy.Top = ClientSize.Height - 60;
-                _hpEnemyBg.Left = 10;
-                _hpEnemyBg.Top = _hudEnemy.Bottom + gap;
-            }
-
             Controls.Add(_hudYou);
             Controls.Add(_hudEnemy);
-            Controls.Add(_hpYouBg);
-            Controls.Add(_hpEnemyBg);
-
             UpdateHud();
         }
 
         private void UpdateHud()
         {
-            _hudYou.Text = _localName;
-            _hudEnemy.Text = _opponentName;
+            string hearts(int hp) => new string('❤', Math.Max(0, hp));
 
-            UpdateHpBar(_hpYouFill, _hpYouBg.Width, _playerHp);
-            UpdateHpBar(_hpEnemyFill, _hpEnemyBg.Width, _opponentHp);
-        }
-
-        private void UpdateHpBar(Panel fill, int maxWidth, int hp)
-        {
-            int clamped = Math.Max(0, Math.Min(MAX_HP, hp));
-            int w = (int)((maxWidth - 2) * (clamped / (float)MAX_HP));
-            if (w < 0) w = 0;
-
-            fill.Width = w;
-
-            if (clamped >= 4) fill.BackColor = Color.Lime;
-            else if (clamped >= 2) fill.BackColor = Color.Yellow;
-            else fill.BackColor = Color.Red;
+            _hudYou.Text = $"{_localName}: {hearts(_playerHp)}";
+            _hudEnemy.Text = $"{_opponentName}: {hearts(_opponentHp)}";
         }
 
         private void SetupPauseOverlay()
@@ -597,16 +403,9 @@ namespace plan_fighting_super_start
             if (_gameEnded) return;
             _paused = !_paused;
             _pausePanel.Visible = _paused;
-            if (_paused)
-            {
-                _gameTimer.Stop();
-                lblStatusGame.Text = "Tạm dừng";
-            }
-            else
-            {
-                _gameTimer.Start();
-                lblStatusGame.Text = _gameStarted ? "Đang chơi…" : "Đang chờ đối thủ…";
-            }
+            if (_paused) _gameTimer.Stop();
+            else _gameTimer.Start();
+            lblStatusGame.Text = _paused ? "Tạm dừng" : "Đang chơi…";
         }
 
         private void SetupTimer()
@@ -747,15 +546,12 @@ namespace plan_fighting_super_start
                     case "hello":
                         if (root.TryGetProperty("name", out var n))
                         {
-                            _opponentConnected = true;
-
                             _opponentName = n.GetString() ?? _opponentName;
                             this.Text = (_isHost ? "[HOST] " : "[CLIENT] ") +
                                         "Room: " + _roomId + "  - vs " + _opponentName;
                             lblStatusGame.Text = "Đã kết nối với " + _opponentName;
                             UpdateHud();
-                            // Nếu muốn dùng avatar góc màn hình:
-                            // LoadOpponentAvatarAsync(_opponentName);
+                            LoadOpponentAvatarAsync(_opponentName);
                         }
                         break;
 
@@ -765,21 +561,10 @@ namespace plan_fighting_super_start
                         {
                             _opponent.Left = x.GetInt32();
                             _opponent.Top = y.GetInt32();
-
-                            if (!_gameStarted)
-                            {
-                                _gameStarted = true;
-                                lblStatusGame.Text = "Đang chơi…";
-                            }
                         }
                         break;
 
                     case "shoot":
-                        if (!_gameStarted)
-                        {
-                            _gameStarted = true;
-                            lblStatusGame.Text = "Đang chơi…";
-                        }
                         SpawnOpponentBullet();
                         break;
 
@@ -874,12 +659,6 @@ namespace plan_fighting_super_start
                 ? (_player.Top - _playerBullet.Height)
                 : _player.Bottom;
 
-            if (!_gameStarted)
-            {
-                _gameStarted = true;
-                lblStatusGame.Text = "Đang chơi…";
-            }
-
             SafeSend(new { type = "shoot" });
         }
 
@@ -916,9 +695,7 @@ namespace plan_fighting_super_start
             _paused = false;
             _pausePanel.Visible = false;
 
-            lblStatusGame.Text = "Trận đấu đã kết thúc";
-
-            // Đánh dấu phòng END khi trận kết thúc
+            // 🔹 Đánh dấu phòng END khi trận kết thúc
             MarkRoomEnd();
 
             if (_isHost)
@@ -989,7 +766,7 @@ namespace plan_fighting_super_start
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (ask == DialogResult.Yes)
             {
-                // Đánh dấu phòng END khi người chơi chủ động thoát
+                // 🔹 Đánh dấu phòng END khi người chơi chủ động thoát
                 MarkRoomEnd();
 
                 try { _gameTimer?.Stop(); } catch { }
@@ -1000,7 +777,7 @@ namespace plan_fighting_super_start
 
         private void Form6_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // nếu form bị đóng trực tiếp, vẫn đánh dấu END
+            // 🔹 Phòng ngừa: nếu form bị đóng trực tiếp, vẫn đánh dấu END
             MarkRoomEnd();
 
             try
@@ -1016,7 +793,7 @@ namespace plan_fighting_super_start
         {
         }
 
-        // ================== AVATAR TỪ S3 (hiện chưa dùng) ==================
+        // ====================== AVATAR TỪ S3 ======================
 
         private async void LoadPlayerAvatarAsync()
         {
