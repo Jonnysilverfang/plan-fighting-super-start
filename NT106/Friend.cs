@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;       // 👈 thêm namespace này
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -8,8 +9,12 @@ namespace plan_fighting_super_start
 {
     public partial class Friend : Form
     {
+        // ImageList vẫn tạo bình thường, không sao với Designer
         private readonly ImageList _avatarImageList = new ImageList();
-        private readonly S3ImageService _imageService = new S3ImageService();
+
+        // ⚠ KHÔNG khởi tạo trực tiếp nữa, để null rồi tạo lúc chạy thật
+        private S3ImageService? _imageService;
+
         private List<FriendEntry> _friends = new List<FriendEntry>();
         private bool _isLoading = false;
 
@@ -17,13 +22,43 @@ namespace plan_fighting_super_start
         {
             InitializeComponent();
 
-            _avatarImageList.ImageSize = new Size(48, 48);   // avatar vuông
+            // 🔒 Nếu đang mở trong Designer thì dừng tại đây,
+            // không làm gì thêm để tránh tạo AWS client / gọi DB.
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+                return;
+
+            _avatarImageList.ImageSize = new Size(48, 48);
             _avatarImageList.ColorDepth = ColorDepth.Depth32Bit;
             lvFriends.SmallImageList = _avatarImageList;
+
+            // chỉ tạo S3ImageService khi chạy app thật
+            _imageService = new S3ImageService();
+
+            StyleButtons();
+        }
+
+        private void StyleButtons()
+        {
+            Color btnBg = Color.FromArgb(20, 40, 70);
+            Color btnBorder = Color.Cyan;
+            Button[] buttons = { btnSendRequest, btnAccept, btnDecline, btnRefresh };
+
+            foreach (var ctrl in buttons)
+            {
+                ctrl.BackColor = btnBg;
+                ctrl.ForeColor = Color.Cyan;
+                ctrl.FlatStyle = FlatStyle.Flat;
+                ctrl.FlatAppearance.BorderColor = btnBorder;
+                ctrl.FlatAppearance.BorderSize = 1;
+            }
         }
 
         private async void Friend_Load(object sender, EventArgs e)
         {
+            // thêm bảo hiểm lần nữa
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+                return;
+
             await LoadFriendsAsync();
         }
 
@@ -67,18 +102,14 @@ namespace plan_fighting_super_start
                 {
                     int imgIndex = await DownloadAvatarByUsernameAsync(f.Username);
 
-                    // cột 0: Avatar (text để trống)
                     var item = new ListViewItem("");
                     if (imgIndex >= 0)
                         item.ImageIndex = imgIndex;
 
-                    // cột 1: User
                     item.SubItems.Add(f.Username);
-
-                    // cột 2: Status
                     item.SubItems.Add(StatusToVietnamese(f.Status));
-
                     item.Tag = f;
+
                     lvFriends.Items.Add(item);
                 }
                 lvFriends.EndUpdate();
@@ -107,7 +138,10 @@ namespace plan_fighting_super_start
         {
             try
             {
-                // 🔥 sửa lại path đúng
+                // đảm bảo _imageService đã được tạo
+                if (_imageService == null)
+                    _imageService = new S3ImageService();
+
                 string key = $"avatars/avatars/{username}.png";
                 var img = await _imageService.GetImageAsync(key);
                 if (img == null) return -1;
@@ -162,7 +196,6 @@ namespace plan_fighting_super_start
 
             try
             {
-                // 1. Kiểm tra tài khoản tồn tại
                 bool exists = await Database.CheckAccountExistsAsync(target);
                 if (!exists)
                 {
@@ -175,7 +208,6 @@ namespace plan_fighting_super_start
                     return;
                 }
 
-                // 2. Gửi lời mời kết bạn nếu tồn tại
                 var ok = await Database.SendFriendRequestAsync(AccountData.Username, target);
                 if (ok)
                 {
@@ -242,6 +274,11 @@ namespace plan_fighting_super_start
         private async void btnRefresh_Click(object sender, EventArgs e)
         {
             await LoadFriendsAsync();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
