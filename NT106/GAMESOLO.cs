@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace plan_fighting_super_start
@@ -31,9 +33,15 @@ namespace plan_fighting_super_start
         private string _localName;
         private string _opponentName = "Đối thủ";
 
-        private int _playerHp = 3;
-        private int _opponentHp = 3;
+        // HP
+        private const int MAX_HP = 5;
+        private int _playerHp = MAX_HP;
+        private int _opponentHp = MAX_HP;
+
         private Label _hudYou, _hudEnemy;
+
+        private Panel _hpYouBg, _hpYouFill;
+        private Panel _hpEnemyBg, _hpEnemyFill;
 
         private Panel _pausePanel;
         private Button _btnResume, _btnQuit;
@@ -42,22 +50,21 @@ namespace plan_fighting_super_start
         private Bitmap _playerBulletBaseImg;
         private Bitmap _opponentBulletBaseImg;
 
-        // Service lấy ảnh từ S3
+        // Service lấy ảnh từ S3 (giữ lại nếu sau này dùng avatar ở góc)
         private readonly S3ImageService _s3 = new S3ImageService();
 
-        public GAMESOLO()
-            : this(new NetworkManager(), true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
+        // Trạng thái kết nối / trận
+        private bool _opponentConnected = false;
+        private bool _gameStarted = false;
 
-        public GAMESOLO(NetworkManager network)
-            : this(network, true, "SOLO-" + Guid.NewGuid().ToString("N")[..6]) { }
+        // ================== CONSTRUCTOR ==================
 
         public GAMESOLO(NetworkManager network, bool isHost, string roomId)
         {
             InitializeComponent();
 
-            this.ActiveControl = null;
-
-            _network = network ?? new NetworkManager();
+            // DÙNG ĐÚNG NetworkManager TỪ ROOM, KHÔNG TẠO MỚI
+            _network = network ?? throw new ArgumentNullException(nameof(network));
             _isHost = isHost;
             _roomId = string.IsNullOrWhiteSpace(roomId) ? "SOLO" : roomId;
 
@@ -76,8 +83,8 @@ namespace plan_fighting_super_start
             SetupTimer();
             WireNetworkEvents();
 
-            LoadPlayerAvatarAsync();
         }
+
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -94,37 +101,130 @@ namespace plan_fighting_super_start
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        // ================== GAME OBJECTS ==================
+        // ================== SETUP GAME OBJECTS ==================
 
         private void SetupGameObjects()
         {
             int w = Math.Max(800, this.ClientSize.Width);
             int h = Math.Max(600, this.ClientSize.Height);
-            int ship = 64;
+            int ship = 96;   // máy bay to hơn
 
-            _player = new PictureBox { Width = ship, Height = ship, BackColor = Color.DeepSkyBlue };
-            _opponent = new PictureBox { Width = ship, Height = ship, BackColor = Color.OrangeRed };
+            // --- NỀN MAP PVP ---
+            try
+            {
+                string bgPath = Path.Combine(Application.StartupPath, "bg_pvp.png");
+                if (File.Exists(bgPath))
+                {
+                    this.BackgroundImage = Image.FromFile(bgPath);
+                    this.BackgroundImageLayout = ImageLayout.Stretch;
+                }
+                else
+                {
+                    this.BackColor = Color.Black;
+                }
+            }
+            catch
+            {
+                this.BackColor = Color.Black;
+            }
 
-            // Host ở dưới, client ở trên (như logic cũ)
+            // --- MÁY BAY ---
+            _player = new PictureBox { Width = ship, Height = ship, BackColor = Color.Transparent };
+            _opponent = new PictureBox { Width = ship, Height = ship, BackColor = Color.Transparent };
+
+            Image hostPlane = null, clientPlane = null;
+
+            try
+            {
+                string hostPlanePath = Path.Combine(Application.StartupPath, "host.png");
+                string clientPlanePath = Path.Combine(Application.StartupPath, "client.png");
+
+                if (File.Exists(hostPlanePath))
+                    hostPlane = Image.FromFile(hostPlanePath);
+                else
+                    hostPlane = Properties.Resource.host;
+
+                if (File.Exists(clientPlanePath))
+                    clientPlane = Image.FromFile(clientPlanePath);
+                else
+                    clientPlane = Properties.Resource.client;
+            }
+            catch { }
+
+            // ✓ ÉP trong suốt cho nền ảnh (ví dụ nền trắng)
+            if (hostPlane != null)
+            {
+                Bitmap b = new Bitmap(hostPlane);
+                b.MakeTransparent(Color.White);
+                hostPlane = b;
+            }
+
+            if (clientPlane != null)
+            {
+                Bitmap b = new Bitmap(clientPlane);
+                b.MakeTransparent(Color.White);
+                clientPlane = b;
+            }
+
+            // Nếu không tìm thấy file, fallback plain màu
+            if (hostPlane == null)
+            {
+                hostPlane = new Bitmap(ship, ship);
+                using (var g = Graphics.FromImage(hostPlane))
+                    g.Clear(Color.DeepSkyBlue);
+            }
+            if (clientPlane == null)
+            {
+                clientPlane = new Bitmap(ship, ship);
+                using (var g = Graphics.FromImage(clientPlane))
+                    g.Clear(Color.OrangeRed);
+            }
+
+            // Tạo 2 phiên bản quay lên / quay xuống
+            Image hostUp = hostPlane;
+            Image hostDown = (Image)hostPlane.Clone();
+            hostDown.RotateFlip(RotateFlipType.Rotate180FlipNone);
+
+            Image clientUp = clientPlane;
+            Image clientDown = (Image)clientPlane.Clone();
+            clientDown.RotateFlip(RotateFlipType.Rotate180FlipNone);
+
+            // Host ở dưới, client ở trên.
+            // Quy ước: máy bay dưới quay lên, máy bay trên quay xuống.
             if (_isHost)
             {
+                // YOU (host) ở dưới -> quay lên
                 _player.Left = (w - ship) / 2;
                 _player.Top = h - ship - 70;
+                _player.Image = hostUp;
+
+                // ENEMY (client) ở trên -> quay xuống
                 _opponent.Left = (w - ship) / 2;
                 _opponent.Top = 70;
+                _opponent.Image = clientDown;
             }
             else
             {
+                // YOU (client) ở trên -> quay xuống
                 _player.Left = (w - ship) / 2;
                 _player.Top = 70;
+                _player.Image = clientDown;
+
+                // ENEMY (host) ở dưới -> quay lên
                 _opponent.Left = (w - ship) / 2;
                 _opponent.Top = h - ship - 70;
+                _opponent.Image = hostUp;
             }
+
+            _player.BackColor = Color.Transparent;
+            _opponent.BackColor = Color.Transparent;
+            _player.SizeMode = PictureBoxSizeMode.StretchImage;
+            _opponent.SizeMode = PictureBoxSizeMode.StretchImage;
 
             Controls.Add(_player);
             Controls.Add(_opponent);
 
-            // Tạo sprite đạn tên lửa
+            // Đạn
             InitPlayerBulletSprite();
             InitOpponentBulletSprite();
 
@@ -146,26 +246,26 @@ namespace plan_fighting_super_start
 
         private void SetupDirections()
         {
-            // Host bắn lên, client bắn xuống (phần còn lại auto)
+            // Host bắn lên, client bắn xuống
             if (_isHost)
             {
-                _playerBulletDir = -1; // host ở dưới -> bắn lên
+                _playerBulletDir = -1;   // host ở dưới -> bắn lên
                 _opponentBulletDir = +1; // client ở trên -> bắn xuống
             }
             else
             {
-                _playerBulletDir = +1; // client ở trên -> bắn xuống
+                _playerBulletDir = +1;   // client ở trên -> bắn xuống
                 _opponentBulletDir = -1; // host ở dưới -> bắn lên
             }
         }
 
-        // ================== VẼ ĐẠN BẰNG CODE ==================
+        // ================== VẼ ĐẠN ==================
 
         private void InitPlayerBulletSprite()
         {
             _playerBullet = new PictureBox
             {
-                Size = new Size(20, 60),
+                Size = new Size(22, 72),
                 BackColor = Color.Transparent,
                 Visible = false
             };
@@ -178,15 +278,15 @@ namespace plan_fighting_super_start
 
                 float centerX = _playerBullet.Width / 2f;
 
-                int bodyWidth = 8;
-                int bodyHeight = 26;
+                int bodyWidth = 10;
+                int bodyHeight = 32;
                 int bodyX = (int)(centerX - bodyWidth / 2f);
                 int bodyY = 8;
                 Rectangle bodyRect = new Rectangle(bodyX, bodyY, bodyWidth, bodyHeight);
 
                 using (var bodyBrush = new SolidBrush(Color.White))
                     g.FillRectangle(bodyBrush, bodyRect);
-                using (var bodyPen = new Pen(Color.FromArgb(200, 180, 180, 180), 1f))
+                using (var bodyPen = new Pen(Color.FromArgb(220, 180, 180, 180), 1f))
                     g.DrawRectangle(bodyPen, bodyRect);
 
                 PointF tip = new PointF(centerX, 0);
@@ -196,7 +296,7 @@ namespace plan_fighting_super_start
                 using (var noseBrush = new SolidBrush(Color.OrangeRed))
                     g.FillPolygon(noseBrush, nose);
 
-                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 4);
+                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 6);
                 using (var windowBrush = new SolidBrush(Color.FromArgb(220, 80, 160, 255)))
                     g.FillEllipse(windowBrush, windowRect);
 
@@ -205,27 +305,27 @@ namespace plan_fighting_super_start
                     PointF[] leftFin =
                     {
                         new PointF(bodyX, bodyY + bodyHeight - 4),
-                        new PointF(bodyX - 5, bodyY + bodyHeight + 4),
-                        new PointF(bodyX, bodyY + bodyHeight + 2),
+                        new PointF(bodyX - 6, bodyY + bodyHeight + 6),
+                        new PointF(bodyX, bodyY + bodyHeight + 3),
                     };
                     g.FillPolygon(finBrush, leftFin);
 
                     PointF[] rightFin =
                     {
                         new PointF(bodyX + bodyWidth, bodyY + bodyHeight - 4),
-                        new PointF(bodyX + bodyWidth + 5, bodyY + bodyHeight + 4),
-                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 2),
+                        new PointF(bodyX + bodyWidth + 6, bodyY + bodyHeight + 6),
+                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 3),
                     };
                     g.FillPolygon(finBrush, rightFin);
                 }
 
-                int flameHeight = 22;
+                int flameHeight = 24;
                 Rectangle flameRect = new Rectangle(bodyX + 1, bodyY + bodyHeight, bodyWidth - 2, flameHeight);
 
                 using (var flameBrush = new LinearGradientBrush(
                     new Point(flameRect.X, flameRect.Y),
                     new Point(flameRect.X, flameRect.Bottom),
-                    Color.FromArgb(230, 0, 255, 255),
+                    Color.FromArgb(240, 0, 255, 255),
                     Color.FromArgb(0, 0, 255, 255)))
                 {
                     g.FillRectangle(flameBrush, flameRect);
@@ -237,7 +337,7 @@ namespace plan_fighting_super_start
                     flameRect.Width + 16,
                     20
                 );
-                using (var glowBrush = new SolidBrush(Color.FromArgb(90, 0, 200, 255)))
+                using (var glowBrush = new SolidBrush(Color.FromArgb(120, 0, 200, 255)))
                     g.FillEllipse(glowBrush, glowRect);
             }
 
@@ -253,7 +353,7 @@ namespace plan_fighting_super_start
         {
             _opponentBullet = new PictureBox
             {
-                Size = new Size(20, 60),
+                Size = new Size(22, 72),
                 BackColor = Color.Transparent,
                 Visible = false
             };
@@ -266,15 +366,15 @@ namespace plan_fighting_super_start
 
                 float centerX = _opponentBullet.Width / 2f;
 
-                int bodyWidth = 8;
-                int bodyHeight = 26;
+                int bodyWidth = 10;
+                int bodyHeight = 32;
                 int bodyX = (int)(centerX - bodyWidth / 2f);
                 int bodyY = 8;
                 Rectangle bodyRect = new Rectangle(bodyX, bodyY, bodyWidth, bodyHeight);
 
                 using (var bodyBrush = new SolidBrush(Color.LightYellow))
                     g.FillRectangle(bodyBrush, bodyRect);
-                using (var bodyPen = new Pen(Color.FromArgb(200, 200, 120, 120), 1f))
+                using (var bodyPen = new Pen(Color.FromArgb(220, 200, 120, 120), 1f))
                     g.DrawRectangle(bodyPen, bodyRect);
 
                 PointF tip = new PointF(centerX, 0);
@@ -284,7 +384,7 @@ namespace plan_fighting_super_start
                 using (var noseBrush = new SolidBrush(Color.Red))
                     g.FillPolygon(noseBrush, nose);
 
-                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 4);
+                Rectangle windowRect = new Rectangle(bodyX + 1, bodyY + 6, bodyWidth - 2, bodyWidth - 6);
                 using (var windowBrush = new SolidBrush(Color.FromArgb(220, 255, 140, 80)))
                     g.FillEllipse(windowBrush, windowRect);
 
@@ -293,27 +393,27 @@ namespace plan_fighting_super_start
                     PointF[] leftFin =
                     {
                         new PointF(bodyX, bodyY + bodyHeight - 4),
-                        new PointF(bodyX - 5, bodyY + bodyHeight + 4),
-                        new PointF(bodyX, bodyY + bodyHeight + 2),
+                        new PointF(bodyX - 6, bodyY + bodyHeight + 6),
+                        new PointF(bodyX, bodyY + bodyHeight + 3),
                     };
                     g.FillPolygon(finBrush, leftFin);
 
                     PointF[] rightFin =
                     {
                         new PointF(bodyX + bodyWidth, bodyY + bodyHeight - 4),
-                        new PointF(bodyX + bodyWidth + 5, bodyY + bodyHeight + 4),
-                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 2),
+                        new PointF(bodyX + bodyWidth + 6, bodyY + bodyHeight + 6),
+                        new PointF(bodyX + bodyWidth, bodyY + bodyHeight + 3),
                     };
                     g.FillPolygon(finBrush, rightFin);
                 }
 
-                int flameHeight = 22;
+                int flameHeight = 24;
                 Rectangle flameRect = new Rectangle(bodyX + 1, bodyY + bodyHeight, bodyWidth - 2, flameHeight);
 
                 using (var flameBrush = new LinearGradientBrush(
                     new Point(flameRect.X, flameRect.Y),
                     new Point(flameRect.X, flameRect.Bottom),
-                    Color.FromArgb(230, 255, 160, 0),
+                    Color.FromArgb(240, 255, 160, 0),
                     Color.FromArgb(0, 255, 0, 0)))
                 {
                     g.FillRectangle(flameBrush, flameRect);
@@ -325,7 +425,7 @@ namespace plan_fighting_super_start
                     flameRect.Width + 16,
                     20
                 );
-                using (var glowBrush = new SolidBrush(Color.FromArgb(90, 255, 80, 0)))
+                using (var glowBrush = new SolidBrush(Color.FromArgb(120, 255, 80, 0)))
                     g.FillEllipse(glowBrush, glowRect);
             }
 
@@ -344,32 +444,113 @@ namespace plan_fighting_super_start
             _hudYou = new Label
             {
                 AutoSize = true,
-                ForeColor = Color.White,
+                ForeColor = Color.Lime,
                 BackColor = Color.Transparent,
-                Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
-                Left = 10,
-                Top = (_isHost ? ClientSize.Height - 35 : 10)
+                Font = new Font("Segoe UI", 12, FontStyle.Bold)
             };
+
             _hudEnemy = new Label
             {
                 AutoSize = true,
-                ForeColor = Color.White,
+                ForeColor = Color.Orange,
                 BackColor = Color.Transparent,
-                Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
-                Left = 10,
-                Top = (_isHost ? 10 : ClientSize.Height - 35)
+                Font = new Font("Segoe UI", 12, FontStyle.Bold)
             };
+
+            int barWidth = 200;
+            int barHeight = 16;
+
+            _hpYouBg = new Panel
+            {
+                Width = barWidth,
+                Height = barHeight,
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            _hpYouFill = new Panel
+            {
+                Height = barHeight - 2,
+                Left = 1,
+                Top = 1,
+                BackColor = Color.Lime
+            };
+            _hpYouBg.Controls.Add(_hpYouFill);
+
+            _hpEnemyBg = new Panel
+            {
+                Width = barWidth,
+                Height = barHeight,
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            _hpEnemyFill = new Panel
+            {
+                Height = barHeight - 2,
+                Left = 1,
+                Top = 1,
+                BackColor = Color.Lime
+            };
+            _hpEnemyBg.Controls.Add(_hpEnemyFill);
+
+            int gap = 6;
+
+            if (_isHost)
+            {
+                // YOU (host) ở dưới
+                _hudYou.Left = 10;
+                _hudYou.Top = ClientSize.Height - 60;
+                _hpYouBg.Left = 10;
+                _hpYouBg.Top = _hudYou.Bottom + gap;
+
+                // ENEMY (client) ở trên
+                _hudEnemy.Left = 10;
+                _hudEnemy.Top = 10;
+                _hpEnemyBg.Left = 10;
+                _hpEnemyBg.Top = _hudEnemy.Bottom + gap;
+            }
+            else
+            {
+                // YOU (client) ở trên
+                _hudYou.Left = 10;
+                _hudYou.Top = 10;
+                _hpYouBg.Left = 10;
+                _hpYouBg.Top = _hudYou.Bottom + gap;
+
+                // ENEMY (host) ở dưới
+                _hudEnemy.Left = 10;
+                _hudEnemy.Top = ClientSize.Height - 60;
+                _hpEnemyBg.Left = 10;
+                _hpEnemyBg.Top = _hudEnemy.Bottom + gap;
+            }
+
             Controls.Add(_hudYou);
             Controls.Add(_hudEnemy);
+            Controls.Add(_hpYouBg);
+            Controls.Add(_hpEnemyBg);
+
             UpdateHud();
         }
 
         private void UpdateHud()
         {
-            string hearts(int hp) => new string('❤', Math.Max(0, hp));
+            _hudYou.Text = _localName;
+            _hudEnemy.Text = _opponentName;
 
-            _hudYou.Text = $"{_localName}: {hearts(_playerHp)}";
-            _hudEnemy.Text = $"{_opponentName}: {hearts(_opponentHp)}";
+            UpdateHpBar(_hpYouFill, _hpYouBg.Width, _playerHp);
+            UpdateHpBar(_hpEnemyFill, _hpEnemyBg.Width, _opponentHp);
+        }
+
+        private void UpdateHpBar(Panel fill, int maxWidth, int hp)
+        {
+            int clamped = Math.Max(0, Math.Min(MAX_HP, hp));
+            int w = (int)((maxWidth - 2) * (clamped / (float)MAX_HP));
+            if (w < 0) w = 0;
+
+            fill.Width = w;
+
+            if (clamped >= 4) fill.BackColor = Color.Lime;
+            else if (clamped >= 2) fill.BackColor = Color.Yellow;
+            else fill.BackColor = Color.Red;
         }
 
         private void SetupPauseOverlay()
@@ -403,9 +584,16 @@ namespace plan_fighting_super_start
             if (_gameEnded) return;
             _paused = !_paused;
             _pausePanel.Visible = _paused;
-            if (_paused) _gameTimer.Stop();
-            else _gameTimer.Start();
-            lblStatusGame.Text = _paused ? "Tạm dừng" : "Đang chơi…";
+            if (_paused)
+            {
+                _gameTimer.Stop();
+                lblStatusGame.Text = "Tạm dừng";
+            }
+            else
+            {
+                _gameTimer.Start();
+                lblStatusGame.Text = _gameStarted ? "Đang chơi…" : "Đang chờ đối thủ…";
+            }
         }
 
         private void SetupTimer()
@@ -414,6 +602,8 @@ namespace plan_fighting_super_start
             _gameTimer.Tick += GameTimer_Tick;
             _gameTimer.Start();
         }
+
+        // ================== NETWORK WIRING ==================
 
         private void WireNetworkEvents()
         {
@@ -433,8 +623,149 @@ namespace plan_fighting_super_start
                 else OnDisconnectedUI();
             };
 
+            // Gửi chào để 2 bên biết tên nhau
             SafeSend(new { type = "hello", name = _localName });
             lblStatusGame.Text = "Đang chờ đối thủ…";
+        }
+
+        private void ProcessNetworkMessage(string msg)
+        {
+            if (string.IsNullOrWhiteSpace(msg)) return;
+            if (msg == "START_GAME") return; // START_GAME xử lý ở Room, không cần trong đây
+
+            try
+            {
+                using var doc = JsonDocument.Parse(msg);
+                var root = doc.RootElement;
+                if (!root.TryGetProperty("type", out var tp)) return;
+                string type = tp.GetString();
+
+                switch (type)
+                {
+                    case "hello":
+                        if (root.TryGetProperty("name", out var n))
+                        {
+                            _opponentConnected = true;
+
+                            _opponentName = n.GetString() ?? _opponentName;
+                            this.Text = (_isHost ? "[HOST] " : "[CLIENT] ") +
+                                        "Room: " + _roomId + "  - vs " + _opponentName;
+                            lblStatusGame.Text = "Đã kết nối với " + _opponentName;
+                            SafeSend(new { type = "hello", name = _localName });
+                            UpdateHud();
+                        }
+                        break;
+
+
+                    case "state":
+                        // khi lần đầu nhận state từ đối thủ mà chưa biết tên,
+                        // mình yêu cầu nó gửi lại "hello"
+                        if (!_opponentConnected)
+                        {
+                            _opponentConnected = true;
+                            SafeSend(new { type = "hello_req" });
+                        }
+
+                        if (_opponent == null) return;
+                        if (root.TryGetProperty("x", out var x) && root.TryGetProperty("y", out var y))
+                        {
+                            _opponent.Left = x.GetInt32();
+                            _opponent.Top = y.GetInt32();
+
+                            if (!_gameStarted)
+                            {
+                                _gameStarted = true;
+                                lblStatusGame.Text = "Đang chơi…";
+                            }
+                        }
+                        break;
+
+                    case "shoot":
+                        if (!_gameStarted)
+                        {
+                            _gameStarted = true;
+                            lblStatusGame.Text = "Đang chơi…";
+                        }
+                        SpawnOpponentBullet();
+                        break;
+
+                    case "hp":
+                        if (root.TryGetProperty("p", out var pProp) && root.TryGetProperty("o", out var oProp))
+                        {
+                            int pHp = pProp.GetInt32();
+                            int oHp = oProp.GetInt32();
+
+                            if (_isHost)
+                            {
+                                _playerHp = pHp;
+                                _opponentHp = oHp;
+                            }
+                            else
+                            {
+                                _opponentHp = pHp; // host
+                                _playerHp = oHp;   // local client
+                            }
+
+                            UpdateHud();
+                        }
+                        break;
+
+                    case "result":
+                        if (_gameEnded) return;
+                        if (root.TryGetProperty("winner", out var wProp))
+                        {
+                            string winnerName = wProp.GetString();
+                            bool youWin = string.Equals(winnerName, _localName,
+                                StringComparison.OrdinalIgnoreCase);
+                            EndGame(youWin, fromNetwork: true);
+                        }
+                        break;
+
+                    case "quit":
+                        if (_gameEnded) return;
+                        _gameEnded = true;
+                        try { _gameTimer?.Stop(); } catch { }
+                        lblStatusGame.Text = "Đối thủ đã thoát trận.";
+                        MarkRoomEnd();
+                        MessageBox.Show(
+                            "Đối thủ đã thoát trận. Quay lại lobby hoặc tạo phòng khác.",
+                            "Thông báo",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        Close();
+                        break;
+                }
+            }
+            catch
+            {
+                // bỏ qua message lỗi
+            }
+        }
+
+        private void OnDisconnectedUI()
+        {
+            if (_gameEnded) return;
+            _gameEnded = true;
+            _gameTimer?.Stop();
+            lblStatusGame.Text = "Mất kết nối.";
+            MessageBox.Show("Kết nối bị ngắt. Quay lại lobby hoặc tạo phòng khác.",
+                "Ngắt kết nối",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            Close();
+        }
+
+        private void SafeSend(object obj)
+        {
+            try
+            {
+                if (_network != null && _network.IsConnected)
+                {
+                    string json = JsonSerializer.Serialize(obj);
+                    _network.Send(json);
+                }
+            }
+            catch { }
         }
 
         // ================== ROOM STATUS (END) ==================
@@ -445,13 +776,11 @@ namespace plan_fighting_super_start
             {
                 if (!string.IsNullOrEmpty(_roomId))
                 {
-                    // Fire-and-forget, không cần await
                     _ = RoomApi.EndRoomAsync(_roomId);
                 }
             }
             catch
             {
-                // tránh crash nếu lỗi mạng
             }
         }
 
@@ -529,110 +858,6 @@ namespace plan_fighting_super_start
             SafeSend(new { type = "state", x = _player.Left, y = _player.Top });
         }
 
-        private void ProcessNetworkMessage(string msg)
-        {
-            if (string.IsNullOrWhiteSpace(msg)) return;
-            if (msg == "START_GAME") return;
-
-            try
-            {
-                using var doc = JsonDocument.Parse(msg);
-                var root = doc.RootElement;
-                if (!root.TryGetProperty("type", out var tp)) return;
-                string type = tp.GetString();
-
-                switch (type)
-                {
-                    case "hello":
-                        if (root.TryGetProperty("name", out var n))
-                        {
-                            _opponentName = n.GetString() ?? _opponentName;
-                            this.Text = (_isHost ? "[HOST] " : "[CLIENT] ") +
-                                        "Room: " + _roomId + "  - vs " + _opponentName;
-                            lblStatusGame.Text = "Đã kết nối với " + _opponentName;
-                            UpdateHud();
-                            LoadOpponentAvatarAsync(_opponentName);
-                        }
-                        break;
-
-                    case "state":
-                        if (_opponent == null) return;
-                        if (root.TryGetProperty("x", out var x) && root.TryGetProperty("y", out var y))
-                        {
-                            _opponent.Left = x.GetInt32();
-                            _opponent.Top = y.GetInt32();
-                        }
-                        break;
-
-                    case "shoot":
-                        SpawnOpponentBullet();
-                        break;
-
-                    case "hp":
-                        if (root.TryGetProperty("p", out var pProp) && root.TryGetProperty("o", out var oProp))
-                        {
-                            int pHp = pProp.GetInt32();
-                            int oHp = oProp.GetInt32();
-
-                            if (_isHost)
-                            {
-                                _playerHp = pHp;
-                                _opponentHp = oHp;
-                            }
-                            else
-                            {
-                                _opponentHp = pHp; // host
-                                _playerHp = oHp;   // local client
-                            }
-
-                            UpdateHud();
-                        }
-                        break;
-
-                    case "result":
-                        if (_gameEnded) return;
-                        if (root.TryGetProperty("winner", out var wProp))
-                        {
-                            string winnerName = wProp.GetString();
-                            bool youWin = string.Equals(winnerName, _localName,
-                                StringComparison.OrdinalIgnoreCase);
-                            EndGame(youWin, fromNetwork: true);
-                        }
-                        break;
-                }
-            }
-            catch
-            {
-                // bỏ qua message lỗi
-            }
-        }
-
-        private void OnDisconnectedUI()
-        {
-            if (_gameEnded) return;
-            _gameEnded = true;
-            _gameTimer?.Stop();
-            lblStatusGame.Text = "Mất kết nối.";
-            MessageBox.Show("Kết nối bị ngắt. Quay lại lobby hoặc tạo phòng khác.",
-                "Ngắt kết nối",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-            Close();
-        }
-
-        private void SafeSend(object obj)
-        {
-            try
-            {
-                if (_network != null && _network.IsConnected)
-                {
-                    string json = JsonSerializer.Serialize(obj);
-                    _network.Send(json);
-                }
-            }
-            catch { }
-        }
-
         // ================== SHOOT & BULLETS ==================
 
         private void FirePlayerBullet()
@@ -646,7 +871,7 @@ namespace plan_fighting_super_start
                     new Rectangle(0, 0, _playerBulletBaseImg.Width, _playerBulletBaseImg.Height),
                     _playerBulletBaseImg.PixelFormat);
 
-                if (_playerBulletDir > 0) // nếu bay xuống thì xoay 180
+                if (_playerBulletDir > 0)
                     img.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
                 _playerBullet.Image?.Dispose();
@@ -658,6 +883,12 @@ namespace plan_fighting_super_start
             _playerBullet.Top = (_playerBulletDir < 0)
                 ? (_player.Top - _playerBullet.Height)
                 : _player.Bottom;
+
+            if (!_gameStarted)
+            {
+                _gameStarted = true;
+                lblStatusGame.Text = "Đang chơi…";
+            }
 
             SafeSend(new { type = "shoot" });
         }
@@ -695,7 +926,8 @@ namespace plan_fighting_super_start
             _paused = false;
             _pausePanel.Visible = false;
 
-            // 🔹 Đánh dấu phòng END khi trận kết thúc
+            lblStatusGame.Text = "Trận đấu đã kết thúc";
+
             MarkRoomEnd();
 
             if (_isHost)
@@ -766,18 +998,25 @@ namespace plan_fighting_super_start
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (ask == DialogResult.Yes)
             {
-                // 🔹 Đánh dấu phòng END khi người chơi chủ động thoát
+                // báo cho đối thủ mình thoát
+                SafeSend(new { type = "quit", name = _localName });
+
                 MarkRoomEnd();
 
                 try { _gameTimer?.Stop(); } catch { }
-                try { (_network as IDisposable)?.Dispose(); _network = null; } catch { }
+                try
+                {
+                    (_network as IDisposable)?.Dispose();
+                    _network = null;
+                }
+                catch { }
+
                 Close();
             }
         }
 
         private void Form6_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // 🔹 Phòng ngừa: nếu form bị đóng trực tiếp, vẫn đánh dấu END
             MarkRoomEnd();
 
             try
@@ -793,50 +1032,7 @@ namespace plan_fighting_super_start
         {
         }
 
-        // ====================== AVATAR TỪ S3 ======================
 
-        private async void LoadPlayerAvatarAsync()
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(AccountData.Username) || _player == null)
-                    return;
-
-                string key = $"avatars/avatars/{AccountData.Username}.png";
-
-                var img = await _s3.GetImageAsync(key);
-                if (img == null) return;
-
-                _player.Image?.Dispose();
-                _player.Image = img;
-                _player.SizeMode = PictureBoxSizeMode.StretchImage;
-                _player.BackColor = Color.Transparent;
-            }
-            catch
-            {
-            }
-        }
-
-        private async void LoadOpponentAvatarAsync(string opponentName)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(opponentName) || _opponent == null)
-                    return;
-
-                string key = $"avatars/avatars/{opponentName}.png";
-
-                var img = await _s3.GetImageAsync(key);
-                if (img == null) return;
-
-                _opponent.Image?.Dispose();
-                _opponent.Image = img;
-                _opponent.SizeMode = PictureBoxSizeMode.StretchImage;
-                _opponent.BackColor = Color.Transparent;
-            }
-            catch
-            {
-            }
-        }
+        
     }
 }
