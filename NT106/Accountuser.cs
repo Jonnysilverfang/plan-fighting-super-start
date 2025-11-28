@@ -146,6 +146,15 @@ namespace plan_fighting_super_start
             this.Show();   // 3) Khi giftcode đóng → hiện lại account user
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (var form = new Friend())
+            {
+                form.ShowDialog();
+            }
+            this.Show();
 
+        }
     }
 }
