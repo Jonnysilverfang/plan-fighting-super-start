@@ -35,6 +35,10 @@ namespace plan_fighting_super_start
         // Cờ tránh vòng lặp SelectedIndexChanged → UpdateKenhItems → SelectedIndexChanged...
         private bool _isUpdatingKenhItems = false;
 
+        // ====== HẰNG SỐ KÊNH ======
+        private const string KENH_SANH_BASE = "Kênh chung (Sảnh)";
+        private const string KENH_PHONG_BASE = "Kênh phòng";
+
         public Room()
         {
             InitializeComponent();
@@ -52,10 +56,10 @@ namespace plan_fighting_super_start
         }
 
         private bool DangChonKenhSanh()
-            => (cmbKenh.SelectedItem?.ToString()?.StartsWith("Kênh chung") ?? false);
+            => (cmbKenh.SelectedItem?.ToString()?.StartsWith(KENH_SANH_BASE, StringComparison.OrdinalIgnoreCase) ?? false);
 
         private bool DangChonKenhPhong()
-            => (cmbKenh.SelectedItem?.ToString()?.StartsWith("Kênh phòng") ?? false);
+            => (cmbKenh.SelectedItem?.ToString()?.StartsWith(KENH_PHONG_BASE, StringComparison.OrdinalIgnoreCase) ?? false);
 
         // Helper chạy an toàn trên UI thread
         private static void SafeOnUI(Control ctl, Action body)
@@ -102,27 +106,60 @@ namespace plan_fighting_super_start
                 _isUpdatingKenhItems = true;
                 try
                 {
-                    string lobbyItem = "Kênh chung (Sảnh)";
-                    string roomItem = string.IsNullOrEmpty(currentRoomId)
-                        ? "Kênh phòng"
-                        : $"Kênh phòng ({currentRoomId})";
+                    // Lưu lại lựa chọn hiện tại để giữ
+                    string? current = cmbKenh.SelectedItem as string;
 
+                    // Xây lại string hiển thị
+                    string lobbyItem = KENH_SANH_BASE;
                     if (_unreadLobby > 0)
                         lobbyItem += $" (+{_unreadLobby})";
 
-                    if (_unreadRoom > 0 && inRoom && !string.IsNullOrEmpty(currentRoomId))
-                        roomItem += $" (+{_unreadRoom})";
+                    string? roomItem = null;
+                    if (inRoom && !string.IsNullOrEmpty(currentRoomId))
+                    {
+                        roomItem = $"{KENH_PHONG_BASE} ({currentRoomId})";
+                        if (_unreadRoom > 0)
+                            roomItem += $" (+{_unreadRoom})";
+                    }
 
                     cmbKenh.Items.Clear();
                     cmbKenh.Items.Add(lobbyItem);
 
-                    if (inRoom && !string.IsNullOrEmpty(currentRoomId))
+                    if (roomItem != null)
                         cmbKenh.Items.Add(roomItem);
 
-                    if (inRoom && cmbKenh.Items.Count > 1)
-                        cmbKenh.SelectedIndex = 1;   // Kênh phòng
+                    // Ưu tiên giữ đúng kênh mà user đã chọn
+                    if (!string.IsNullOrEmpty(current))
+                    {
+                        if (current.StartsWith(KENH_PHONG_BASE, StringComparison.OrdinalIgnoreCase) && roomItem != null)
+                        {
+                            cmbKenh.SelectedItem = roomItem;
+                            if (cmbKenh.SelectedItem == null && cmbKenh.Items.Count > 1)
+                                cmbKenh.SelectedIndex = 1;
+                        }
+                        else if (current.StartsWith(KENH_SANH_BASE, StringComparison.OrdinalIgnoreCase))
+                        {
+                            cmbKenh.SelectedItem = lobbyItem;
+                            if (cmbKenh.SelectedItem == null && cmbKenh.Items.Count > 0)
+                                cmbKenh.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            // Nếu không match base nào thì fallback
+                            if (roomItem != null && inRoom && cmbKenh.Items.Count > 1)
+                                cmbKenh.SelectedIndex = 1;
+                            else
+                                cmbKenh.SelectedIndex = 0;
+                        }
+                    }
                     else
-                        cmbKenh.SelectedIndex = 0;   // Kênh sảnh
+                    {
+                        // Lần đầu: nếu đang ở phòng thì chọn phòng, không thì chọn sảnh
+                        if (roomItem != null && inRoom && cmbKenh.Items.Count > 1)
+                            cmbKenh.SelectedIndex = 1;
+                        else
+                            cmbKenh.SelectedIndex = 0;
+                    }
                 }
                 finally
                 {
@@ -732,7 +769,6 @@ namespace plan_fighting_super_start
 
             game.FormClosed += async (_, __) =>
             {
-                
                 SetStatus("Đã quay lại lobby.");
                 UpdateKenhItems(false);
 
@@ -804,8 +840,25 @@ namespace plan_fighting_super_start
 
             bool inRoom = !string.IsNullOrEmpty(currentRoomId);
 
-            // Nếu chưa trong phòng hoặc không chọn “Kênh phòng” → gửi sảnh
-            if (!inRoom || !DangChonKenhPhong())
+            bool guiSanh = DangChonKenhSanh();
+            bool guiPhong = DangChonKenhPhong();
+
+            // Chưa chọn kênh
+            if (!guiSanh && !guiPhong)
+            {
+                MessageBox.Show("Hãy chọn kênh chat (Sảnh hoặc Kênh phòng).");
+                return;
+            }
+
+            // Chọn kênh phòng nhưng chưa ở trong phòng
+            if (guiPhong && !inRoom)
+            {
+                MessageBox.Show("Bạn chưa tham gia phòng nào, không thể chat kênh phòng.");
+                return;
+            }
+
+            // ========== KÊNH SẢNH (UDP broadcast) ==========
+            if (guiSanh)
             {
                 if (chatSanh == null)
                 {
@@ -815,7 +868,10 @@ namespace plan_fighting_super_start
                     {
                         UI(() =>
                         {
-                            if (DangChonKenhSanh()) AppendChat($"[LOBBY]{ten}", noiDung, false);
+                            if (DangChonKenhSanh())
+                            {
+                                AppendChat($"[LOBBY]{ten}", noiDung, false);
+                            }
                             else
                             {
                                 _pendingLobby.Enqueue(($"[LOBBY]{ten}", noiDung, false));
@@ -828,7 +884,10 @@ namespace plan_fighting_super_start
 
                 try { await chatSanh.GuiTinSanhAsync(from, text); } catch { }
 
-                if (DangChonKenhSanh()) AppendChat($"[LOBBY]{from}", text, false);
+                if (DangChonKenhSanh())
+                {
+                    AppendChat($"[LOBBY]{from}", text, false);
+                }
                 else
                 {
                     _pendingLobby.Enqueue(($"[LOBBY]{from}", text, false));
@@ -840,21 +899,27 @@ namespace plan_fighting_super_start
                 return;
             }
 
-            // Kênh phòng (TCP)
-            string role = isHost ? "HOST" : "CLIENT";
-            string payload = $"CHAT|{role}|{from}|{text}";
-
-            if (DangChonKenhPhong()) AppendChat(from, text, isHost);
-            else
+            // ========== KÊNH PHÒNG (TCP) ==========
+            if (guiPhong && inRoom)
             {
-                _pendingRoom.Enqueue((from, text, isHost));
-                _unreadRoom++;
-                UpdateKenhItems(true);
+                string role = isHost ? "HOST" : "CLIENT";
+                string payload = $"CHAT|{role}|{from}|{text}";
+
+                if (DangChonKenhPhong())
+                {
+                    AppendChat(from, text, isHost);
+                }
+                else
+                {
+                    _pendingRoom.Enqueue((from, text, isHost));
+                    _unreadRoom++;
+                    UpdateKenhItems(true);
+                }
+
+                txtChat.Clear();
+
+                try { networkManager.Send(payload); } catch { }
             }
-
-            txtChat.Clear();
-
-            try { networkManager.Send(payload); } catch { }
         }
 
         private void chatBox_TextChanged(object sender, EventArgs e) { }
