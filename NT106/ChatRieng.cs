@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace plan_fighting_super_start
@@ -14,16 +15,23 @@ namespace plan_fighting_super_start
         {
             _ban = tenBan ?? "";
             _toi = AccountData.Username ?? "me";
+
             InitializeComponent();
         }
 
-        private void ChatRieng_Load(object sender, EventArgs e)
+        // ================== SỰ KIỆN FORM ==================
+
+        private async void ChatRieng_Load(object sender, EventArgs e)
         {
             lblTieuDe.Text = $"NHẮN VỚI  {_ban.ToUpper()}";
 
+            // Bật nghe LAN DM
             _kenhLan = new ChatSanhLAN();
             _kenhLan.BatDauNghe();
             _kenhLan.NhanTinDM += XuLyTinNhanDM;
+
+            // 🔹 Khi mở form, tải lịch sử chat từ S3 qua API
+            await TaiLichSuCloudAsync();
         }
 
         private void ChatRieng_FormClosed(object sender, FormClosedEventArgs e)
@@ -36,10 +44,15 @@ namespace plan_fighting_super_start
                     _kenhLan.Dispose();
                 }
             }
-            catch { }
+            catch
+            {
+                // ignore
+            }
         }
 
-        // Nhận tin DM từ ChatSanhLAN
+        // ================== NHẬN TIN TỪ LAN ==================
+
+        // Hàm này được ChatSanhLAN gọi khi có DM tới
         private void XuLyTinNhanDM(string tu, string den, string noiDung)
         {
             // Chỉ nhận tin thuộc cặp (_toi <-> _ban)
@@ -51,10 +64,14 @@ namespace plan_fighting_super_start
 
             if (!dungCuoc) return;
 
-            ChenDong(tu, noiDung, tu.Equals(_toi, StringComparison.OrdinalIgnoreCase));
+            bool laCuaToi = string.Equals(tu, _toi, StringComparison.OrdinalIgnoreCase);
+            ChenDong(tu, noiDung, laCuaToi);
+
+            // ⛔ Không gọi API ở đây, vì bên gửi đã ghi lên S3
         }
 
-        // Gửi tin
+        // ================== GỬI TIN ==================
+
         private async void btnGui_Click(object sender, EventArgs e)
         {
             string msg = (txtNoiDung.Text ?? "").Trim();
@@ -69,17 +86,67 @@ namespace plan_fighting_super_start
                     _kenhLan.NhanTinDM += XuLyTinNhanDM;
                 }
 
+                // Gửi qua LAN
                 await _kenhLan.GuiTinDMAsync(_toi, _ban, msg);
             }
             catch
             {
-                // tránh crash nếu lỗi mạng
+                // tránh crash nếu LAN lỗi
             }
 
             // Hiện luôn tin của mình
             ChenDong(_toi, msg, true);
             txtNoiDung.Clear();
+
+            // 🔹 Ghi tin nhắn này lên S3 qua API (append dòng mới)
+            _ = LuuTinNhanCloudAsync(_toi, _ban, msg);
         }
+
+        // ================== LÀM VIỆC VỚI API (S3) ==================
+
+        private async Task LuuTinNhanCloudAsync(string from, string to, string msg)
+        {
+            try
+            {
+                await DmApiClient.AppendMessageAsync(from, to, msg);
+            }
+            catch
+            {
+                // nếu lỗi API thì thôi, vẫn chat LAN bình thường
+            }
+        }
+
+        private async Task TaiLichSuCloudAsync()
+        {
+            try
+            {
+                var res = await DmApiClient.GetHistoryAsync(_toi, _ban);
+                if (res?.Lines == null || res.Lines.Length == 0)
+                    return;
+
+                rtbHopThoai.Clear();
+
+                foreach (var line in res.Lines)
+                {
+                    // format: time|from|to|message
+                    var parts = line.Split('|', 4);
+                    if (parts.Length < 4) continue;
+
+                    string from = parts[1];
+                    string to = parts[2];
+                    string message = parts[3];
+
+                    bool laCuaToi = string.Equals(from, _toi, StringComparison.OrdinalIgnoreCase);
+                    ChenDong(from, message, laCuaToi);
+                }
+            }
+            catch
+            {
+                // nếu lỗi thì bỏ qua, không crash form
+            }
+        }
+
+        // ================== HIỂN THỊ LÊN RICH TEXT BOX ==================
 
         // Thêm 1 dòng vào khung chat
         private void ChenDong(string ai, string text, bool laCuaToi)
