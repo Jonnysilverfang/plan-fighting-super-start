@@ -729,11 +729,10 @@ namespace plan_fighting_super_start
         {
             var game = new GAMESOLO(networkManager, isHost, currentRoomId);
             game.Show();
-            this.Hide();
 
             game.FormClosed += async (_, __) =>
             {
-                this.Show();
+                
                 SetStatus("Đã quay lại lobby.");
                 UpdateKenhItems(false);
 

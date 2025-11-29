@@ -37,6 +37,7 @@ namespace plan_fighting_super_start
         }
 
         // ==================== Cấu hình ListView ====================
+
         private void ForceListViewConfig()
         {
             if (_listViewConfigured || lvFriends == null) return;
@@ -65,10 +66,12 @@ namespace plan_fighting_super_start
             try
             {
                 lvFriends.Columns.Clear();
+                // 0: User (avatar + tên)
                 lvFriends.Columns.Add("User", 260, HorizontalAlignment.Left);
+                // 1: Status
                 lvFriends.Columns.Add("Status", 220, HorizontalAlignment.Left);
-                lvFriends.Columns.Add("", 60, HorizontalAlignment.Center); // Chat
-                lvFriends.Columns.Add("", 60, HorizontalAlignment.Center); // Delete
+                // 2: Chat icon
+                lvFriends.Columns.Add("", 60, HorizontalAlignment.Center);
             }
             catch { }
         }
@@ -83,6 +86,7 @@ namespace plan_fighting_super_start
         }
 
         // ==================== Form Load ====================
+
         private void Friend_Load(object sender, EventArgs e)
         {
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
@@ -91,6 +95,7 @@ namespace plan_fighting_super_start
         }
 
         // ==================== Tải danh sách bạn bè ====================
+
         private async Task LoadFriendsAsync()
         {
             if (_isLoading) return;
@@ -156,10 +161,10 @@ namespace plan_fighting_super_start
 
                 foreach (var f in _friends)
                 {
-                    var item = new ListViewItem(""); // cột User (ảnh + tên)
-                    item.SubItems.Add(StatusToVietnamese(f.Status));
-                    item.SubItems.Add(""); // Chat icon
-                    item.SubItems.Add(""); // Delete icon
+                    // 3 cột: User, Status, Chat
+                    var item = new ListViewItem(""); // User (ảnh + tên)
+                    item.SubItems.Add(StatusToVietnamese(f.Status)); // Status
+                    item.SubItems.Add("");                             // Chat icon
                     item.Tag = f;
                     lvFriends.Items.Add(item);
                 }
@@ -191,6 +196,7 @@ namespace plan_fighting_super_start
         }
 
         // ==================== Avatar song song ====================
+
         private async Task TaiAvatarSongSongAsync(CancellationToken token)
         {
             if (_friends.Count == 0 || !UiAlive()) return;
@@ -237,7 +243,6 @@ namespace plan_fighting_super_start
             try
             {
                 if (_s3 == null) _s3 = new S3ImageService();
-
                 string key =
                     !string.IsNullOrWhiteSpace(f.AvatarKey)
                         ? f.AvatarKey
@@ -266,7 +271,9 @@ namespace plan_fighting_super_start
             }
         }
 
+
         // ==================== OwnerDraw ====================
+
         private void Lv_DrawColumnHeader(object? sender, DrawListViewColumnHeaderEventArgs e)
         {
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(18, 26, 48)), e.Bounds);
@@ -302,6 +309,7 @@ namespace plan_fighting_super_start
 
             if (e.ColumnIndex == 0)
             {
+                // Avatar + username
                 var r = e.Bounds;
                 int left = r.Left + 8;
                 int imgW = 44, imgH = 44;
@@ -330,15 +338,18 @@ namespace plan_fighting_super_start
                 return;
             }
 
-            var iconRect = e.Bounds;
-            int size = Math.Min(iconRect.Height - 8, 26);
-            iconRect = new Rectangle(
-                iconRect.Left + (iconRect.Width - size) / 2,
-                iconRect.Top + (iconRect.Height - size) / 2,
-                size, size);
+            // Cột 2: icon Chat
+            if (e.ColumnIndex == 2)
+            {
+                var iconRect = e.Bounds;
+                int size = Math.Min(iconRect.Height - 8, 26);
+                iconRect = new Rectangle(
+                    iconRect.Left + (iconRect.Width - size) / 2,
+                    iconRect.Top + (iconRect.Height - size) / 2,
+                    size, size);
 
-            if (e.ColumnIndex == 2) DrawChatIcon(e.Graphics, iconRect, isFriend);
-            if (e.ColumnIndex == 3) DrawDeleteIcon(e.Graphics, iconRect, isFriend);
+                DrawChatIcon(e.Graphics, iconRect, isFriend);
+            }
         }
 
         private void DrawChatIcon(Graphics g, Rectangle r, bool enabled)
@@ -361,19 +372,8 @@ namespace plan_fighting_super_start
             g.DrawPolygon(pen, tail);
         }
 
-        private void DrawDeleteIcon(Graphics g, Rectangle r, bool enabled)
-        {
-            var fill = enabled ? Color.FromArgb(30, 180, 100) : Color.FromArgb(70, 90, 80);
-            using var b = new SolidBrush(fill);
-            using var pen = new Pen(Color.Black, 3);
-
-            g.FillEllipse(b, r);
-            g.DrawEllipse(Pens.DarkGreen, r);
-            g.DrawLine(pen, r.Left + 6, r.Top + 6, r.Right - 6, r.Bottom - 6);
-            g.DrawLine(pen, r.Right - 6, r.Top + 6, r.Left + 6, r.Bottom - 6);
-        }
-
         // ==================== Click icon ====================
+
         private void Lv_MouseUp(object? sender, MouseEventArgs e)
         {
             if (!UiAlive()) return;
@@ -386,41 +386,16 @@ namespace plan_fighting_super_start
             bool isFriend = string.Equals(entry.Status, "accepted", StringComparison.OrdinalIgnoreCase);
             if (!isFriend) return;
 
+            // chỉ còn 1 cột icon Chat (index = 2)
             if (colIndex == 2)
             {
                 var dm = new ChatRieng(entry.Username);
                 dm.Show();
             }
-            else if (colIndex == 3)
-            {
-                _ = DeleteFriendFlow(entry);
-            }
-        }
-
-        private async Task DeleteFriendFlow(FriendEntry entry)
-        {
-            if (MessageBox.Show(
-                    $"Xóa \"{entry.Username}\" khỏi danh sách bạn?",
-                    "Xóa bạn",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) != DialogResult.Yes)
-                return;
-
-            try
-            {
-                bool ok = await Database.RemoveFriendAsync(AccountData.Username, entry.Username);
-                if (ok)
-                    await LoadFriendsAsync();
-                else
-                    MessageBox.Show("Xóa bạn thất bại.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi xóa bạn: " + ex.Message);
-            }
         }
 
         // ==================== Các nút ====================
+
         private async void btnRefresh_Click(object sender, EventArgs e)
         {
             await LoadFriendsAsync();
@@ -542,6 +517,7 @@ namespace plan_fighting_super_start
 
         private void lvFriends_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
         {
+            // Giữ nguyên width do mình set trong SetupColumns (khỏi bị resize lệch icon)
             e.Cancel = true;
             e.NewWidth = lvFriends.Columns[e.ColumnIndex].Width;
         }

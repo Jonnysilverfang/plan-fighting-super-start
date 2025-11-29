@@ -19,6 +19,7 @@ namespace plan_fighting_super_start
         private Button btnRefresh;
         private Label lblTitle;
         private Label lblLoading;
+        private Button button1;
 
         protected override void Dispose(bool disposing)
         {
@@ -86,7 +87,7 @@ namespace plan_fighting_super_start
             txtFriendUsername.BackColor = Color.FromArgb(15, 25, 45);
             txtFriendUsername.BorderStyle = BorderStyle.FixedSingle;
             txtFriendUsername.ForeColor = Color.White;
-            txtFriendUsername.Location = new Point(172, 418);
+            txtFriendUsername.Location = new Point(199, 418);
             txtFriendUsername.Name = "txtFriendUsername";
             txtFriendUsername.Size = new Size(210, 27);
             txtFriendUsername.TabIndex = 1;
@@ -106,7 +107,7 @@ namespace plan_fighting_super_start
             // 
             btnSendRequest.Font = new Font("Arial", 10.2F, FontStyle.Bold);
             btnSendRequest.ForeColor = Color.FromArgb(0, 192, 192);
-            btnSendRequest.Location = new Point(388, 418);
+            btnSendRequest.Location = new Point(444, 419);
             btnSendRequest.Name = "btnSendRequest";
             btnSendRequest.Size = new Size(110, 27);
             btnSendRequest.TabIndex = 3;
@@ -213,7 +214,5 @@ namespace plan_fighting_super_start
         }
 
         #endregion
-
-        private Button button1;
     }
 }
