@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -20,6 +21,19 @@ namespace plan_fighting_super_start
 
         private bool gameStarted = false;
         private bool shuttingDown = false;
+        private volatile bool _connectedToRoom = false;
+
+        // Hàng đợi tin chưa đọc
+        private readonly Queue<(string from, string text, bool isHostSender)> _pendingLobby = new();
+        private readonly Queue<(string from, string text, bool isHostSender)> _pendingRoom = new();
+        private int _unreadLobby = 0;
+        private int _unreadRoom = 0;
+
+        // Chống double-click Tạo phòng
+        private bool _creatingRoom = false;
+
+        // Cờ tránh vòng lặp SelectedIndexChanged → UpdateKenhItems → SelectedIndexChanged...
+        private bool _isUpdatingKenhItems = false;
 
         public Room()
         {
@@ -29,32 +43,109 @@ namespace plan_fighting_super_start
         private static bool InDesigner()
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return true;
-            try { return Process.GetCurrentProcess().ProcessName.IndexOf("devenv", StringComparison.OrdinalIgnoreCase) >= 0; }
+            try
+            {
+                return Process.GetCurrentProcess().ProcessName
+                    .IndexOf("devenv", StringComparison.OrdinalIgnoreCase) >= 0;
+            }
             catch { return false; }
         }
 
-        private bool CanAccessUi()
+        private bool DangChonKenhSanh()
+            => (cmbKenh.SelectedItem?.ToString()?.StartsWith("Kênh chung") ?? false);
+
+        private bool DangChonKenhPhong()
+            => (cmbKenh.SelectedItem?.ToString()?.StartsWith("Kênh phòng") ?? false);
+
+        // Helper chạy an toàn trên UI thread
+        private static void SafeOnUI(Control ctl, Action body)
         {
-            return !IsDisposed && IsHandleCreated;
+            if (ctl == null || body == null) return;
+            if (ctl.IsDisposed) return;
+
+            void Wrapped()
+            {
+                if (ctl.IsDisposed) return;
+                try { body(); }
+                catch { }
+            }
+
+            if (!ctl.IsHandleCreated)
+            {
+                void handler(object? s, EventArgs e)
+                {
+                    try { ctl.HandleCreated -= handler; } catch { }
+                    SafeOnUI(ctl, body);
+                }
+
+                try { ctl.HandleCreated += handler; } catch { }
+                return;
+            }
+
+            if (ctl.InvokeRequired)
+            {
+                try { ctl.BeginInvoke((Action)Wrapped); } catch { }
+            }
+            else
+            {
+                Wrapped();
+            }
         }
 
+        // ================== Cập nhật combobox kênh + badge ==================
         private void UpdateKenhItems(bool inRoom)
         {
-            if (!CanAccessUi()) return;
-            if (cmbKenh == null || cmbKenh.IsDisposed) return;
+            SafeOnUI(cmbKenh, () =>
+            {
+                if (cmbKenh == null || cmbKenh.IsDisposed) return;
 
-            cmbKenh.Items.Clear();
-            cmbKenh.Items.Add("Kênh chung (Sảnh)");
-            if (inRoom && !string.IsNullOrEmpty(currentRoomId))
-                cmbKenh.Items.Add($"Kênh phòng ({currentRoomId})");
-            cmbKenh.SelectedIndex = 0;
+                _isUpdatingKenhItems = true;
+                try
+                {
+                    string lobbyItem = "Kênh chung (Sảnh)";
+                    string roomItem = string.IsNullOrEmpty(currentRoomId)
+                        ? "Kênh phòng"
+                        : $"Kênh phòng ({currentRoomId})";
+
+                    if (_unreadLobby > 0)
+                        lobbyItem += $" (+{_unreadLobby})";
+
+                    if (_unreadRoom > 0 && inRoom && !string.IsNullOrEmpty(currentRoomId))
+                        roomItem += $" (+{_unreadRoom})";
+
+                    cmbKenh.Items.Clear();
+                    cmbKenh.Items.Add(lobbyItem);
+
+                    if (inRoom && !string.IsNullOrEmpty(currentRoomId))
+                        cmbKenh.Items.Add(roomItem);
+
+                    if (inRoom && cmbKenh.Items.Count > 1)
+                        cmbKenh.SelectedIndex = 1;   // Kênh phòng
+                    else
+                        cmbKenh.SelectedIndex = 0;   // Kênh sảnh
+                }
+                finally
+                {
+                    _isUpdatingKenhItems = false;
+                }
+            });
         }
 
-        // ========================= FORM LOAD =========================
+        private void UI(Action a)
+        {
+            if (InvokeRequired) BeginInvoke(a);
+            else a();
+        }
+
+        // =============== LOAD ===============
         private async void Room_Load(object sender, EventArgs e)
         {
             if (InDesigner())
             {
+                chatBox.SendToBack();
+                cmbKenh.BringToFront();
+                txtChat.BringToFront();
+                btnSendChat.BringToFront();
                 return;
             }
 
@@ -66,10 +157,54 @@ namespace plan_fighting_super_start
             btnStartGame.Enabled = false;
             btnLeaveRoom.Enabled = false;
 
+            // Chat sảnh LAN
             chatSanh = new ChatSanhLAN();
             chatSanh.BatDauNghe();
+
             chatSanh.NhanTinSanh += (ten, noiDung) =>
-                UI(() => AppendChat($"[LOBBY]{ten}", noiDung, false));
+            {
+                UI(() =>
+                {
+                    if (DangChonKenhSanh())
+                    {
+                        AppendChat($"[LOBBY]{ten}", noiDung, false);
+                    }
+                    else
+                    {
+                        _pendingLobby.Enqueue(($"[LOBBY]{ten}", noiDung, false));
+                        _unreadLobby++;
+                        UpdateKenhItems(_connectedToRoom);
+                    }
+                });
+            };
+
+            // Khi đổi kênh thì xả hàng đợi
+            cmbKenh.SelectedIndexChanged += (_, __) =>
+            {
+                if (_isUpdatingKenhItems) return; // tránh recursion
+
+                if (DangChonKenhSanh())
+                {
+                    while (_pendingLobby.Count > 0)
+                    {
+                        var it = _pendingLobby.Dequeue();
+                        AppendChat(it.from, it.text, it.isHostSender);
+                    }
+                    _unreadLobby = 0;
+                    UpdateKenhItems(_connectedToRoom);
+                }
+
+                if (DangChonKenhPhong())
+                {
+                    while (_pendingRoom.Count > 0)
+                    {
+                        var it = _pendingRoom.Dequeue();
+                        AppendChat(it.from, it.text, it.isHostSender);
+                    }
+                    _unreadRoom = 0;
+                    UpdateKenhItems(_connectedToRoom);
+                }
+            };
 
             await LoadRoomsAsync();
         }
@@ -78,95 +213,73 @@ namespace plan_fighting_super_start
         {
             shuttingDown = true;
 
-            try { networkManager?.Dispose(); networkManager = null; } catch { }
-            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
-            try { chatSanh?.Dispose(); chatSanh = null; } catch { }
+            try { networkManager?.Dispose(); } catch { }
+            try { lanBroadcast?.Dispose(); } catch { }
+            try { chatSanh?.Dispose(); } catch { }
 
             try
             {
                 if (isHost && !string.IsNullOrEmpty(currentRoomId))
                 {
-                    if (gameStarted)
-                        _ = RoomApi.EndRoomAsync(currentRoomId);
-                    else
-                        _ = RoomApi.CancelRoomAsync(currentRoomId);
+                    if (gameStarted) _ = RoomApi.EndRoomAsync(currentRoomId);
+                    else _ = RoomApi.CancelRoomAsync(currentRoomId);
                 }
             }
             catch { }
         }
 
-        // ===== HELPER =====
-
         private void SetStatus(string msg)
         {
-            if (!CanAccessUi()) return;
-            if (lblStatus == null || lblStatus.IsDisposed) return;
-
-            try
-            {
-                if (InvokeRequired)
-                    Invoke(new Action(() => lblStatus.Text = msg));
-                else
-                    lblStatus.Text = msg;
-            }
-            catch { }
+            if (InvokeRequired) Invoke(new Action(() => lblStatus.Text = msg));
+            else lblStatus.Text = msg;
         }
 
-        private void UI(Action a)
-        {
-            if (!CanAccessUi()) return;
+        private static string MakeRoomId()
+            => new Random().Next(100000, 999999).ToString();
 
-            try
-            {
-                if (InvokeRequired)
-                    BeginInvoke(a);
-                else
-                    a();
-            }
-            catch { }
-        }
-
-        private string MakeRoomId() => new Random().Next(100000, 999999).ToString();
-
-        // ===== CHAT =====
-
+        // =============== HIỂN THỊ CHAT ===============
         private void AppendChat(string from, string text, bool isHostSender)
         {
-            if (!CanAccessUi()) return;
-            if (chatBox == null || chatBox.IsDisposed) return;
+            if (chatBox == null) return;
 
             if (chatBox.InvokeRequired)
             {
-                try { chatBox.Invoke(new Action(() => AppendChat(from, text, isHostSender))); }
-                catch { }
+                chatBox.Invoke(new Action(() => AppendChat(from, text, isHostSender)));
                 return;
             }
 
             bool laLobby = from.StartsWith("[LOBBY]");
             if (laLobby) from = from.Substring("[LOBBY]".Length);
 
-            Color prefixColor = laLobby ? Color.Cyan : (isHostSender ? Color.Red : Color.LightGray);
             string prefix = laLobby ? "[LOBBY] " : (isHostSender ? "[HOST] " : "[CLIENT] ");
+            Color prefixColor = laLobby ? Color.Cyan : (isHostSender ? Color.Red : Color.LightGray);
+            Color nameColor = Color.Gold;
+            Color textColor = Color.White;
+
+            if (chatBox.TextLength > 0) chatBox.AppendText(Environment.NewLine);
+
+            int start = chatBox.TextLength;
+
+            chatBox.AppendText(prefix);
+            chatBox.Select(start, prefix.Length);
+            chatBox.SelectionColor = prefixColor;
+
+            string namePart = from + ": ";
+            chatBox.AppendText(namePart);
+            chatBox.Select(start + prefix.Length, namePart.Length);
+            chatBox.SelectionColor = nameColor;
+
+            chatBox.AppendText(text);
+            chatBox.SelectionColor = textColor;
 
             chatBox.SelectionStart = chatBox.TextLength;
-            chatBox.SelectionColor = prefixColor;
-            chatBox.AppendText(prefix);
-
-            chatBox.SelectionColor = Color.Gold;
-            chatBox.AppendText(from + ": ");
-
-            chatBox.SelectionColor = Color.White;
-            chatBox.AppendText(text + "\n");
-
             chatBox.ScrollToCaret();
         }
 
-        // ===== HOST =====
-
+        // =============== HOST LISTEN ===============
         private void StartHostServer()
         {
             try { networkManager?.Dispose(); } catch { }
-
             networkManager = new NetworkManager();
             WireNetworkEvents();
             networkManager.StartHost(GAME_PORT);
@@ -181,20 +294,37 @@ namespace plan_fighting_super_start
                 StartHostServer();
                 var ok = await RoomApi.BackToCreatedAsync(currentRoomId);
 
+                if (ok)
+                {
+                    UI(() =>
+                    {
+                        btnStartGame.Enabled = false;
+                        SetStatus($"Người chơi rời phòng. Phòng {currentRoomId} trở lại trạng thái chờ (1/2).");
+                        btnLeaveRoom.Enabled = true;
+                    });
+                    UpdateKenhItems(true);
+                    await LoadRoomsAsync();
+                }
+                else
+                {
+                    UI(() =>
+                    {
+                        btnStartGame.Enabled = false;
+                        SetStatus($"Người chơi rời phòng, nhưng API BackToCreatedAsync thất bại (room {currentRoomId}).");
+                        btnLeaveRoom.Enabled = true;
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
                 UI(() =>
                 {
                     btnStartGame.Enabled = false;
-                    SetStatus("Người chơi rời phòng. Phòng trở về trạng thái chờ.");
+                    SetStatus("Lỗi khi cập nhật phòng về CREATED: " + ex.Message);
                     btnLeaveRoom.Enabled = true;
                 });
-
-                await LoadRoomsAsync();
-                UpdateKenhItems(true);
             }
-            catch { }
         }
-
-        // ===== WIRE EVENTS =====
 
         private void WireNetworkEvents()
         {
@@ -202,69 +332,114 @@ namespace plan_fighting_super_start
 
             networkManager.OnPeerConnected += () =>
             {
+                _connectedToRoom = true;
+
                 UI(() =>
                 {
+                    UpdateKenhItems(true);
+
                     if (isHost)
                     {
                         btnStartGame.Enabled = true;
                         btnLeaveRoom.Enabled = true;
-                        SetStatus($"Phòng {currentRoomId}: Đã đủ 2 người.");
+                        SetStatus($"Phòng {currentRoomId}: ĐÃ ĐỦ 2 NGƯỜI. Host có thể bấm BẮT ĐẦU.");
                     }
                     else
                     {
+                        if (cmbKenh.Items.Count > 1)
+                            cmbKenh.SelectedIndex = 1;
+
                         btnLeaveRoom.Enabled = true;
-                        SetStatus("Đã kết nối. Chờ host bắt đầu.");
+                        SetStatus($"Đã kết nối tới phòng {currentRoomId}. Chờ host bấm BẮT ĐẦU.");
                     }
                 });
             };
 
             networkManager.OnMessageReceived += (msg) =>
             {
-                if (msg == "START_GAME")
+                if (msg.StartsWith("LEFT_ROOM|"))
                 {
+                    string who = msg.Substring("LEFT_ROOM|".Length);
                     UI(() =>
                     {
-                        gameStarted = true;
-                        OpenGame();
+                        var line = ("Hệ thống", $"{who} đã rời phòng.", true);
+                        if (DangChonKenhPhong()) AppendChat(line.Item1, line.Item2, line.Item3);
+                        else
+                        {
+                            _pendingRoom.Enqueue(line);
+                            _unreadRoom++;
+                            UpdateKenhItems(true);
+                        }
                     });
                     return;
                 }
 
-                if (msg.StartsWith("LEFT_ROOM|"))
+                if (msg == "START_GAME")
                 {
-                    UI(() => SetStatus("Người chơi đã rời phòng."));
+                    UI(() => { gameStarted = true; OpenGame(); });
                     return;
                 }
 
-                // CHAT
                 if (msg.StartsWith("CHAT|"))
                 {
-                    var parts = msg.Split('|');
-                    if (parts.Length >= 4)
+                    try
                     {
-                        string role = parts[1];
-                        string from = parts[2];
-                        string text = parts[3];
-                        AppendChat(from, text, role == "HOST");
+                        var parts = msg.Split(new[] { '|' }, 4);
+                        if (parts.Length >= 4)
+                        {
+                            string role = parts[1];
+                            string from = parts[2];
+                            string text = parts[3];
+                            bool isHostSender = role.Equals("HOST", StringComparison.OrdinalIgnoreCase);
+
+                            UI(() =>
+                            {
+                                var line = (from, text, isHostSender);
+
+                                if (DangChonKenhPhong())
+                                    AppendChat(line.from, line.text, line.isHostSender);
+                                else
+                                {
+                                    _pendingRoom.Enqueue(line);
+                                    _unreadRoom++;
+                                    UpdateKenhItems(true);
+                                }
+                            });
+                        }
                     }
+                    catch { }
+                    return;
+                }
+
+                if (msg == "ROOM_NOT_FOUND")
+                {
+                    UI(() =>
+                    {
+                        SetStatus("Không tìm thấy phòng trên server.");
+                        btnJoinRoom.Enabled = true;
+                        btnCreateRoom.Enabled = true;
+                        btnLeaveRoom.Enabled = false;
+                    });
                 }
             };
 
             networkManager.OnDisconnected += () =>
             {
+                _connectedToRoom = false;
+
+                UI(() => { btnStartGame.Enabled = false; });
+
                 if (shuttingDown) return;
 
                 if (isHost && !gameStarted)
                 {
                     _ = HandlePeerDisconnectedAsync();
-                    return;
                 }
-
-                if (!isHost)
+                else if (!isHost)
                 {
                     UI(() =>
                     {
-                        SetStatus("Host rời phòng.");
+                        SetStatus("Host đã rời phòng. Bạn đã bị ngắt kết nối.");
                         btnJoinRoom.Enabled = true;
                         btnCreateRoom.Enabled = true;
                         btnLeaveRoom.Enabled = false;
@@ -276,87 +451,122 @@ namespace plan_fighting_super_start
             };
         }
 
-        // ===== LOAD ROOM LIST =====
-
+        // =============== ROOMS LIST ===============
         private async Task LoadRoomsAsync()
         {
             try
             {
                 var rooms = await RoomApi.GetRoomsAsync();
+
                 UI(() =>
                 {
                     IdRoom.Rows.Clear();
-                    if (rooms == null) return;
+                    if (rooms == null || rooms.Count == 0) return;
 
-                    foreach (var r in rooms)
+                    foreach (RoomApi.RoomInfo r in rooms)
                     {
-                        string statusText = $"{r.PlayerCount}/2 - {r.Status}";
+                        string playersPart = $"{r.PlayerCount}/2";
+                        string statusText = string.IsNullOrWhiteSpace(r.Status)
+                            ? playersPart
+                            : $"{playersPart} - {r.Status}";
                         IdRoom.Rows.Add(r.RoomId, r.Host, statusText);
                     }
                 });
             }
-            catch { }
+            catch (Exception ex)
+            {
+                SetStatus("Không tải được danh sách phòng: " + ex.Message);
+            }
         }
 
-        // ===== CREATE ROOM =====
-
+        // =============== TẠO PHÒNG ===============
         private async void btnCreateRoom_Click(object sender, EventArgs e)
         {
-            if (!NetworkManager.IsNetworkAvailable())
+            if (_creatingRoom) return;
+            _creatingRoom = true;
+
+            try
             {
-                SetStatus("Không có mạng LAN!");
-                return;
+                if (!NetworkManager.IsNetworkAvailable())
+                {
+                    SetStatus("Không phát hiện mạng LAN khả dụng!");
+                    return;
+                }
+
+                currentRoomId = string.IsNullOrWhiteSpace(txtRoomID.Text)
+                    ? MakeRoomId()
+                    : txtRoomID.Text.Trim();
+                txtRoomID.Text = currentRoomId;
+
+                try { networkManager?.Dispose(); } catch { }
+                try { lanBroadcast?.Dispose(); } catch { }
+
+                gameStarted = false;
+                shuttingDown = false;
+
+                isHost = true;
+                btnStartGame.Enabled = false;
+                _connectedToRoom = false;
+
+                btnJoinRoom.Enabled = false;
+                btnCreateRoom.Enabled = false;
+                btnLeaveRoom.Enabled = true;
+
+                lanBroadcast = new LANBroadcast();
+                lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
+
+                StartHostServer();
+
+                SetStatus($"[HOST] Đã tạo phòng {currentRoomId}. Đang chờ người chơi khác...");
+                UpdateKenhItems(true);
+
+                // Host tự động chuyển sang Kênh phòng sau khi tạo
+                SafeOnUI(cmbKenh, () =>
+                {
+                    if (cmbKenh.Items.Count > 1)
+                        cmbKenh.SelectedIndex = 1;
+                });
+
+                var hostName = string.IsNullOrWhiteSpace(AccountData.Username)
+                    ? "Host"
+                    : AccountData.Username;
+                _ = RoomLogger.LogHost(currentRoomId, hostName);
+
+                var ok = await RoomApi.CreateRoomAsync(currentRoomId, hostName);
+                if (!ok)
+                {
+                    SetStatus($"[HOST] Đã tạo phòng {currentRoomId} (LAN OK) nhưng POST API thất bại.");
+                }
+
+                await LoadRoomsAsync();
             }
-
-            currentRoomId = string.IsNullOrWhiteSpace(txtRoomID.Text)
-                ? MakeRoomId()
-                : txtRoomID.Text.Trim();
-
-            txtRoomID.Text = currentRoomId;
-
-            try { networkManager?.Dispose(); networkManager = null; } catch { }
-            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
-
-            gameStarted = false;
-            shuttingDown = false;
-
-            isHost = true;
-            btnStartGame.Enabled = false;
-
-            btnJoinRoom.Enabled = false;
-            btnCreateRoom.Enabled = false;
-            btnLeaveRoom.Enabled = true;
-
-            lanBroadcast = new LANBroadcast();
-            lanBroadcast.StartBroadcast(currentRoomId, GAME_PORT);
-
-            StartHostServer();
-
-            SetStatus($"HOST: Đã tạo phòng {currentRoomId}. Chờ người khác...");
-
-            UpdateKenhItems(true);
-
-            var hostName = string.IsNullOrWhiteSpace(AccountData.Username) ? "Host" : AccountData.Username;
-            _ = RoomLogger.LogHost(currentRoomId, hostName);
-
-            await RoomApi.CreateRoomAsync(currentRoomId, hostName);
-            await LoadRoomsAsync();
+            catch (Exception ex)
+            {
+                SetStatus("Lỗi tạo phòng (LAN): " + ex.Message);
+                btnCreateRoom.Enabled = true;
+                btnJoinRoom.Enabled = true;
+                btnLeaveRoom.Enabled = false;
+            }
+            finally
+            {
+                _creatingRoom = false;
+            }
         }
 
-        // ===== JOIN ROOM =====
-
+        // =============== JOIN PHÒNG ===============
         private void btnJoinRoom_Click(object sender, EventArgs e)
         {
             string roomId = txtRoomID.Text.Trim();
+
             if (string.IsNullOrEmpty(roomId))
             {
-                SetStatus("Hãy nhập Room ID");
+                SetStatus("Nhập Room ID trước!");
                 return;
             }
 
             if (!NetworkManager.IsNetworkAvailable())
             {
-                SetStatus("Không có mạng LAN");
+                SetStatus("Không phát hiện mạng LAN khả dụng!");
                 return;
             }
 
@@ -364,55 +574,77 @@ namespace plan_fighting_super_start
             isHost = false;
             gameStarted = false;
             shuttingDown = false;
+            _connectedToRoom = false;
 
             btnJoinRoom.Enabled = false;
             btnStartGame.Enabled = false;
             btnCreateRoom.Enabled = false;
             btnLeaveRoom.Enabled = true;
 
-            try { networkManager?.Dispose(); networkManager = null; } catch { }
-            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
+            try { networkManager?.Dispose(); } catch { }
+            try { lanBroadcast?.Dispose(); } catch { }
 
             lanBroadcast = new LANBroadcast();
-            SetStatus($"Đang tìm phòng {roomId}...");
+            SetStatus($"[CLIENT] Đang tìm phòng {roomId} trong LAN...");
 
             lanBroadcast.OnRoomFound += async (foundRoomId, hostIp, port) =>
             {
                 if (foundRoomId != currentRoomId) return;
 
-                lanBroadcast.StopListen();
-
-                UI(() => SetStatus($"Tìm thấy host, đang kết nối..."));
-
-                networkManager = new NetworkManager();
-                WireNetworkEvents();
-
-                await networkManager.JoinHost(hostIp, port);
-
-                UI(() =>
+                try
                 {
-                    SetStatus("Đã kết nối! Chờ host bắt đầu.");
-                    UpdateKenhItems(true);
-                    btnLeaveRoom.Enabled = true;
-                });
+                    lanBroadcast.StopListen();
 
-                var guestName = string.IsNullOrWhiteSpace(AccountData.Username) ? "Client" : AccountData.Username;
-                _ = RoomLogger.LogGuest(currentRoomId, guestName);
-                await RoomApi.JoinRoomAsync(currentRoomId, guestName);
+                    UI(() => SetStatus($"Tìm thấy host {hostIp}:{port}, đang kết nối..."));
 
-                await LoadRoomsAsync();
+                    networkManager = new NetworkManager();
+                    WireNetworkEvents();
+
+                    await networkManager.JoinHost(hostIp, port);
+
+                    UI(() =>
+                    {
+                        SetStatus($"Đã kết nối tới host {hostIp}. Chờ host bấm BẮT ĐẦU.");
+                        UpdateKenhItems(true);
+                        if (cmbKenh.Items.Count > 1) cmbKenh.SelectedIndex = 1;
+                        btnLeaveRoom.Enabled = true;
+                    });
+
+                    var guestName = string.IsNullOrWhiteSpace(AccountData.Username)
+                        ? "Client"
+                        : AccountData.Username;
+                    _ = RoomLogger.LogGuest(currentRoomId, guestName);
+
+                    var ok = await RoomApi.JoinRoomAsync(currentRoomId, guestName);
+                    if (!ok)
+                    {
+                        UI(() => SetStatus($"Đã join LAN nhưng POST API join thất bại (phòng {currentRoomId})."));
+                    }
+
+                    await LoadRoomsAsync();
+                }
+                catch (Exception ex)
+                {
+                    UI(() =>
+                    {
+                        SetStatus("Lỗi kết nối host: " + ex.Message);
+                        btnJoinRoom.Enabled = true;
+                        btnCreateRoom.Enabled = true;
+                        btnLeaveRoom.Enabled = false;
+                        UpdateKenhItems(false);
+                    });
+                }
             };
 
             lanBroadcast.StartListen(currentRoomId);
         }
 
-        // ===== START GAME =====
-
-        private void btnStartGame_Click(object sender, EventArgs e)
+        // =============== START GAME ===============
+        private async void btnStartGame_Click(object sender, EventArgs e)
         {
             if (networkManager == null || !networkManager.IsConnected)
             {
-                SetStatus("Chưa đủ 2 người!");
+                SetStatus("Chưa đủ 2 người để bắt đầu!");
                 return;
             }
 
@@ -420,7 +652,9 @@ namespace plan_fighting_super_start
 
             if (isHost)
             {
-                var hostName = string.IsNullOrWhiteSpace(AccountData.Username) ? "Host" : AccountData.Username;
+                var hostName = string.IsNullOrWhiteSpace(AccountData.Username)
+                    ? "Host"
+                    : AccountData.Username;
                 _ = RoomApi.StartRoomAsync(currentRoomId, hostName);
             }
 
@@ -428,40 +662,57 @@ namespace plan_fighting_super_start
             OpenGame();
         }
 
-        // ===== LEAVE ROOM =====
-
+        // =============== THOÁT PHÒNG ===============
         private async void btnLeaveRoom_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(currentRoomId))
             {
-                SetStatus("Không ở trong phòng nào.");
+                SetStatus("Hiện không ở trong phòng nào để thoát.");
                 btnLeaveRoom.Enabled = false;
                 return;
             }
 
+            // Client báo host trước khi rời
+            if (!isHost && networkManager != null && networkManager.IsConnected)
+            {
+                string who = string.IsNullOrWhiteSpace(AccountData.Username)
+                    ? "Client"
+                    : AccountData.Username;
+                try { networkManager.Send("LEFT_ROOM|" + who); } catch { }
+            }
+
             shuttingDown = true;
 
-            try { networkManager?.Dispose(); networkManager = null; } catch { }
-            try { lanBroadcast?.Dispose(); lanBroadcast = null; } catch { }
+            try { networkManager?.Dispose(); } catch { }
+            try { lanBroadcast?.Dispose(); } catch { }
 
             if (isHost)
             {
-                if (gameStarted)
-                    _ = RoomApi.EndRoomAsync(currentRoomId);
-                else
-                    _ = RoomApi.CancelRoomAsync(currentRoomId);
-
-                SetStatus($"Đã đóng phòng {currentRoomId}");
+                try
+                {
+                    if (gameStarted) _ = RoomApi.EndRoomAsync(currentRoomId);
+                    else _ = RoomApi.CancelRoomAsync(currentRoomId);
+                    SetStatus($"Bạn đã thoát và đóng phòng {currentRoomId}.");
+                }
+                catch (Exception ex)
+                {
+                    SetStatus("Lỗi khi hủy/đóng phòng: " + ex.Message);
+                }
             }
             else
             {
-                SetStatus($"Đã rời phòng {currentRoomId}");
+                SetStatus($"Bạn đã rời phòng {currentRoomId}.");
             }
 
             isHost = false;
             gameStarted = false;
             currentRoomId = null;
             shuttingDown = false;
+            _connectedToRoom = false;
+
+            _pendingLobby.Clear();
+            _pendingRoom.Clear();
+            _unreadLobby = _unreadRoom = 0;
 
             UpdateKenhItems(false);
 
@@ -473,27 +724,18 @@ namespace plan_fighting_super_start
             try { await LoadRoomsAsync(); } catch { }
         }
 
-        // ===== OPEN GAME (FINAL FIX) =====
-
+        // =============== GAME FORM ===============
         private void OpenGame()
         {
-            if (networkManager == null || !networkManager.IsConnected)
-            {
-                SetStatus("Không thể mở trận vì chưa kết nối.");
-                return;
-            }
-
-            this.Enabled = false; // KHÔNG HIDE
-
             var game = new GAMESOLO(networkManager, isHost, currentRoomId);
-            game.StartPosition = FormStartPosition.CenterScreen;
+            game.Show();
+            this.Hide();
 
             game.FormClosed += async (_, __) =>
             {
-                this.Enabled = true;
-                this.Activate();
-
+                this.Show();
                 SetStatus("Đã quay lại lobby.");
+                UpdateKenhItems(false);
 
                 btnCreateRoom.Enabled = true;
                 btnJoinRoom.Enabled = true;
@@ -503,69 +745,15 @@ namespace plan_fighting_super_start
                 currentRoomId = null;
                 isHost = false;
                 gameStarted = false;
+                _connectedToRoom = false;
 
                 await LoadRoomsAsync();
-                UpdateKenhItems(false);
             };
-
-            game.Show();
         }
 
-        private async void btnSendChat_Click(object sender, EventArgs e)
-        {
-            string text = txtChat.Text.Trim();
-            if (string.IsNullOrEmpty(text)) return;
-
-            string from = string.IsNullOrWhiteSpace(AccountData.Username)
-                ? (isHost ? "Host" : "Client")
-                : AccountData.Username;
-
-            bool inRoom = networkManager != null && networkManager.IsConnected && !string.IsNullOrEmpty(currentRoomId);
-            bool guiKenhPhong = cmbKenh.SelectedItem?.ToString()?.StartsWith("Kênh phòng") == true;
-
-            if (!inRoom || !guiKenhPhong)
-            {
-                try { await chatSanh.GuiTinSanhAsync(from, text); } catch { }
-                AppendChat(from, text, isHost);
-                txtChat.Clear();
-                return;
-            }
-
-            string role = isHost ? "HOST" : "CLIENT";
-            string payload = $"CHAT|{role}|{from}|{text}";
-
-            AppendChat(from, text, isHost);
-            txtChat.Clear();
-
-            try { networkManager.Send(payload); } catch { }
-        }
-        // ========================= SỰ KIỆN GRID / NÚT / TEXTBOX =========================
-
-        private void IdRoom_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Không làm gì cũng được, chỉ để Designer khỏi báo lỗi
-        }
-
-        private void IdRoom_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Double click vào dòng => tự fill RoomID và join
-            if (e.RowIndex < 0) return;
-
-            var row = IdRoom.Rows[e.RowIndex];
-
-            var roomIdObj = row.Cells["Player1"]?.Value;
-            var roomId = roomIdObj?.ToString();
-
-            if (string.IsNullOrWhiteSpace(roomId)) return;
-
-            txtRoomID.Text = roomId;
-            // Tái sử dụng luôn logic join
-            btnJoinRoom_Click(btnJoinRoom, EventArgs.Empty);
-        }
-
+        // =============== UI MISC ===============
         private void button1_Click(object sender, EventArgs e)
         {
-            // Lịch sử đấu
             if (string.IsNullOrEmpty(AccountData.Username))
             {
                 MessageBox.Show("Vui lòng đăng nhập để xem lịch sử.", "Lỗi",
@@ -584,28 +772,93 @@ namespace plan_fighting_super_start
             }
         }
 
+        private void IdRoom_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+
+        private void IdRoom_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            var row = IdRoom.Rows[e.RowIndex];
+            var roomIdObj = row.Cells["Player1"]?.Value;
+            var roomId = roomIdObj?.ToString();
+            if (string.IsNullOrWhiteSpace(roomId)) return;
+
+            txtRoomID.Text = roomId;
+            btnJoinRoom_Click(btnJoinRoom, EventArgs.Empty);
+        }
+
         private async void button2_Click(object sender, EventArgs e)
         {
-            // Load lại danh sách phòng
-            try
-            {
-                await LoadRoomsAsync();
-            }
-            catch (Exception ex)
-            {
-                SetStatus("Không tải được danh sách phòng: " + ex.Message);
-            }
+            try { await LoadRoomsAsync(); }
+            catch (Exception ex) { SetStatus("Không tải được danh sách phòng: " + ex.Message); }
         }
 
-        private void chatBox_TextChanged(object sender, EventArgs e)
+        // =============== GỬI CHAT ===============
+        private async void btnSendChat_Click(object sender, EventArgs e)
         {
-            // Để trống cũng được – chỉ để tránh lỗi Designer
+            string text = txtChat.Text.Trim();
+            if (string.IsNullOrEmpty(text)) return;
+
+            string from = string.IsNullOrWhiteSpace(AccountData.Username)
+                ? (isHost ? "Host" : "Client")
+                : AccountData.Username;
+
+            bool inRoom = !string.IsNullOrEmpty(currentRoomId);
+
+            // Nếu chưa trong phòng hoặc không chọn “Kênh phòng” → gửi sảnh
+            if (!inRoom || !DangChonKenhPhong())
+            {
+                if (chatSanh == null)
+                {
+                    chatSanh = new ChatSanhLAN();
+                    chatSanh.BatDauNghe();
+                    chatSanh.NhanTinSanh += (ten, noiDung) =>
+                    {
+                        UI(() =>
+                        {
+                            if (DangChonKenhSanh()) AppendChat($"[LOBBY]{ten}", noiDung, false);
+                            else
+                            {
+                                _pendingLobby.Enqueue(($"[LOBBY]{ten}", noiDung, false));
+                                _unreadLobby++;
+                                UpdateKenhItems(_connectedToRoom);
+                            }
+                        });
+                    };
+                }
+
+                try { await chatSanh.GuiTinSanhAsync(from, text); } catch { }
+
+                if (DangChonKenhSanh()) AppendChat($"[LOBBY]{from}", text, false);
+                else
+                {
+                    _pendingLobby.Enqueue(($"[LOBBY]{from}", text, false));
+                    _unreadLobby++;
+                    UpdateKenhItems(_connectedToRoom);
+                }
+
+                txtChat.Clear();
+                return;
+            }
+
+            // Kênh phòng (TCP)
+            string role = isHost ? "HOST" : "CLIENT";
+            string payload = $"CHAT|{role}|{from}|{text}";
+
+            if (DangChonKenhPhong()) AppendChat(from, text, isHost);
+            else
+            {
+                _pendingRoom.Enqueue((from, text, isHost));
+                _unreadRoom++;
+                UpdateKenhItems(true);
+            }
+
+            txtChat.Clear();
+
+            try { networkManager.Send(payload); } catch { }
         }
 
-        private void txtChat_TextChanged(object sender, EventArgs e)
-        {
-            // Nếu sau này muốn gõ Enter để gửi thì xử lý ở đây
-        }
-
+        private void chatBox_TextChanged(object sender, EventArgs e) { }
+        private void txtChat_TextChanged(object sender, EventArgs e) { }
     }
 }
