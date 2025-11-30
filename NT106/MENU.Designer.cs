@@ -60,6 +60,7 @@ namespace plan_fighting_super_start
             pictureBoxPlane = new PictureBox();
             buttonDoiMayBay = new Button();
             label5 = new Label();
+            button3 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxAvatar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxPlane).BeginInit();
             SuspendLayout();
@@ -283,6 +284,19 @@ namespace plan_fighting_super_start
             label5.TabIndex = 21;
             label5.Text = "Máy bay";
             // 
+            // button3
+            // 
+            button3.FlatStyle = FlatStyle.Flat;
+            button3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            button3.ForeColor = Color.FromArgb(0, 192, 192);
+            button3.Location = new Point(631, 639);
+            button3.Name = "button3";
+            button3.Size = new Size(41, 29);
+            button3.TabIndex = 22;
+            button3.Text = "🔄";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
             // Menu
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -291,6 +305,7 @@ namespace plan_fighting_super_start
             BackgroundImage = Properties.Resource.Gemini_Generated_Image_dy9x6hdy9x6hdy9x;
             BackgroundImageLayout = ImageLayout.Center;
             ClientSize = new Size(684, 680);
+            Controls.Add(button3);
             Controls.Add(label5);
             Controls.Add(buttonDoiMayBay);
             Controls.Add(pictureBoxPlane);
@@ -325,5 +340,6 @@ namespace plan_fighting_super_start
             PerformLayout();
         }
         private Label label5;
+        private Button button3;
     }
 }

@@ -14,7 +14,7 @@ namespace plan_fighting_super_start
             public int GoldBonus { get; set; }
         }
 
-        private readonly List<RewardInfo> _rewards = new List<RewardInfo>
+        private readonly List<RewardInfo> _rewards = new()
         {
             new RewardInfo { Level = 10,  DamageBonus = 5,  GoldBonus = 100 },
             new RewardInfo { Level = 50, DamageBonus = 15, GoldBonus = 500 },
@@ -30,8 +30,9 @@ namespace plan_fighting_super_start
         public Reward()
         {
             InitializeComponent();
+            DoubleBuffered = true;
 
-            this.Load += Reward_Load;
+            Load += Reward_Load;
             btnClaimReward.Click += BtnClaimReward_Click;
         }
 
@@ -41,21 +42,36 @@ namespace plan_fighting_super_start
             UpdateRewardUI();
         }
 
-        // Áp dụng theme cho form
+        // ================== THEME ==================
+
         private void ApplyTheme()
         {
-            
-            this.BackColor = BgDark;
+            // Form nền tối
+            BackColor = BgDark;
+            ForeColor = Teal;
 
-            // Label info
+            // Nền mờ overlay
+            panelMain.BackColor = Color.FromArgb(150, 0, 0, 0);
+
+            // Card
+            panelCard.BackColor = BgPanel;
+            panelCard.Padding = new Padding(16);
+
+            // Tiêu đề
+            labelTitle.BackColor = Color.Transparent;
+            labelTitle.ForeColor = Teal;
+            labelTitle.Font = new Font("Segoe UI", 14f, FontStyle.Bold);
+
+            // Info
             labelInfo.BackColor = Color.Transparent;
-            labelInfo.ForeColor = Teal;
-            labelInfo.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+            labelInfo.ForeColor = Color.White;
+            labelInfo.Font = new Font("Segoe UI", 10.5f, FontStyle.Regular);
 
-            // CheckedListBox
-            checkedListRewards.BackColor = BgPanel;
+            // List reward
+            checkedListRewards.BackColor = Color.FromArgb(10, 18, 40);
             checkedListRewards.ForeColor = Teal;
-            checkedListRewards.BorderStyle = BorderStyle.FixedSingle;
+            checkedListRewards.BorderStyle = BorderStyle.None;
+            checkedListRewards.Font = new Font("Segoe UI", 10f, FontStyle.Regular);
 
             // Button
             SetGameButton(btnClaimReward);
@@ -72,6 +88,7 @@ namespace plan_fighting_super_start
             button.ForeColor = Teal;
             button.UseVisualStyleBackColor = false;
             button.Cursor = Cursors.Hand;
+            button.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
 
             button.MouseEnter += (_, __) =>
             {
@@ -86,17 +103,17 @@ namespace plan_fighting_super_start
             };
         }
 
-        // Logic reward 
+        // ================== LOGIC REWARD (y nguyên) ==================
 
         private bool IsLevelClaimed(int level)
         {
-            switch (level)
+            return level switch
             {
-                case 10: return AccountData.RewardLv10Claimed;
-                case 50: return AccountData.RewardLv50Claimed;
-                case 100: return AccountData.RewardLv100Claimed;
-                default: return true;
-            }
+                10 => AccountData.RewardLv10Claimed,
+                50 => AccountData.RewardLv50Claimed,
+                100 => AccountData.RewardLv100Claimed,
+                _ => true
+            };
         }
 
         private void SetLevelClaimed(int level)
@@ -119,23 +136,21 @@ namespace plan_fighting_super_start
         {
             int level = AccountData.Level;
 
-            //  Cập nhật danh sách checkbox 
+            // danh sách
             checkedListRewards.Items.Clear();
-
             foreach (var r in _rewards)
             {
                 bool claimed = IsLevelClaimed(r.Level);
                 string text = $"Lv {r.Level}: +{r.DamageBonus} DMG, +{r.GoldBonus} Gold";
 
                 int idx = checkedListRewards.Items.Add(text);
-                checkedListRewards.SetItemChecked(idx, claimed); // đã nhận thì tick
+                checkedListRewards.SetItemChecked(idx, claimed);
             }
 
-            checkedListRewards.Enabled = false; // chỉ hiển thị, không cho tự tick
+            checkedListRewards.Enabled = false;
 
-            // Label + nút 
             bool anyAvailable = false;
-            List<string> available = new List<string>();
+            List<string> available = new();
 
             foreach (var r in _rewards)
             {
@@ -172,7 +187,7 @@ namespace plan_fighting_super_start
             int level = AccountData.Level;
             int totalDamage = 0;
             int totalGold = 0;
-            List<string> detail = new List<string>();
+            List<string> detail = new();
 
             foreach (var r in _rewards)
             {
@@ -211,7 +226,7 @@ namespace plan_fighting_super_start
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
-
+                
             UpdateRewardUI();
         }
     }

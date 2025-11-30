@@ -124,7 +124,7 @@ namespace plan_fighting_super_start
             textBox3.Text = AccountData.Level.ToString();
         }
 
-        
+
         private void ReloadAccountFromServer()
         {
             try
@@ -174,7 +174,7 @@ namespace plan_fighting_super_start
             // style
             StyleHeader(labelWelcome);
 
-            
+
 
             foreach (var l in new[] { label1, label2, label3, label4 })
                 StyleSmallLabel(l);
@@ -341,5 +341,64 @@ namespace plan_fighting_super_start
         {
 
         }
+        private Panel _loadingOverlay;
+
+        private void ShowLoading(string text = "Đang tải dữ liệu...")
+        {
+            if (_loadingOverlay != null) return;
+
+            _loadingOverlay = new Panel();
+            _loadingOverlay.Dock = DockStyle.Fill;
+            _loadingOverlay.BackColor = Color.FromArgb(120, 0, 0, 0);
+
+            Label lbl = new Label();
+            lbl.Text = text;
+            lbl.ForeColor = Color.White;
+            lbl.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lbl.AutoSize = true;
+            lbl.BackColor = Color.Transparent;
+
+            lbl.Location = new Point(
+                (this.Width - lbl.Width) / 2,
+                (this.Height - lbl.Height) / 2
+            );
+
+            _loadingOverlay.Controls.Add(lbl);
+            Controls.Add(_loadingOverlay);
+            _loadingOverlay.BringToFront();
+        }
+
+        private void HideLoading()
+        {
+            if (_loadingOverlay != null)
+            {
+                Controls.Remove(_loadingOverlay);
+                _loadingOverlay.Dispose();
+                _loadingOverlay = null;
+            }
+        }
+
+
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ShowLoading("Đang cập nhật dữ liệu...");
+
+                // Chạy hàm UpdateAccountData trong thread khác để không khoá UI
+                await Task.Run(() => Database.UpdateAccountData());
+
+                MessageBox.Show("Cập nhật thành công!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.Message);
+            }
+            finally
+            {
+                HideLoading();
+            }
+        }
+
     }
 }
