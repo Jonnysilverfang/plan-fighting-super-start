@@ -62,6 +62,7 @@ namespace plan_fighting_super_start
         public GAMESOLO(NetworkManager network, bool isHost, string roomId)
         {
             InitializeComponent();
+            OptimizeGameFrame();
 
             // DÙNG ĐÚNG NetworkManager TỪ ROOM, KHÔNG TẠO MỚI
             _network = network ?? throw new ArgumentNullException(nameof(network));
@@ -83,6 +84,27 @@ namespace plan_fighting_super_start
             SetupTimer();
             WireNetworkEvents();
 
+        }
+        private void OptimizeGameFrame()
+        {
+            // Lấy vùng làm việc của màn hình hiện tại
+            var screen = Screen.FromControl(this).WorkingArea;
+
+            // Mục tiêu: tỉ lệ 16:9, chiếm khoảng 80% chiều cao màn hình
+            float targetRatio = 16f / 9f;
+
+            int targetHeight = (int)(screen.Height * 0.8);
+            int targetWidth = (int)(targetHeight * targetRatio);
+
+            // Nếu rộng quá so với màn, scale theo chiều rộng
+            if (targetWidth > screen.Width * 0.8)
+            {
+                targetWidth = (int)(screen.Width * 0.8);
+                targetHeight = (int)(targetWidth / targetRatio);
+            }
+
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.ClientSize = new Size(targetWidth, targetHeight);
         }
 
 
